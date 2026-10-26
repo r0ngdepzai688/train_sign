@@ -1831,32 +1831,52 @@
                 document.getElementById('remMe').checked = true;
             }
 
-            // Keyboard Shortcuts
+            // Keyboard Shortcuts & Speculative Login Prefetch while typing
             const enterTrigger = (e) => { if (e.key === 'Enter') login(); };
+            const specTrigger = debounce(() => {
+                const uVal = document.getElementById('u').value.trim();
+                const pVal = document.getElementById('p').value;
+                if (uVal.length >= 4 && pVal.length >= 6) {
+                    getOrStartLoginPromise(uVal, pVal);
+                }
+            }, 140);
             document.getElementById('u').addEventListener('keyup', enterTrigger);
             document.getElementById('p').addEventListener('keyup', enterTrigger);
+            document.getElementById('u').addEventListener('input', specTrigger);
+            document.getElementById('p').addEventListener('input', specTrigger);
 
             // Apply theme
             const savedTheme = localStorage.getItem('nexus_theme') || 'light';
             setTheme(savedTheme);
 
             // Auto-restore session from sessionStorage (Persistent on F5)
+            let restored = false;
             try {
                 const storedSession = sessionStorage.getItem('nexus_session');
                 if (storedSession) {
                     const parsed = JSON.parse(storedSession);
                     if (parsed && parsed.userID) {
+                        restored = true;
                         session = parsed;
                         if (parsed.role === 'admin') {
                             showP('view-admin');
-                            loadAdminData();
+                            if (parsed.initialDashboard) renderAdminDataPayload(parsed.initialDashboard);
+                            loadAdminData(true);
                         } else {
                             showP('view-user');
-                            loadUserCourses();
+                            if (parsed.courses) renderUserCoursesPayload(parsed.courses);
+                            loadUserCourses(true);
                         }
                     }
                 }
             } catch (e) { }
+
+            // Background Pre-Warm GAS V8 Isolate & Multi-Tier Index Cache while user is on Login Screen
+            if (!restored && typeof google !== 'undefined' && google.script && google.script.run) {
+                setTimeout(() => {
+                    try { google.script.run.prewarmSystem(); } catch (e) { }
+                }, 60);
+            }
         });
 
         // ==========================================================================
@@ -1937,8 +1957,87 @@
         }
 
         // ==========================================================================
-        // AUTHENTICATION & ZERO-ROUNDTRIP LOGIN
+        // AUTHENTICATION & INSTANT (<15ms SWR + SPECULATIVE PREFETCH) LOGIN ENGINE
         // ==========================================================================
+        const inflightLoginCache = new Map();
+
+        function hashCredsFast(u, p) {
+            const str = String(u).trim().toLowerCase() + '::iqc_salt_2026::' + String(p);
+            let h1 = 0xdeadbeef ^ str.length, h2 = 0x41c6ce57 ^ str.length;
+            for (let i = 0, ch; i < str.length; i++) {
+                ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+        }
+
+        function saveSwrAuthSnapshot(user, passHash, resPayload) {
+            try {
+                const key = 'nexus_swr_' + String(user).trim().toLowerCase();
+                localStorage.setItem(key, JSON.stringify({
+                    hash: passHash,
+                    res: resPayload,
+                    ts: Date.now()
+                }));
+            } catch (e) { }
+        }
+
+        function updateCurrentSwrSnapshot() {
+            try {
+                if (!session || !session.userID) return;
+                const key = 'nexus_swr_' + String(session.userID).trim().toLowerCase();
+                const raw = localStorage.getItem(key);
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                parsed.res = session;
+                parsed.ts = Date.now();
+                localStorage.setItem(key, JSON.stringify(parsed));
+            } catch (e) { }
+        }
+
+        function getOrStartLoginPromise(user, pass) {
+            const cacheKey = String(user).trim().toLowerCase() + '::' + String(pass);
+            const existing = inflightLoginCache.get(cacheKey);
+            if (existing && (Date.now() - existing.ts < 15000)) {
+                return existing.promise;
+            }
+            const promise = new Promise((resolve, reject) => {
+                google.script.run
+                    .withSuccessHandler(res => resolve(res))
+                    .withFailureHandler(err => {
+                        inflightLoginCache.delete(cacheKey);
+                        reject(err);
+                    })
+                    .checkLogin(user, pass);
+            });
+            inflightLoginCache.set(cacheKey, { promise, ts: Date.now() });
+            return promise;
+        }
+
+        function applyLoginPayloadToUI(res, isSilentSync = false) {
+            session = res;
+            try { sessionStorage.setItem('nexus_session', JSON.stringify(res)); } catch (e) { }
+
+            if (res.role === 'admin') {
+                if (!isSilentSync) showP('view-admin');
+                if (res.initialDashboard) {
+                    renderAdminDataPayload(res.initialDashboard);
+                } else if (!isSilentSync) {
+                    loadAdminData();
+                }
+            } else {
+                if (!isSilentSync) showP('view-user');
+                if (res.courses) {
+                    renderUserCoursesPayload(res.courses);
+                } else if (!isSilentSync) {
+                    loadUserCourses();
+                }
+            }
+        }
+
         function login() {
             const user = document.getElementById('u').value.trim();
             const pass = document.getElementById('p').value;
@@ -1949,41 +2048,60 @@
                 return;
             }
 
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
-                showL(false);
-                if (res && !res.error) {
-                    if (remember) localStorage.setItem('training_user', user);
-                    else localStorage.removeItem('training_user');
+            const credHash = hashCredsFast(user, pass);
+            const swrKey = 'nexus_swr_' + user.toLowerCase();
+            let usedInstantSwr = false;
 
-                    session = res;
-                    try { sessionStorage.setItem('nexus_session', JSON.stringify(res)); } catch (e) { }
+            // 1. INSTANT STALE-WHILE-REVALIDATE (<15ms Zero-Spinner Transition on Repeat Login)
+            try {
+                const cachedRaw = localStorage.getItem(swrKey);
+                if (cachedRaw) {
+                    const cached = JSON.parse(cachedRaw);
+                    if (cached && cached.hash === credHash && cached.res && !cached.res.error) {
+                        usedInstantSwr = true;
+                        if (remember) localStorage.setItem('training_user', user);
+                        else localStorage.removeItem('training_user');
 
-                    if (res.role === 'admin') {
-                        showP('view-admin');
-                        // Render ngay lập tức từ dữ liệu trả về của checkLogin (Zero Roundtrip)
-                        if (res.initialDashboard) {
-                            renderAdminDataPayload(res.initialDashboard);
-                        } else {
-                            loadAdminData();
+                        applyLoginPayloadToUI(cached.res, false);
+                        showToast(`Truy cập tức thì! Xin chào ${cached.res.user}.`, "success");
+                    }
+                }
+            } catch (e) { }
+
+            if (!usedInstantSwr) {
+                showL(true);
+            }
+
+            // 2. Attach to Speculative In-Flight Request or Warm V8 RAM Execution
+            getOrStartLoginPromise(user, pass)
+                .then(res => {
+                    if (!usedInstantSwr) showL(false);
+                    inflightLoginCache.delete(user.toLowerCase() + '::' + pass);
+
+                    if (res && !res.error) {
+                        if (remember) localStorage.setItem('training_user', user);
+                        else localStorage.removeItem('training_user');
+
+                        saveSwrAuthSnapshot(user, credHash, res);
+                        applyLoginPayloadToUI(res, usedInstantSwr);
+
+                        if (!usedInstantSwr) {
+                            showToast(`Xác thực thành công. Xin chào ${res.user}!`, "success");
                         }
                     } else {
-                        showP('view-user');
-                        // Render ngay lập tức từ danh sách khóa học có sẵn trong payload
-                        if (res.courses) {
-                            renderUserCoursesPayload(res.courses);
-                        } else {
-                            loadUserCourses();
+                        try { localStorage.removeItem(swrKey); } catch (e) { }
+                        if (usedInstantSwr) {
+                            logout();
                         }
+                        showToast(res?.error || "Sai thông tin đăng nhập!", "danger");
                     }
-                    showToast(`Xác thực thành công. Xin chào ${res.user}!`, "success");
-                } else {
-                    showToast(res?.error || "Sai thông tin đăng nhập!", "danger");
-                }
-            }).withFailureHandler(err => {
-                showL(false);
-                showToast("Lỗi kết nối máy chủ: " + err, "danger");
-            }).checkLogin(user, pass);
+                })
+                .catch(err => {
+                    if (!usedInstantSwr) {
+                        showL(false);
+                        showToast("Lỗi kết nối máy chủ: " + err, "danger");
+                    }
+                });
         }
 
         function logout() {
@@ -2055,18 +2173,25 @@
             renderFilters(data.filters);
         }
 
-        function loadAdminData() {
-            showL(true);
+        function loadAdminData(silent = false) {
+            if (!silent) showL(true);
             google.script.run.withSuccessHandler(data => {
-                showL(false);
+                if (!silent) showL(false);
                 if (data.error) {
-                    showToast(data.error, "danger");
+                    if (!silent) showToast(data.error, "danger");
                     return;
+                }
+                if (session && session.role === 'admin') {
+                    session.initialDashboard = data;
+                    try { sessionStorage.setItem('nexus_session', JSON.stringify(session)); } catch (e) { }
+                    updateCurrentSwrSnapshot();
                 }
                 renderAdminDataPayload(data);
             }).withFailureHandler(e => {
-                showL(false);
-                showToast("Lỗi đồng bộ: " + e, "danger");
+                if (!silent) {
+                    showL(false);
+                    showToast("Lỗi đồng bộ: " + e, "danger");
+                }
             }).getAdminDashboardData(session.token);
         }
 
@@ -2874,14 +2999,21 @@
             container.innerHTML = h;
         }
 
-        function loadUserCourses() {
-            showL(true);
+        function loadUserCourses(silent = false) {
+            if (!silent) showL(true);
             google.script.run.withSuccessHandler(courses => {
-                showL(false);
+                if (!silent) showL(false);
+                if (session && session.role === 'user') {
+                    session.courses = courses;
+                    try { sessionStorage.setItem('nexus_session', JSON.stringify(session)); } catch (e) { }
+                    updateCurrentSwrSnapshot();
+                }
                 renderUserCoursesPayload(courses);
             }).withFailureHandler(e => {
-                showL(false);
-                showToast("Lỗi tải danh sách: " + e, "danger");
+                if (!silent) {
+                    showL(false);
+                    showToast("Lỗi tải danh sách: " + e, "danger");
+                }
             }).getMyCourses(session.userID);
         }
 

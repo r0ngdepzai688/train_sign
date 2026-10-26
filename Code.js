@@ -5,24 +5,72 @@
  * Slogan: Silence the ads. Let quality make the noise.
  */
 
-// --- CẤU HÌNH HỆ THỐNG ---
+// --- CẤU HÌNH HỆ THỐNG & V8 IN-MEMORY MULTI-TIER CACHE ---
 const ADMIN_PASS_DEFAULT = "@nhd16488";
 const USER_DEFAULT_PASS_DEFAULT = "@iqc6368";
 const SPREADSHEET_ID_DEFAULT = "15K3FetZvSMPRKLNp9I7kyPLCeAIpreWNeeG7uerW3wk";
 const RECIPIENT_EMAILS_DEFAULT = 'hien.pt1@samsung.com,qcteam.iqctraining@gmail.com,dinh.hnhung@samsung.com,dang.ngoc@samsung.com,nhung.tt2@samsung.com,an.pthi@samsung.com,haiduong17.nguyen@gmail.com';
 
-function getProp(key, fallback) {
+const _MEM_CACHE = {
+    hydrated: false,
+    db: null,
+    props: null,
+    usersData: null,
+    coursesData: null,
+    assignIndex: null,
+    courseStats: null,
+    adminFilters: null,
+    availableCourses: null,
+    authTokens: {}
+};
+
+function hydrateMemoryFromScriptCache() {
+    if (_MEM_CACHE.hydrated) return;
+    _MEM_CACHE.hydrated = true;
     try {
-        const val = PropertiesService.getScriptProperties().getProperty(key);
-        return (val !== null && val !== undefined && val !== '') ? val : fallback;
-    } catch (e) {
-        return fallback;
+        const cache = CacheService.getScriptCache();
+        const keys = [
+            'sys_props_v2',
+            'users_raw_v2',
+            'courses_raw_data',
+            'assign_idx_v2',
+            'course_stats_cache',
+            'admin_filters',
+            'available_courses'
+        ];
+        const batch = cache.getAll(keys) || {};
+        if (batch['sys_props_v2'] && !_MEM_CACHE.props) _MEM_CACHE.props = JSON.parse(batch['sys_props_v2']);
+        if (batch['users_raw_v2'] && !_MEM_CACHE.usersData) _MEM_CACHE.usersData = JSON.parse(batch['users_raw_v2']);
+        if (batch['courses_raw_data'] && !_MEM_CACHE.coursesData) _MEM_CACHE.coursesData = JSON.parse(batch['courses_raw_data']);
+        if (batch['assign_idx_v2'] && !_MEM_CACHE.assignIndex) _MEM_CACHE.assignIndex = JSON.parse(batch['assign_idx_v2']);
+        if (batch['course_stats_cache'] && !_MEM_CACHE.courseStats) _MEM_CACHE.courseStats = JSON.parse(batch['course_stats_cache']);
+        if (batch['admin_filters'] && !_MEM_CACHE.adminFilters) _MEM_CACHE.adminFilters = JSON.parse(batch['admin_filters']);
+        if (batch['available_courses'] && !_MEM_CACHE.availableCourses) _MEM_CACHE.availableCourses = JSON.parse(batch['available_courses']);
+    } catch (e) { }
+}
+
+function getProp(key, fallback) {
+    hydrateMemoryFromScriptCache();
+    if (!_MEM_CACHE.props) {
+        try {
+            const rawProps = PropertiesService.getScriptProperties().getProperties() || {};
+            _MEM_CACHE.props = rawProps;
+            try {
+                CacheService.getScriptCache().put('sys_props_v2', JSON.stringify(rawProps), 3600);
+            } catch (e) { }
+        } catch (e) {
+            _MEM_CACHE.props = {};
+        }
     }
+    const val = _MEM_CACHE.props[key];
+    return (val !== null && val !== undefined && val !== '') ? val : fallback;
 }
 
 function getDB() {
+    if (_MEM_CACHE.db) return _MEM_CACHE.db;
     const sheetId = getProp('SPREADSHEET_ID', SPREADSHEET_ID_DEFAULT);
-    return SpreadsheetApp.openById(sheetId);
+    _MEM_CACHE.db = SpreadsheetApp.openById(sheetId);
+    return _MEM_CACHE.db;
 }
 
 function doGet() {
@@ -37,31 +85,58 @@ function doGet() {
 
 function verifyAdminToken(token) {
     if (!token) return false;
+    if (_MEM_CACHE.authTokens[token] === 'admin') return true;
     try {
         const cached = CacheService.getScriptCache().get('AUTH_' + token);
-        return cached === 'admin';
+        if (cached === 'admin') {
+            _MEM_CACHE.authTokens[token] = 'admin';
+            return true;
+        }
+        return false;
     } catch (e) {
         return false;
     }
 }
 
 /**
- * Đăng nhập siêu tốc (Zero-Roundtrip)
+ * Khởi động nóng toàn bộ Engine & nạp sẵn Index vào V8 RAM + CacheService
+ * Được gọi tự động ngầm ngay khi người dùng vừa mở màn hình Đăng nhập
+ */
+function prewarmSystem() {
+    try {
+        hydrateMemoryFromScriptCache();
+        getProp('ADMIN_PASS', ADMIN_PASS_DEFAULT);
+        getCachedUsersData();
+        getCachedCourses();
+        getCachedAssignmentsIndex();
+        getCourseStatistics();
+        getAdminFilters();
+        getAvailableCourses();
+        return { warmed: true, ts: Date.now() };
+    } catch (e) {
+        return { warmed: false };
+    }
+}
+
+/**
+ * Đăng nhập siêu tốc (Zero-Roundtrip + O(1) RAM Index Lookup)
  */
 function checkLogin(user, pass) {
     try {
+        hydrateMemoryFromScriptCache();
         const adminPass = getProp('ADMIN_PASS', ADMIN_PASS_DEFAULT);
         const userDefaultPass = getProp('USER_DEFAULT_PASS', USER_DEFAULT_PASS_DEFAULT);
-        const uTarget = String(user).trim();
+        const uTarget = String(user || '').trim();
 
         // 1. Quản trị viên
         if (uTarget === 'admin' && pass === adminPass) {
             const token = Utilities.getUuid() + '-' + Date.now();
+            _MEM_CACHE.authTokens[token] = 'admin';
             try {
                 CacheService.getScriptCache().put('AUTH_' + token, 'admin', 21600); // 6 giờ
             } catch (e) { }
 
-            const dashboardData = getAdminDashboardData(token);
+            const dashboardData = getAdminDashboardData(token, true);
             return {
                 role: 'admin',
                 user: 'Quản trị viên',
@@ -71,15 +146,12 @@ function checkLogin(user, pass) {
             };
         }
 
-        // 2. Nhân viên IQC
-        const ss = getDB();
-        const userSheet = ss.getSheetByName('Users');
-        if (!userSheet) return { error: "Không tìm thấy bảng Users!" };
-
-        const userData = userSheet.getDataRange().getDisplayValues();
+        // 2. Nhân viên IQC (Đọc từ Cached Users Index - 0ms Spreadsheet I/O khi Warm)
+        const userData = getCachedUsersData();
+        if (!userData || userData.length === 0) return { error: "Không tìm thấy bảng Users!" };
 
         for (let i = 1; i < userData.length; i++) {
-            let uID = String(userData[i][1] || '').trim();
+            const uID = String(userData[i][1] || '').trim();
             if (uID === uTarget && pass === userDefaultPass) {
                 if (userData[i][6] === 'Inactive') return { error: "Tài khoản của bạn đã bị khóa!" };
 
@@ -127,15 +199,46 @@ function parseDateFlexible(dVal) {
 }
 
 /**
+ * Cache bảng Users trong V8 RAM + CacheService (TTL 30 phút)
+ */
+function getCachedUsersData() {
+    hydrateMemoryFromScriptCache();
+    if (_MEM_CACHE.usersData) return _MEM_CACHE.usersData;
+    try {
+        const cached = CacheService.getScriptCache().get('users_raw_v2');
+        if (cached) {
+            _MEM_CACHE.usersData = JSON.parse(cached);
+            return _MEM_CACHE.usersData;
+        }
+    } catch (e) { }
+
+    const ss = getDB();
+    const sheet = ss.getSheetByName('Users');
+    if (!sheet) return [];
+    const data = sheet.getDataRange().getDisplayValues();
+    _MEM_CACHE.usersData = data;
+    try {
+        const serialized = JSON.stringify(data);
+        if (serialized.length < 95000) {
+            CacheService.getScriptCache().put('users_raw_v2', serialized, 1800);
+        }
+    } catch (e) { }
+    return data;
+}
+
+/**
  * Cache trung gian danh sách khóa học:
- * Tránh đọc bảng Courses liên tục trong mỗi request, giảm 50% thời gian Spreadsheet I/O
+ * Tránh đọc bảng Courses liên tục trong mỗi request
  */
 function getCachedCourses() {
+    hydrateMemoryFromScriptCache();
+    if (_MEM_CACHE.coursesData) return _MEM_CACHE.coursesData;
     try {
         const cache = CacheService.getScriptCache();
         const cached = cache.get('courses_raw_data');
         if (cached) {
-            return JSON.parse(cached);
+            _MEM_CACHE.coursesData = JSON.parse(cached);
+            return _MEM_CACHE.coursesData;
         }
     } catch (e) { }
 
@@ -143,19 +246,89 @@ function getCachedCourses() {
     const sheet = ss.getSheetByName('Courses');
     if (!sheet) return [];
     const data = sheet.getDataRange().getDisplayValues();
+    _MEM_CACHE.coursesData = data;
     try {
-        CacheService.getScriptCache().put('courses_raw_data', JSON.stringify(data), 900); // 15 phút
+        const serialized = JSON.stringify(data);
+        if (serialized.length < 95000) {
+            CacheService.getScriptCache().put('courses_raw_data', serialized, 1800);
+        }
     } catch (e) { }
     return data;
 }
 
+/**
+ * Cache chỉ mục phân bổ gọn nhẹ (statsByCourse + pendingByUser):
+ * Giúp checkLogin(user) & getCourseStatistics() đạt 0ms Spreadsheet I/O
+ */
+function getCachedAssignmentsIndex() {
+    hydrateMemoryFromScriptCache();
+    if (_MEM_CACHE.assignIndex) return _MEM_CACHE.assignIndex;
+    try {
+        const cached = CacheService.getScriptCache().get('assign_idx_v2');
+        if (cached) {
+            _MEM_CACHE.assignIndex = JSON.parse(cached);
+            return _MEM_CACHE.assignIndex;
+        }
+    } catch (e) { }
+
+    const ss = getDB();
+    const sheet = ss.getSheetByName('Assignments');
+    const rows = sheet ? sheet.getDataRange().getDisplayValues().slice(1) : [];
+
+    const statsByCourse = {};
+    const pendingByUser = {};
+
+    for (let i = 0; i < rows.length; i++) {
+        const r = rows[i];
+        const cid = String(r[0] || '').trim();
+        const uid = String(r[2] || '').trim();
+        if (!cid) continue;
+
+        if (!statsByCourse[cid]) statsByCourse[cid] = { total: 0, completed: 0 };
+        statsByCourse[cid].total++;
+
+        const isDone = (r[7] !== '' || r[9] !== '');
+        if (isDone) {
+            statsByCourse[cid].completed++;
+        } else if (uid) {
+            if (!pendingByUser[uid]) pendingByUser[uid] = [];
+            pendingByUser[uid].push(cid);
+        }
+    }
+
+    const indexObj = { statsByCourse: statsByCourse, pendingByUser: pendingByUser };
+    _MEM_CACHE.assignIndex = indexObj;
+    try {
+        const serialized = JSON.stringify(indexObj);
+        if (serialized.length < 95000) {
+            CacheService.getScriptCache().put('assign_idx_v2', serialized, 1800);
+        }
+    } catch (e) { }
+    return indexObj;
+}
+
 function clearDashboardCache() {
+    _MEM_CACHE.usersData = null;
+    _MEM_CACHE.coursesData = null;
+    _MEM_CACHE.assignIndex = null;
+    _MEM_CACHE.courseStats = null;
+    _MEM_CACHE.adminFilters = null;
+    _MEM_CACHE.availableCourses = null;
     try {
         const cache = CacheService.getScriptCache();
-        cache.remove('admin_filters');
-        cache.remove('available_courses');
-        cache.remove('courses_raw_data');
-        cache.remove('course_stats_cache');
+        const keysToRemove = [
+            'users_raw_v2',
+            'assign_idx_v2',
+            'admin_filters',
+            'available_courses',
+            'courses_raw_data',
+            'course_stats_cache'
+        ];
+        if (typeof cache.removeAll === 'function') {
+            cache.removeAll(keysToRemove);
+        } else {
+            keysToRemove.forEach(k => cache.remove(k));
+        }
     } catch (e) { }
 }
 
@@ -324,13 +497,11 @@ function resolveSignaturesBatch(signVals) {
 
 // --- DATA ACCESS & DASHBOARD APIS ---
 
-function getAdminUsers(adminToken) {
-    if (adminToken && !verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };
+function getAdminUsers(adminToken, skipVerify) {
+    if (!skipVerify && adminToken && !verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };
     try {
-        const ss = getDB();
-        const sheet = ss.getSheetByName('Users');
-        if (!sheet) return [];
-        return sheet.getDataRange().getDisplayValues().slice(1);
+        const users = getCachedUsersData();
+        return users.length > 1 ? users.slice(1) : [];
     } catch (e) {
         return { error: e.toString() };
     }
@@ -342,12 +513,17 @@ function getAdminCourses(adminToken) {
 }
 
 function getAdminFilters(adminToken) {
+    hydrateMemoryFromScriptCache();
+    if (_MEM_CACHE.adminFilters) return _MEM_CACHE.adminFilters;
     try {
         const cache = CacheService.getScriptCache();
         const cached = cache.get('admin_filters');
-        if (cached) return JSON.parse(cached);
+        if (cached) {
+            _MEM_CACHE.adminFilters = JSON.parse(cached);
+            return _MEM_CACHE.adminFilters;
+        }
 
-        const users = getDB().getSheetByName('Users').getDataRange().getValues().slice(1);
+        const users = getCachedUsersData().slice(1);
         const getUnique = (idx) => [...new Set(users.map(u => String(u[idx] || '').trim()).filter(Boolean))].sort();
 
         const result = {
@@ -355,18 +531,19 @@ function getAdminFilters(adminToken) {
             group: getUnique(3),
             part: getUnique(4)
         };
-        cache.put('admin_filters', JSON.stringify(result), 900);
+        _MEM_CACHE.adminFilters = result;
+        cache.put('admin_filters', JSON.stringify(result), 1800);
         return result;
     } catch (e) {
         return { com: [], group: [], part: [] };
     }
 }
 
-function getAdminDashboardData(adminToken) {
-    if (!verifyAdminToken(adminToken)) {
+function getAdminDashboardData(adminToken, skipVerify) {
+    if (!skipVerify && !verifyAdminToken(adminToken)) {
         return { error: "Phiên làm việc quản trị đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại!" };
     }
-    const users = getAdminUsers(adminToken);
+    const users = getAdminUsers(adminToken, true);
     const newRegs = Array.isArray(users) ? users.filter(u => u[6] === 'New-Reg') : [];
 
     return {
@@ -389,10 +566,15 @@ function getCourseDetails(courseId) {
 }
 
 function getAvailableCourses() {
+    hydrateMemoryFromScriptCache();
+    if (_MEM_CACHE.availableCourses) return _MEM_CACHE.availableCourses;
     try {
         const cache = CacheService.getScriptCache();
         const cached = cache.get('available_courses');
-        if (cached) return JSON.parse(cached);
+        if (cached) {
+            _MEM_CACHE.availableCourses = JSON.parse(cached);
+            return _MEM_CACHE.availableCourses;
+        }
 
         const courseData = getCachedCourses().slice(1);
         const today = new Date();
@@ -408,7 +590,8 @@ function getAvailableCourses() {
             return { id: c[0], name: c[1], status: status };
         });
 
-        cache.put('available_courses', JSON.stringify(list), 600);
+        _MEM_CACHE.availableCourses = list;
+        cache.put('available_courses', JSON.stringify(list), 1800);
         return list;
     } catch (e) {
         return [];
@@ -585,6 +768,7 @@ function assignCoursesToUsers(userIds, courseIds, adminToken) {
 
         if (newRows.length > 0) {
             assignSheet.getRange(assignSheet.getLastRow() + 1, 1, newRows.length, 10).setValues(newRows);
+            clearDashboardCache();
         }
         return { count: count };
     } catch (e) {
@@ -750,24 +934,23 @@ function deleteUsersByScope(scope, value, adminToken) {
 
 function getMyCourses(userID) {
     try {
-        const db = getDB();
-        const assignData = db.getSheetByName('Assignments').getDataRange().getDisplayValues();
+        const assignIdx = getCachedAssignmentsIndex();
         const courseData = getCachedCourses();
-        const uTarget = String(userID).trim();
+        const uTarget = String(userID || '').trim();
+
+        const pendingCids = (assignIdx && assignIdx.pendingByUser && assignIdx.pendingByUser[uTarget]) || [];
+        if (pendingCids.length === 0) return [];
 
         const courseMap = {};
         for (let i = 1; i < courseData.length; i++) {
             courseMap[String(courseData[i][0]).trim()] = courseData[i];
         }
 
-        const assigns = assignData.slice(1);
-        const myAssigns = assigns.filter(r => String(r[2]).trim() === uTarget && r[7] === '' && r[9] === '');
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        return myAssigns.map(a => {
-            const cid = String(a[0]).trim();
+        return pendingCids.map(rawCid => {
+            const cid = String(rawCid).trim();
             const courseInfo = courseMap[cid];
             if (!courseInfo) return null;
 
@@ -784,7 +967,7 @@ function getMyCourses(userID) {
 
             return {
                 id: cid,
-                name: a[1],
+                name: courseInfo[1],
                 start: courseInfo[2],
                 end: courseInfo[3],
                 status: status,
@@ -843,8 +1026,8 @@ function confirmTraining(userID, courseID, sign) {
                 const signRef = saveSignatureToDrive(cTarget, uTarget, sign);
                 assignSheet.getRange(i + 1, 8, 1, 2).setValues([[signRef, new Date()]]);
 
-                // Xóa cache thống kê để cập nhật ngay tiến độ
-                try { CacheService.getScriptCache().remove('course_stats_cache'); } catch (e) { }
+                // Xóa toàn bộ cache chỉ mục phân bổ & thống kê để đồng bộ tức thời
+                clearDashboardCache();
 
                 return { success: true };
             }
@@ -989,25 +1172,22 @@ function deleteCourse(courseId, adminToken) {
 }
 
 function getCourseStatistics() {
+    hydrateMemoryFromScriptCache();
+    if (_MEM_CACHE.courseStats) return _MEM_CACHE.courseStats;
     try {
         const cache = CacheService.getScriptCache();
         const cached = cache.get('course_stats_cache');
-        if (cached) return JSON.parse(cached);
+        if (cached) {
+            _MEM_CACHE.courseStats = JSON.parse(cached);
+            return _MEM_CACHE.courseStats;
+        }
 
-        const ss = getDB();
-        const assignments = ss.getSheetByName('Assignments').getDataRange().getDisplayValues().slice(1);
+        const assignIdx = getCachedAssignmentsIndex();
+        const assignMap = (assignIdx && assignIdx.statsByCourse) || {};
         const courses = getCachedCourses().slice(1);
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
-        const assignMap = {};
-        assignments.forEach(a => {
-            const cid = String(a[0]).trim();
-            if (!assignMap[cid]) assignMap[cid] = { total: 0, completed: 0 };
-            assignMap[cid].total++;
-            if (a[7] !== '' || a[9] !== '') assignMap[cid].completed++;
-        });
 
         const result = courses.map(c => {
             const cid = String(c[0]).trim();
@@ -1032,7 +1212,11 @@ function getCourseStatistics() {
             };
         }).reverse();
 
-        cache.put('course_stats_cache', JSON.stringify(result), 180); // Cache 3 phút
+        _MEM_CACHE.courseStats = result;
+        const serialized = JSON.stringify(result);
+        if (serialized.length < 95000) {
+            cache.put('course_stats_cache', serialized, 600);
+        }
         return result;
     } catch (e) {
         return { error: "Lỗi tải khóa học: " + e.message };
@@ -1066,7 +1250,7 @@ function updateException(courseID, userID, reason, adminToken) {
         for (let i = 1; i < data.length; i++) {
             if (String(data[i][0]).trim() === cTarget && String(data[i][2]).trim() === uTarget) {
                 sheet.getRange(i + 1, 10).setValue(reason);
-                try { CacheService.getScriptCache().remove('course_stats_cache'); } catch (e) { }
+                clearDashboardCache();
                 return true;
             }
         }
