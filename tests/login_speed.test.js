@@ -244,11 +244,21 @@ function runTests() {
     const afterSignLogin = env.sandbox.checkLogin('10545998', '@iqc6368');
     assert.strictEqual(afterSignLogin.courses.length, 0, 'After signing TRN-001, user should have 0 pending courses');
 
-    // 7. Verify Client-Side SWR & Speculative Login Engine (@blast-radius: ui)
+    // 7. Verify Client-Side SWR & Speculative Login Engine + GAS HTML Sanitizer Safety (@blast-radius: ui)
     const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'Index.html'), 'utf8');
     assert.ok(indexHtml.includes('prewarmSystem()'), 'Index.html must trigger background prewarmSystem() on load');
     assert.ok(indexHtml.includes('getOrStartLoginPromise'), 'Index.html must include speculative in-flight login prefetch');
     assert.ok(indexHtml.includes('nexus_swr_'), 'Index.html must include <15ms Stale-While-Revalidate instant auth cache');
+
+    const scriptBlocks = [...indexHtml.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi)];
+    scriptBlocks.forEach((m, idx) => {
+        new vm.Script(m[1], { filename: `Index_script_${idx}.js` });
+        // Simulate GAS Closure Compiler bug where // inside backtick template literals is stripped as a comment
+        const templateLiterals = [...m[1].matchAll(/`([\s\S]*?)`/g)];
+        templateLiterals.forEach((t) => {
+            assert.ok(!t[1].includes('//'), `FAIL: Template literal in Index.html contains '//' which GAS HTML compiler strips as a comment, breaking all buttons!`);
+        });
+    });
 
     console.log('✅ ALL SMART-TEST ASSERTIONS PASSED!');
 }

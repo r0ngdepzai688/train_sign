@@ -2890,7 +2890,8 @@
             });
 
             const portalLink = OFFICIAL_SHORT_URL || data.webAppUrl || window.location.href;
-            msg += `👉 Đề nghị các Part Leader nhắc nhở nhân sự truy cập Cổng IQC Nexus hoàn thành ký xác nhận ngay:\n🔗 Link ngắn: ${portalLink} (Dự phòng: https://da.gd/iqc-nexus)\n`;
+            const backupPortalLink = 'https://da.gd/iqc-nexus';
+            msg += `👉 Đề nghị các Part Leader nhắc nhở nhân sự truy cập Cổng IQC Nexus hoàn thành ký xác nhận ngay:\n🔗 Link ngắn: ${portalLink} (Dự phòng: ${backupPortalLink})\n`;
             msg += `— Silence the ads. Let quality make the noise.`;
 
             document.getElementById('rem-message-box').value = msg;

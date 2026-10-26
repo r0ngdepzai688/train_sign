@@ -75,8 +75,7 @@ function getDB() {
 }
 
 function doGet() {
-    return HtmlService.createTemplateFromFile('Index')
-        .evaluate()
+    return HtmlService.createHtmlOutputFromFile('Index')
         .setTitle('IQC Nexus | Hệ Thống Đào Tạo & Ký Số')
         .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover')
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
