@@ -1340,6 +1340,17 @@ function exportCourseReport(courseID, adminToken) {
             </style>
         </head>
         <body>
+            <table style="width: 100%; border: none; margin-bottom: 12px; border-bottom: 2px solid #0c65ff; padding-bottom: 6px;">
+                <tr>
+                    <td style="border: none; text-align: left; font-size: 13pt; font-weight: bold; color: #0c65ff; padding: 0;">
+                        IQC NEXUS | ENTERPRISE QUALITY TRAINING
+                    </td>
+                    <td style="border: none; text-align: right; font-size: 8.5pt; color: #64748b; font-style: italic; padding: 0;">
+                        Silence the ads. Let quality make the noise.
+                    </td>
+                </tr>
+            </table>
+
             <h1>DANH SÁCH XÁC NHẬN ĐÀO TẠO</h1>
             <h2 style="font-size: 13pt; text-align: center; margin-top: 0;">KHÓA: ${cName}</h2>
             <div class="meta">Thời gian đào tạo: ${cTime}</div>
@@ -1403,6 +1414,9 @@ function exportCourseReport(courseID, adminToken) {
         html += `
                 </tbody>
             </table>
+            <div style="margin-top: 24px; text-align: center; font-size: 8.5pt; color: #64748b; border-top: 1px solid #cbd5e1; padding-top: 8px;">
+                Silence the ads. Let quality make the noise. • Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering
+            </div>
         </body>
         </html>
         `;
