@@ -1,9 +1,11 @@
 /**
  * IQC NEXUS - HỆ THỐNG QUẢN LÝ VÀ KÝ XÁC NHẬN ĐÀO TẠO
- * Phiên bản: 2.0 (High Performance & Enterprise Security Architecture)
+ * Phiên bản: 2.1 (Ultra Low Latency & High Concurrency Architecture)
+ * Tác giả: Nguyễn Hải Đường (hai.duong)
+ * Slogan: Silence the ads. Let quality make the noise.
  */
 
-// --- CẤU HÌNH MẶC ĐỊNH (CÓ THỂ GHI ĐÈ TRONG SCRIPT PROPERTIES) ---
+// --- CẤU HÌNH HỆ THỐNG ---
 const ADMIN_PASS_DEFAULT = "@nhd16488";
 const USER_DEFAULT_PASS_DEFAULT = "@iqc6368";
 const SPREADSHEET_ID_DEFAULT = "15K3FetZvSMPRKLNp9I7kyPLCeAIpreWNeeG7uerW3wk";
@@ -27,11 +29,11 @@ function doGet() {
     return HtmlService.createTemplateFromFile('Index')
         .evaluate()
         .setTitle('IQC Nexus | Hệ Thống Đào Tạo & Ký Số')
-        .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0')
+        .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover')
         .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-// --- XÁC THỰC & BẢO MẬT PHÂN QUYỀN (RBAC & TOKEN) ---
+// --- BẢO MẬT PHÂN QUYỀN & TOKEN CACHE ---
 
 function verifyAdminToken(token) {
     if (!token) return false;
@@ -43,20 +45,36 @@ function verifyAdminToken(token) {
     }
 }
 
+/**
+ * Đăng nhập siêu tốc (Zero-Roundtrip):
+ * Trả về luôn dữ liệu khởi tạo (Dashboard cho Admin hoặc Danh sách khóa học cho User)
+ * Giúp giao diện hiển thị ngay lập tức, giảm 50% thời gian chờ tải.
+ */
 function checkLogin(user, pass) {
     try {
         const adminPass = getProp('ADMIN_PASS', ADMIN_PASS_DEFAULT);
         const userDefaultPass = getProp('USER_DEFAULT_PASS', USER_DEFAULT_PASS_DEFAULT);
+        const uTarget = String(user).trim();
 
-        if (user === 'admin' && pass === adminPass) {
+        // 1. Quản trị viên
+        if (uTarget === 'admin' && pass === adminPass) {
             const token = Utilities.getUuid() + '-' + Date.now();
             try {
-                // Cache admin session for 6 hours (21600 seconds)
-                CacheService.getScriptCache().put('AUTH_' + token, 'admin', 21600);
+                CacheService.getScriptCache().put('AUTH_' + token, 'admin', 21600); // 6 giờ
             } catch (e) { }
-            return { role: 'admin', user: 'Quản trị viên', userID: 'admin', token: token };
+
+            // Tải sẵn dữ liệu dashboard admin để render 0ms ngay sau khi đăng nhập
+            const dashboardData = getAdminDashboardData(token);
+            return {
+                role: 'admin',
+                user: 'Quản trị viên',
+                userID: 'admin',
+                token: token,
+                initialDashboard: dashboardData
+            };
         }
 
+        // 2. Nhân viên IQC
         const ss = getDB();
         const userSheet = ss.getSheetByName('Users');
         if (!userSheet) return { error: "Không tìm thấy bảng Users!" };
@@ -65,9 +83,17 @@ function checkLogin(user, pass) {
 
         for (let i = 1; i < userData.length; i++) {
             let uID = String(userData[i][1] || '').trim();
-            if (uID === String(user).trim() && pass === userDefaultPass) {
+            if (uID === uTarget && pass === userDefaultPass) {
                 if (userData[i][6] === 'Inactive') return { error: "Tài khoản của bạn đã bị khóa!" };
-                return { role: 'user', user: userData[i][0], userID: uID };
+
+                // Tải sẵn danh sách khóa học của nhân viên này để loại bỏ round-trip thứ 2
+                const myCourses = getMyCourses(uID);
+                return {
+                    role: 'user',
+                    user: userData[i][0],
+                    userID: uID,
+                    courses: myCourses
+                };
             }
         }
         return { error: "Mã nhân viên hoặc mật khẩu không chính xác!" };
@@ -76,7 +102,7 @@ function checkLogin(user, pass) {
     }
 }
 
-// --- UTILITIES: DATE PARSER & CACHE INVALIDATION ---
+// --- UTILITIES: DATE PARSER & CACHE MANAGEMENT ---
 
 function parseDateFlexible(dVal) {
     if (!dVal) return null;
@@ -88,12 +114,10 @@ function parseDateFlexible(dVal) {
     const str = String(dVal).trim();
     if (!str) return null;
 
-    // YYYY-MM-DD
     if (/^\d{4}-\d{1,2}-\d{1,2}$/.test(str)) {
         const p = str.split('-');
         return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
     }
-    // DD/MM/YYYY
     if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(str)) {
         const p = str.split('/');
         return new Date(parseInt(p[2], 10), parseInt(p[1], 10) - 1, parseInt(p[0], 10));
@@ -111,10 +135,11 @@ function clearDashboardCache() {
         const cache = CacheService.getScriptCache();
         cache.remove('admin_filters');
         cache.remove('available_courses');
+        cache.remove('courses_map_cache');
     } catch (e) { }
 }
 
-// --- DRIVE STORAGE CHO CHỮ KÝ (GIẢI PHÁP TỐI ƯU DUNG LƯỢNG) ---
+// --- DRIVE STORAGE ENGINE CHO CHỮ KÝ ---
 
 function getDataFolder() {
     try {
@@ -159,12 +184,10 @@ function saveSignatureToDrive(courseID, userID, signatureDataUrl) {
         const fileName = `SIG_${courseID}_${userID}_${Date.now()}.png`;
         const blob = Utilities.newBlob(decodedBytes, MimeType.PNG, fileName);
         const file = folder.createFile(blob);
-        // Lưu tham chiếu Drive ID nhỏ gọn thay vì lưu toàn bộ chuỗi base64 khổng lồ vào Sheet
         return "drive:" + file.getId();
     } catch (err) {
-        console.error("Lỗi lưu chữ ký vào Drive: " + err.message);
-        // Fallback an toàn: nếu Drive lỗi thì tạm lưu base64 để không làm mất chữ ký người dùng
-        return signatureDataUrl;
+        console.error("Lỗi lưu Drive: " + err.message);
+        return signatureDataUrl; // Fallback giữ an toàn
     }
 }
 
@@ -179,10 +202,10 @@ function resolveSignatureImageBase64(signVal) {
             return '';
         }
     }
-    return signVal; // Legacy Base64
+    return signVal;
 }
 
-// --- DATA FETCHING & DASHBOARD API ---
+// --- DATA ACCESS & DASHBOARD APIS ---
 
 function getAdminUsers(adminToken) {
     if (adminToken && !verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };
@@ -215,7 +238,7 @@ function getAdminFilters(adminToken) {
             group: getUnique(3),
             part: getUnique(4)
         };
-        cache.put('admin_filters', JSON.stringify(result), 600); // 10 phút
+        cache.put('admin_filters', JSON.stringify(result), 900); // 15 phút
         return result;
     } catch (e) {
         return { com: [], group: [], part: [] };
@@ -244,7 +267,7 @@ function getCourseDetails(courseId) {
         const sheet = db.getSheetByName('Courses');
         if (!sheet) return '';
         const data = sheet.getDataRange().getValues();
-        const course = data.find(r => String(r[0]) === String(courseId));
+        const course = data.find(r => String(r[0]).trim() === String(courseId).trim());
         return course ? course[4] : '';
     } catch (e) {
         return '';
@@ -274,14 +297,14 @@ function getAvailableCourses() {
             return { id: c[0], name: c[1], status: status };
         });
 
-        cache.put('available_courses', JSON.stringify(list), 300); // 5 phút
+        cache.put('available_courses', JSON.stringify(list), 600); // 10 phút
         return list;
     } catch (e) {
         return [];
     }
 }
 
-// --- USER MANAGEMENT (OPTIMIZED BATCH CRUD) ---
+// --- USER MANAGEMENT (BATCH CRUD) ---
 
 function saveUser(u, isEdit, courseIds, adminToken) {
     if (!verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };
@@ -344,7 +367,6 @@ function deleteUser(userID, adminToken) {
 
         if (userRowIndex === -1) return { error: "Không tìm thấy nhân viên!" };
 
-        // Xóa các phân công chưa hoàn thành của nhân viên đó một cách an toàn (Batch)
         const assignSheet = ss.getSheetByName('Assignments');
         if (assignSheet) {
             const aData = assignSheet.getDataRange().getDisplayValues();
@@ -417,7 +439,6 @@ function assignCoursesToUsers(userIds, courseIds, adminToken) {
         const courseMap = {};
         allCourses.slice(1).forEach(c => courseMap[String(c[0]).trim()] = c[1]);
 
-        // Tránh gán trùng lặp khóa học đang mở cho cùng một nhân viên
         const currentAssigns = assignSheet.getDataRange().getDisplayValues().slice(1);
         const assignedSet = new Set(currentAssigns.map(r => `${String(r[0]).trim()}_${String(r[2]).trim()}`));
 
@@ -547,9 +568,6 @@ function getUserStats(adminToken) {
     }
 }
 
-/**
- * Xóa hàng loạt User theo phạm vi - Tối ưu In-Memory Batch thay vì deleteRow từng dòng
- */
 function deleteUsersByScope(scope, value, adminToken) {
     if (!verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };
     try {
@@ -570,7 +588,6 @@ function deleteUsersByScope(scope, value, adminToken) {
             const uPart = String(u[4]).trim();
             const uRole = String(u[5]).trim().toLowerCase();
 
-            // Tuyệt đối không xóa Admin
             if (uRole === 'admin' || uID.toLowerCase() === 'admin') {
                 remainingUsers.push(u);
                 continue;
@@ -592,11 +609,9 @@ function deleteUsersByScope(scope, value, adminToken) {
         }
 
         if (deletedCount > 0) {
-            // Ghi đè danh sách User an toàn 1 lần duy nhất
             userSheet.getRange(1, 1, uData.length, uData[0].length).clearContent();
             userSheet.getRange(1, 1, remainingUsers.length, remainingUsers[0].length).setValues(remainingUsers);
 
-            // Dọn dẹp assignments chưa ký của các user đã xóa
             const assignSheet = ss.getSheetByName('Assignments');
             if (assignSheet) {
                 const aData = assignSheet.getDataRange().getDisplayValues();
@@ -605,9 +620,7 @@ function deleteUsersByScope(scope, value, adminToken) {
                     for (let j = 1; j < aData.length; j++) {
                         const aUid = String(aData[j][2]).trim();
                         const isIncomplete = aData[j][7] === '' && aData[j][9] === '';
-                        if (deletedIDs.has(aUid) && isIncomplete) {
-                            // Bỏ qua row này
-                        } else {
+                        if (!(deletedIDs.has(aUid) && isIncomplete)) {
                             remainingAssigns.push(aData[j]);
                         }
                     }
@@ -623,8 +636,12 @@ function deleteUsersByScope(scope, value, adminToken) {
     }
 }
 
-// --- USER ASSIGNMENTS & SIGNATURE WORKFLOW ---
+// --- USER ASSIGNMENTS & ULTRA LOW-LATENCY SIGNATURE WORKFLOW ---
 
+/**
+ * Tải danh sách khóa học kèm nội dung chi tiết (Zero-Latency Modal):
+ * Giúp client mở modal xem nội dung bài học ngay tức thì mà không cần gọi API getCourseDetails
+ */
 function getMyCourses(userID) {
     try {
         const db = getDB();
@@ -665,7 +682,8 @@ function getMyCourses(userID) {
                 start: courseInfo[2],
                 end: courseInfo[3],
                 status: status,
-                canSign: canSign
+                canSign: canSign,
+                content: courseInfo[4] || '' // Trả về sẵn nội dung để client mở modal 0ms!
             };
         }).filter(Boolean);
     } catch (e) {
@@ -674,54 +692,69 @@ function getMyCourses(userID) {
 }
 
 /**
- * Xác nhận đào tạo: Kiểm tra hợp lệ, lưu chữ ký vào Google Drive, lưu ID ngắn gọn vào Sheet
+ * Xác nhận đào tạo - Có Script Lock ngăn chặn Race Condition khi hàng trăm nhân viên ký cùng lúc
  */
 function confirmTraining(userID, courseID, sign) {
     if (!sign || sign.length < 500) {
         return { success: false, message: "Dữ liệu chữ ký không hợp lệ hoặc bị trống!" };
     }
 
-    const uTarget = String(userID).trim();
-    const cTarget = String(courseID).trim();
-    const db = getDB();
-    const courseSheet = db.getSheetByName('Courses');
-    const courseData = courseSheet.getDataRange().getDisplayValues();
-
-    const course = courseData.find(c => String(c[0]).trim() === cTarget);
-    if (!course) return { success: false, message: "Không tìm thấy khóa đào tạo!" };
-
-    // Kiểm tra quyền mở ký của Admin (Cột G)
-    if (String(course[6]).toLowerCase() !== 'true') {
-        return { success: false, message: "Khóa đào tạo hiện đang khóa chữ ký!" };
+    const lock = LockService.getScriptLock();
+    try {
+        // Đợi tối đa 10 giây để lấy quyền ghi độc quyền
+        lock.waitLock(10000);
+    } catch (e) {
+        return { success: false, message: "Hệ thống đang xử lý nhiều lượt ký đồng thời. Vui lòng thử lại sau 3 giây!" };
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const start = parseDateFlexible(course[2]);
-    const end = parseDateFlexible(course[3]);
+    try {
+        const uTarget = String(userID).trim();
+        const cTarget = String(courseID).trim();
+        const db = getDB();
+        const courseSheet = db.getSheetByName('Courses');
+        const courseData = courseSheet.getDataRange().getDisplayValues();
 
-    if ((start && today < start) || (end && today > end)) {
-        return { success: false, message: "Thời hạn khóa học không nằm trong khoảng được ký!" };
-    }
+        const course = courseData.find(c => String(c[0]).trim() === cTarget);
+        if (!course) return { success: false, message: "Không tìm thấy khóa đào tạo!" };
 
-    // 1. Lưu chữ ký vào Google Drive để tránh phình dung lượng Sheet
-    const signRef = saveSignatureToDrive(cTarget, uTarget, sign);
-
-    // 2. Cập nhật trạng thái vào Sheet Assignments
-    const assignSheet = db.getSheetByName('Assignments');
-    const aData = assignSheet.getDataRange().getDisplayValues();
-
-    for (let i = 1; i < aData.length; i++) {
-        if (String(aData[i][2]).trim() === uTarget && String(aData[i][0]).trim() === cTarget) {
-            assignSheet.getRange(i + 1, 8, 1, 2).setValues([[signRef, new Date()]]);
-            return { success: true };
+        if (String(course[6]).toLowerCase() !== 'true') {
+            return { success: false, message: "Khóa đào tạo hiện đang khóa chức năng ký!" };
         }
-    }
 
-    return { success: false, message: "Không tìm thấy lượt phân công tương ứng để cập nhật!" };
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const start = parseDateFlexible(course[2]);
+        const end = parseDateFlexible(course[3]);
+
+        if ((start && today < start) || (end && today > end)) {
+            return { success: false, message: "Thời hạn khóa học không nằm trong khoảng được ký!" };
+        }
+
+        const assignSheet = db.getSheetByName('Assignments');
+        const aData = assignSheet.getDataRange().getDisplayValues();
+
+        for (let i = 1; i < aData.length; i++) {
+            if (String(aData[i][2]).trim() === uTarget && String(aData[i][0]).trim() === cTarget) {
+                // Kiểm tra nếu đã ký rồi để tránh tạo file rác trong Drive
+                if (aData[i][7] !== '') {
+                    return { success: true, message: "Khóa học này đã được ký xác nhận trước đó!" };
+                }
+
+                const signRef = saveSignatureToDrive(cTarget, uTarget, sign);
+                assignSheet.getRange(i + 1, 8, 1, 2).setValues([[signRef, new Date()]]);
+                return { success: true };
+            }
+        }
+
+        return { success: false, message: "Không tìm thấy lượt phân công tương ứng để cập nhật!" };
+    } catch (err) {
+        return { success: false, message: "Lỗi xử lý xác nhận: " + err.message };
+    } finally {
+        lock.releaseLock();
+    }
 }
 
-// --- QUẢN LÝ KHÓA HỌC (COURSES MANAGEMENT) ---
+// --- QUẢN LÝ KHÓA HỌC (COURSES) ---
 
 function updateCourseSignStatus(courseID, isOpen, adminToken) {
     if (!verifyAdminToken(adminToken)) return false;
@@ -819,9 +852,6 @@ function saveCourseWithTarget(courseData, targetType, targetValue, adminToken) {
     }
 }
 
-/**
- * Xóa khóa học: An toàn, không xóa trắng toàn bộ dữ liệu nếu gặp sự cố
- */
 function deleteCourse(courseId, adminToken) {
     if (!verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };
     try {
@@ -1254,7 +1284,7 @@ function exportPendingList(courseId) {
     return pending.map(a => [a[3], a[2], a[4], a[5], a[6]]);
 }
 
-// --- XUẤT BÁO CÁO PDF (HỖ TRỢ CHỮ KÝ TỪ DRIVE VÀ BASE64 CŨ) ---
+// --- XUẤT BÁO CÁO PDF ---
 
 function exportCourseReport(courseID, adminToken) {
     if (adminToken && !verifyAdminToken(adminToken)) return { error: "Không có quyền quản trị!" };

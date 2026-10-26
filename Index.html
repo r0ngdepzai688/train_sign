@@ -98,7 +98,7 @@
             font-family: var(--font-sans);
             background-color: var(--bg-base);
             color: var(--text-body);
-            min-height: 100dvh; /* Mobile browser address bar stability */
+            min-height: 100dvh;
             line-height: 1.5;
             transition: background-color 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
@@ -177,15 +177,6 @@
             box-shadow: var(--shadow-glass), var(--shadow-specular);
             position: relative;
             transition: transform 0.25s var(--spring), box-shadow 0.25s var(--spring), border-color 0.25s ease;
-        }
-
-        .liquid-glass-elevated {
-            background: var(--bg-surface-elevated);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-radius: var(--radius-card);
-            border: 1px solid var(--border-glass);
-            box-shadow: var(--shadow-elevated), var(--shadow-specular);
         }
 
         .liquid-glass-interactive:hover {
@@ -303,7 +294,7 @@
             border-color: var(--rose);
         }
 
-        /* --- PRECISION INPUT SYSTEM --- */
+        /* --- INPUT CONTROLS --- */
         .form-control, .form-select {
             background-color: var(--bg-surface);
             color: var(--text-heading);
@@ -327,7 +318,7 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
         }
 
-        /* --- RETINA-GRADE SIGNATURE PAD WRAPPER --- */
+        /* --- SIGNATURE CANVAS ENGINE --- */
         .signature-glass-dock {
             position: relative;
             background-color: #ffffff;
@@ -335,7 +326,7 @@
             border: 1px solid rgba(15, 23, 42, 0.12);
             box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
             overflow: hidden;
-            touch-action: none; /* Block browser swipe & pinch */
+            touch-action: none;
         }
 
         #sign-canvas {
@@ -347,7 +338,6 @@
             touch-action: none;
         }
 
-        /* Watermark Guide Line in Canvas */
         .signature-watermark {
             position: absolute;
             bottom: 38px;
@@ -365,7 +355,6 @@
             user-select: none;
         }
 
-        /* --- PROGRESS METER --- */
         .progress-meter {
             height: 6px;
             background-color: var(--bg-subtle);
@@ -381,7 +370,7 @@
             transition: width 0.4s var(--spring);
         }
 
-        /* --- TOAST SYSTEM (NON-BLOCKING LUXURY FEEDBACK) --- */
+        /* --- TOAST SYSTEM --- */
         #nexus-toast-container {
             position: fixed;
             top: 24px;
@@ -417,7 +406,7 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* --- SHIMMER LOADER --- */
+        /* --- LOADER --- */
         #loader {
             display: none;
             position: fixed;
@@ -445,7 +434,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Modern Segmented Navigation Tabs */
         .nexus-tabs {
             display: flex;
             background: var(--bg-subtle);
@@ -474,7 +462,6 @@
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), var(--shadow-specular);
         }
 
-        /* Floating Action Button (FAB) */
         .fab-trigger {
             position: fixed;
             bottom: 30px;
@@ -499,7 +486,6 @@
             transform: scale(0.92);
         }
 
-        /* Modal Customization */
         .modal-content {
             background: var(--bg-surface-elevated);
             backdrop-filter: var(--glass-blur);
@@ -523,6 +509,35 @@
             background-color: rgba(26, 35, 54, 0.7);
             color: var(--text-muted);
             border-color: var(--border-subtle);
+        }
+
+        /* --- SIGNATURE FOOTER BRANDING (SLOGAN & COPYRIGHT) --- */
+        .nexus-footer-brand {
+            margin-top: 48px;
+            padding: 24px 0 16px 0;
+            border-top: 1px solid var(--border-subtle);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nexus-slogan {
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nexus-copyright {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
         }
     </style>
 </head>
@@ -587,7 +602,18 @@
                 <a href="javascript:void(0)" class="small text-primary fw-bold text-decoration-none" onclick="showP('view-reg')">Tạo tài khoản mới</a>
             </div>
         </div>
-        <div class="text-center small text-muted font-mono mt-4">Enterprise Quality Engineering • Standard Release 2026</div>
+
+        <!-- FOOTER BRANDING: SLOGAN & COPYRIGHT -->
+        <div class="nexus-footer-brand">
+            <div class="nexus-slogan">
+                <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
+                Silence the ads. Let quality make the noise.
+                <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
+            </div>
+            <div class="nexus-copyright">
+                Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering
+            </div>
+        </div>
     </div>
 
     <!-- ==========================================================================
@@ -632,6 +658,11 @@
                 <i class="fa-solid fa-circle-check me-2"></i>Đăng ký tài khoản
             </button>
         </div>
+
+        <div class="nexus-footer-brand">
+            <div class="nexus-slogan">Silence the ads. Let quality make the noise.</div>
+            <div class="nexus-copyright">Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</div>
+        </div>
     </div>
 
     <!-- ==========================================================================
@@ -648,7 +679,7 @@
                     <h4 class="fw-bold mb-0">IQC Executive Command</h4>
                     <div class="d-flex align-items-center gap-2 mt-1">
                         <span class="live-beacon"><span class="live-beacon-pulse"></span><span class="live-beacon-core"></span></span>
-                        <span class="small font-mono text-muted" style="font-size: 0.76rem;">AUTHENTICATED SESSION</span>
+                        <span class="small font-mono text-muted" style="font-size: 0.76rem;">AUTHENTICATED ADMIN SESSION</span>
                     </div>
                 </div>
             </div>
@@ -707,6 +738,18 @@
             <div id="list-u"></div>
             <button class="fab-trigger" onclick="openUserModal()" title="Thêm nhân viên"><i class="fa-solid fa-user-plus fa-lg"></i></button>
         </div>
+
+        <!-- FOOTER BRANDING: SLOGAN & COPYRIGHT -->
+        <div class="nexus-footer-brand">
+            <div class="nexus-slogan">
+                <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
+                Silence the ads. Let quality make the noise.
+                <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
+            </div>
+            <div class="nexus-copyright">
+                Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering Platform
+            </div>
+        </div>
     </div>
 
     <!-- ==========================================================================
@@ -734,13 +777,25 @@
         </div>
 
         <div id="user-course-list"></div>
+
+        <!-- FOOTER BRANDING: SLOGAN & COPYRIGHT -->
+        <div class="nexus-footer-brand">
+            <div class="nexus-slogan">
+                <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
+                Silence the ads. Let quality make the noise.
+                <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
+            </div>
+            <div class="nexus-copyright">
+                Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering
+            </div>
+        </div>
     </div>
 
     <!-- ==========================================================================
-         MODALS & DIALOGS (VISION-OS STYLE REFRACTION)
+         MODALS & DIALOGS
          ========================================================================== -->
 
-    <!-- SIGNATURE MODAL (HIGH-PRECISION BÉZIER TOUCH PAD) -->
+    <!-- SIGNATURE MODAL -->
     <div class="modal fade" id="modalSign" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
@@ -788,7 +843,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-nexus btn-nexus-secondary" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn-nexus btn-nexus-primary" onclick="submitSignature()">
+                    <button type="button" class="btn-nexus btn-nexus-primary" id="btn-submit-sign" onclick="submitSignature()">
                         <i class="fa-solid fa-circle-check me-1"></i>Xác nhận hoàn thành
                     </button>
                 </div>
@@ -1061,6 +1116,9 @@
         let editingCourseID = null;
         let quill = null;
 
+        // In-Memory Fast Cache for Courses
+        let userCoursesMap = {};
+
         // Modals
         let mUser, mCourse, mNewReg, mStats, mSign, mParticipants;
 
@@ -1079,7 +1137,7 @@
             mSign = new bootstrap.Modal('#modalSign');
             mParticipants = new bootstrap.Modal('#modalParticipants');
 
-            // Init Quill
+            // Init Quill Editor
             quill = new Quill('#editor-container', {
                 theme: 'snow',
                 modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]] }
@@ -1106,6 +1164,24 @@
             // Apply theme
             const savedTheme = localStorage.getItem('nexus_theme') || 'light';
             setTheme(savedTheme);
+
+            // Auto-restore session from sessionStorage (Persistent on F5)
+            try {
+                const storedSession = sessionStorage.getItem('nexus_session');
+                if (storedSession) {
+                    const parsed = JSON.parse(storedSession);
+                    if (parsed && parsed.userID) {
+                        session = parsed;
+                        if (parsed.role === 'admin') {
+                            showP('view-admin');
+                            loadAdminData();
+                        } else {
+                            showP('view-user');
+                            loadUserCourses();
+                        }
+                    }
+                }
+            } catch (e) { }
         });
 
         // ==========================================================================
@@ -1185,7 +1261,7 @@
         }
 
         // ==========================================================================
-        // AUTHENTICATION
+        // AUTHENTICATION & ZERO-ROUNDTRIP LOGIN
         // ==========================================================================
         function login() {
             const user = document.getElementById('u').value.trim();
@@ -1205,12 +1281,24 @@
                     else localStorage.removeItem('training_user');
 
                     session = res;
+                    try { sessionStorage.setItem('nexus_session', JSON.stringify(res)); } catch (e) { }
+
                     if (res.role === 'admin') {
                         showP('view-admin');
-                        loadAdminData();
+                        // Render ngay lập tức từ dữ liệu trả về của checkLogin (Zero Roundtrip)
+                        if (res.initialDashboard) {
+                            renderAdminDataPayload(res.initialDashboard);
+                        } else {
+                            loadAdminData();
+                        }
                     } else {
                         showP('view-user');
-                        loadUserCourses();
+                        // Render ngay lập tức từ danh sách khóa học có sẵn trong payload
+                        if (res.courses) {
+                            renderUserCoursesPayload(res.courses);
+                        } else {
+                            loadUserCourses();
+                        }
                     }
                     showToast(`Xác thực thành công. Xin chào ${res.user}!`, "success");
                 } else {
@@ -1224,6 +1312,7 @@
 
         function logout() {
             session = {};
+            try { sessionStorage.removeItem('nexus_session'); } catch (e) { }
             document.getElementById('p').value = '';
             showP('view-login');
             showToast("Đã kết thúc phiên làm việc an toàn.", "info");
@@ -1272,6 +1361,24 @@
             }
         }
 
+        function renderAdminDataPayload(data) {
+            availableCoursesGlobal = data.availableCourses || [];
+            allUsers = data.allUsers || [];
+
+            renderCourseSelection('manual-courses', availableCoursesGlobal);
+            renderCourseSelection('import-courses', availableCoursesGlobal);
+
+            if (data.newRegisters && data.newRegisters.length > 0) {
+                newRegUserIDs = data.newRegisters.map(u => u[1]);
+                renderNewRegModal(data.newRegisters, availableCoursesGlobal);
+                mNewReg.show();
+            }
+
+            renderAIBrief(data.courses, data.allUsers);
+            renderCourseCards(data.courses);
+            renderFilters(data.filters);
+        }
+
         function loadAdminData() {
             showL(true);
             google.script.run.withSuccessHandler(data => {
@@ -1280,23 +1387,7 @@
                     showToast(data.error, "danger");
                     return;
                 }
-
-                availableCoursesGlobal = data.availableCourses || [];
-                allUsers = data.allUsers || [];
-
-                renderCourseSelection('manual-courses', availableCoursesGlobal);
-                renderCourseSelection('import-courses', availableCoursesGlobal);
-
-                if (data.newRegisters && data.newRegisters.length > 0) {
-                    newRegUserIDs = data.newRegisters.map(u => u[1]);
-                    renderNewRegModal(data.newRegisters, availableCoursesGlobal);
-                    mNewReg.show();
-                }
-
-                renderAIBrief(data.courses, data.allUsers);
-                renderCourseCards(data.courses);
-                renderFilters(data.filters);
-
+                renderAdminDataPayload(data);
             }).withFailureHandler(e => {
                 showL(false);
                 showToast("Lỗi đồng bộ: " + e, "danger");
@@ -1686,7 +1777,7 @@
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
-                if (rows.length === 0) return;
+                if (!rows || rows.length === 0) return;
 
                 const headers = rows[0].map(h => h ? String(h).trim().toLowerCase() : '');
                 const map = {
@@ -1851,61 +1942,75 @@
         }
 
         // ==========================================================================
-        // USER PORTAL & BÉZIER VECTOR SIGNATURE ENGINE
+        // USER PORTAL & BÉZIER VECTOR SIGNATURE ENGINE (ZERO-LATENCY MODAL)
         // ==========================================================================
-        function loadUserCourses() {
+        function renderUserCoursesPayload(courses) {
             if (session.user) {
                 document.getElementById('user-info-display').innerText = `${session.user} (${session.userID})`;
             }
+            const container = document.getElementById('user-course-list');
+            if (!courses || courses.length === 0) {
+                container.innerHTML = `
+                <div class="liquid-glass text-center py-5">
+                    <i class="fa-solid fa-circle-check fa-3x text-success mb-3"></i>
+                    <h5 class="fw-bold">Bạn đã hoàn thành tất cả nhiệm vụ!</h5>
+                    <p class="text-muted small">Hiện không có khóa đào tạo nào cần ký xác nhận bổ sung.</p>
+                </div>`;
+                return;
+            }
+
+            userCoursesMap = {};
+            let h = '';
+            courses.forEach(c => {
+                userCoursesMap[c.id] = c;
+                const actionBtn = c.canSign ?
+                    `<button class="btn-nexus btn-nexus-primary" onclick="openSignModal('${c.id}')"><i class="fa-solid fa-pen-nib"></i> Ký xác nhận</button>` :
+                    `<button class="btn-nexus btn-nexus-secondary disabled opacity-50" style="cursor: not-allowed;"><i class="fa-solid fa-lock"></i> Chưa mở ký</button>`;
+
+                h += `
+                <div class="liquid-glass p-4 mb-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div>
+                            <h5 class="fw-bold mb-1">${c.name}</h5>
+                            <div class="small text-muted mb-2"><i class="fa-regular fa-clock me-1"></i>Thời gian: ${c.start} đến ${c.end}</div>
+                            <span class="badge bg-warning-subtle text-warning font-mono" style="font-size: 0.72rem;">CHỜ KÝ XÁC NHẬN</span>
+                        </div>
+                        <div>${actionBtn}</div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = h;
+        }
+
+        function loadUserCourses() {
             showL(true);
             google.script.run.withSuccessHandler(courses => {
                 showL(false);
-                const container = document.getElementById('user-course-list');
-                if (!courses || courses.length === 0) {
-                    container.innerHTML = `
-                    <div class="liquid-glass text-center py-5">
-                        <i class="fa-solid fa-circle-check fa-3x text-success mb-3"></i>
-                        <h5 class="fw-bold">Bạn đã hoàn thành tất cả nhiệm vụ!</h5>
-                        <p class="text-muted small">Hiện không có khóa đào tạo nào cần ký xác nhận bổ sung.</p>
-                    </div>`;
-                    return;
-                }
-
-                let h = '';
-                courses.forEach(c => {
-                    const actionBtn = c.canSign ?
-                        `<button class="btn-nexus btn-nexus-primary" onclick="openSignModal('${c.id}')"><i class="fa-solid fa-pen-nib"></i> Ký xác nhận</button>` :
-                        `<button class="btn-nexus btn-nexus-secondary disabled opacity-50" style="cursor: not-allowed;"><i class="fa-solid fa-lock"></i> Chưa mở ký</button>`;
-
-                    h += `
-                    <div class="liquid-glass p-4 mb-3">
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                            <div>
-                                <h5 class="fw-bold mb-1">${c.name}</h5>
-                                <div class="small text-muted mb-2"><i class="fa-regular fa-clock me-1"></i>Thời gian: ${c.start} đến ${c.end}</div>
-                                <span class="badge bg-warning-subtle text-warning font-mono" style="font-size: 0.72rem;">CHỜ KÝ XÁC NHẬN</span>
-                            </div>
-                            <div>${actionBtn}</div>
-                        </div>
-                    </div>`;
-                });
-                container.innerHTML = h;
+                renderUserCoursesPayload(courses);
             }).withFailureHandler(e => {
                 showL(false);
                 showToast("Lỗi tải danh sách: " + e, "danger");
             }).getMyCourses(session.userID);
         }
 
+        /**
+         * Mở modal xem nội dung và ký xác nhận: 0ms LATENCY
+         * Lấy trực tiếp nội dung đã được tải sẵn trong memory, không cần gọi server
+         */
         function openSignModal(courseId) {
             pendingSignatureCourseID = courseId;
             document.getElementById('commitCheck').checked = false;
-            document.getElementById('sign-course-content').innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang đồng bộ nội dung...</div>';
+            document.getElementById('btn-submit-sign').disabled = false;
+
+            const course = userCoursesMap[courseId];
+            if (course && course.content) {
+                document.getElementById('sign-course-content').innerHTML = course.content;
+            } else {
+                document.getElementById('sign-course-content').innerHTML = '<p class="text-muted">Không có nội dung mô tả chi tiết.</p>';
+            }
+
             clearCanvas();
             mSign.show();
-
-            google.script.run.withSuccessHandler(content => {
-                document.getElementById('sign-course-content').innerHTML = content || '<p class="text-muted">Không có nội dung mô tả chi tiết.</p>';
-            }).getCourseDetails(courseId);
         }
 
         // --- RETINA & QUADRATIC BÉZIER VECTOR SIGNATURE ENGINE ---
@@ -1993,11 +2098,16 @@
                 return;
             }
 
+            // Chống spam double-click
+            const submitBtn = document.getElementById('btn-submit-sign');
+            submitBtn.disabled = true;
+
             const signatureData = signCanvas.toDataURL('image/png');
             showL(true);
 
             google.script.run.withSuccessHandler(res => {
                 showL(false);
+                submitBtn.disabled = false;
                 if (res && res.success) {
                     showToast("Đã ký xác nhận thành công!", "success");
                     mSign.hide();
@@ -2007,6 +2117,7 @@
                 }
             }).withFailureHandler(e => {
                 showL(false);
+                submitBtn.disabled = false;
                 showToast("Lỗi gửi chữ ký: " + e, "danger");
             }).confirmTraining(session.userID, pendingSignatureCourseID, signatureData);
         }
