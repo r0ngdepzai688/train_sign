@@ -221,10 +221,11 @@ function runTests() {
     assert.strictEqual(userRes.courses[0].id, 'TRN-001');
     console.log(`[Metric] Warm User Login  -> openById: ${env.metrics.openByIdCalls}, sheetReads: ${env.metrics.sheetReadCalls}, simulatedLatency: ${env.metrics.simulatedLatencyMs}ms`);
 
-    // 3. Measure Warm Admin Login (After Prewarm)
+    // 3. Measure Warm Admin Login (After Prewarm) & Case-Insensitive / Mobile Auto-Capitalize Support
     env.resetMetrics();
-    const warmAdminRes = env.sandbox.checkLogin('admin', '@nhd16488');
-    assert.strictEqual(warmAdminRes.role, 'admin');
+    const warmAdminRes = env.sandbox.checkLogin('Admin ', ' @nhd16488 ');
+    assert.strictEqual(warmAdminRes.role, 'admin', 'Mobile auto-capitalized Admin with trailing space must succeed');
+    assert.ok(JSON.stringify(warmAdminRes).length > 20, 'checkLogin payload must be 100% JSON serializable for google.script.run');
     console.log(`[Metric] Warm Admin Login -> openById: ${env.metrics.openByIdCalls}, sheetReads: ${env.metrics.sheetReadCalls}, simulatedLatency: ${env.metrics.simulatedLatencyMs}ms`);
 
     // 4. Verify Inactive User Rejection

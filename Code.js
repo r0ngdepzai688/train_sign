@@ -120,24 +120,32 @@ function prewarmSystem() {
 }
 
 /**
- * Đăng nhập siêu tốc (Zero-Roundtrip + O(1) RAM Index Lookup)
+ * Đăng nhập siêu tốc (Zero-Roundtrip + O(1) RAM Index Lookup + Case/Whitespace Tolerant)
  */
 function checkLogin(user, pass) {
     try {
         hydrateMemoryFromScriptCache();
-        const adminPass = getProp('ADMIN_PASS', ADMIN_PASS_DEFAULT);
-        const userDefaultPass = getProp('USER_DEFAULT_PASS', USER_DEFAULT_PASS_DEFAULT);
+        const adminPass = String(getProp('ADMIN_PASS', ADMIN_PASS_DEFAULT)).trim();
+        const userDefaultPass = String(getProp('USER_DEFAULT_PASS', USER_DEFAULT_PASS_DEFAULT)).trim();
         const uTarget = String(user || '').trim();
+        const uTargetLower = uTarget.toLowerCase();
+        const pRaw = String(pass || '');
+        const pTrim = pRaw.trim();
 
-        // 1. Quản trị viên
-        if (uTarget === 'admin' && pass === adminPass) {
+        // 1. Quản trị viên (Chấp nhận 'admin', 'Admin', 'ADMIN' trên bàn phím điện thoại)
+        if (uTargetLower === 'admin' && (pRaw === adminPass || pTrim === adminPass)) {
             const token = Utilities.getUuid() + '-' + Date.now();
             _MEM_CACHE.authTokens[token] = 'admin';
             try {
                 CacheService.getScriptCache().put('AUTH_' + token, 'admin', 21600); // 6 giờ
             } catch (e) { }
 
-            const dashboardData = getAdminDashboardData(token, true);
+            let dashboardData = null;
+            try {
+                dashboardData = getAdminDashboardData(token, true);
+            } catch (dashErr) {
+                dashboardData = null;
+            }
             return {
                 role: 'admin',
                 user: 'Quản trị viên',
@@ -151,12 +159,42 @@ function checkLogin(user, pass) {
         const userData = getCachedUsersData();
         if (!userData || userData.length === 0) return { error: "Không tìm thấy bảng Users!" };
 
+        const isPassMatch = (pRaw === userDefaultPass || pTrim === userDefaultPass);
+
         for (let i = 1; i < userData.length; i++) {
             const uID = String(userData[i][1] || '').trim();
-            if (uID === uTarget && pass === userDefaultPass) {
-                if (userData[i][6] === 'Inactive') return { error: "Tài khoản của bạn đã bị khóa!" };
+            if (uID && uID.toLowerCase() === uTargetLower && isPassMatch) {
+                if (String(userData[i][6] || '').trim() === 'Inactive') {
+                    return { error: "Tài khoản của bạn đã bị khóa!" };
+                }
 
-                const myCourses = getMyCourses(uID);
+                // Kiểm tra nếu nhân viên có vai trò admin trong bảng Users
+                const uRole = String(userData[i][5] || 'user').trim().toLowerCase();
+                if (uRole === 'admin') {
+                    const token = Utilities.getUuid() + '-' + Date.now();
+                    _MEM_CACHE.authTokens[token] = 'admin';
+                    try {
+                        CacheService.getScriptCache().put('AUTH_' + token, 'admin', 21600);
+                    } catch (e) { }
+                    let dashboardData = null;
+                    try {
+                        dashboardData = getAdminDashboardData(token, true);
+                    } catch (dashErr) { }
+                    return {
+                        role: 'admin',
+                        user: userData[i][0] || 'Quản trị viên',
+                        userID: uID,
+                        token: token,
+                        initialDashboard: dashboardData
+                    };
+                }
+
+                let myCourses = [];
+                try {
+                    myCourses = getMyCourses(uID);
+                } catch (cErr) {
+                    myCourses = [];
+                }
                 return {
                     role: 'user',
                     user: userData[i][0],
@@ -544,11 +582,14 @@ function getAdminDashboardData(adminToken, skipVerify) {
     if (!skipVerify && !verifyAdminToken(adminToken)) {
         return { error: "Phiên làm việc quản trị đã hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại!" };
     }
-    const users = getAdminUsers(adminToken, true);
-    const newRegs = Array.isArray(users) ? users.filter(u => u[6] === 'New-Reg') : [];
+    const rawUsers = getAdminUsers(adminToken, true);
+    const users = Array.isArray(rawUsers) ? rawUsers : [];
+    const newRegs = users.filter(u => u && u[6] === 'New-Reg');
+    const rawCourses = getCourseStatistics();
+    const courses = Array.isArray(rawCourses) ? rawCourses : [];
 
     return {
-        courses: getCourseStatistics(),
+        courses: courses,
         filters: getAdminFilters(adminToken),
         newRegisters: newRegs,
         availableCourses: getAvailableCourses(),

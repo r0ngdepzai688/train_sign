@@ -1086,7 +1086,7 @@
                 <label class="form-label small fw-semibold text-secondary mb-1">Mã nhân viên (User ID)</label>
                 <div class="nexus-input-shell">
                     <span class="nexus-input-icon"><i class="fa-solid fa-id-badge"></i></span>
-                    <input type="text" id="u" class="nexus-input-field" placeholder="Nhập mã nhân viên (VD: 10545998)" autocomplete="username">
+                    <input type="text" id="u" class="nexus-input-field" placeholder="Nhập mã nhân viên (VD: 10545998)" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
                 </div>
             </div>
 
@@ -1094,7 +1094,7 @@
                 <label class="form-label small fw-semibold text-secondary mb-1">Mật khẩu</label>
                 <div class="nexus-input-shell">
                     <span class="nexus-input-icon"><i class="fa-solid fa-key"></i></span>
-                    <input type="password" id="p" class="nexus-input-field" placeholder="••••••••" autocomplete="current-password">
+                    <input type="password" id="p" class="nexus-input-field" placeholder="••••••••" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
                     <button class="nexus-input-action" type="button" onclick="toggPass()" title="Hiện / Ẩn mật khẩu"><i class="fa-solid fa-eye" id="eye-icon"></i></button>
                 </div>
             </div>
@@ -1878,19 +1878,22 @@
                 document.getElementById('remMe').checked = true;
             }
 
-            // Keyboard Shortcuts & Speculative Login Prefetch while typing
+            // Keyboard Shortcuts (Enter to submit) & Intent-Based Prefetch (on CTA hover/focus only, avoiding RPC queue congestion while typing)
             const enterTrigger = (e) => { if (e.key === 'Enter') login(); };
-            const specTrigger = debounce(() => {
-                const uVal = document.getElementById('u').value.trim();
-                const pVal = document.getElementById('p').value;
-                if (uVal.length >= 4 && pVal.length >= 6) {
-                    getOrStartLoginPromise(uVal, pVal);
-                }
-            }, 140);
             document.getElementById('u').addEventListener('keyup', enterTrigger);
             document.getElementById('p').addEventListener('keyup', enterTrigger);
-            document.getElementById('u').addEventListener('input', specTrigger);
-            document.getElementById('p').addEventListener('input', specTrigger);
+            const loginCtaBtn = document.querySelector('#view-login .btn-nexus-cta-2026');
+            if (loginCtaBtn) {
+                const intentPrefetch = () => {
+                    const uVal = document.getElementById('u').value.trim();
+                    const pVal = document.getElementById('p').value.trim();
+                    if (uVal.length >= 4 && pVal.length >= 6) {
+                        getOrStartLoginPromise(uVal, pVal);
+                    }
+                };
+                loginCtaBtn.addEventListener('pointerenter', intentPrefetch, { passive: true });
+                loginCtaBtn.addEventListener('touchstart', intentPrefetch, { passive: true });
+            }
 
             // Apply theme
             const savedTheme = localStorage.getItem('nexus_theme') || 'light';
@@ -2009,7 +2012,7 @@
         const inflightLoginCache = new Map();
 
         function hashCredsFast(u, p) {
-            const str = String(u).trim().toLowerCase() + '::iqc_salt_2026::' + String(p);
+            const str = String(u).trim().toLowerCase() + '::iqc_salt_2026::' + String(p).trim();
             let h1 = 0xdeadbeef ^ str.length, h2 = 0x41c6ce57 ^ str.length;
             for (let i = 0, ch; i < str.length; i++) {
                 ch = str.charCodeAt(i);
@@ -2046,19 +2049,50 @@
         }
 
         function getOrStartLoginPromise(user, pass) {
-            const cacheKey = String(user).trim().toLowerCase() + '::' + String(pass);
+            const uClean = String(user).trim();
+            const pClean = String(pass).trim();
+            const cacheKey = uClean.toLowerCase() + '::' + pClean;
             const existing = inflightLoginCache.get(cacheKey);
-            if (existing && (Date.now() - existing.ts < 15000)) {
+            if (existing && (Date.now() - existing.ts < 8000)) {
                 return existing.promise;
             }
             const promise = new Promise((resolve, reject) => {
-                google.script.run
-                    .withSuccessHandler(res => resolve(res))
-                    .withFailureHandler(err => {
+                if (typeof google === 'undefined' || !google.script || !google.script.run) {
+                    inflightLoginCache.delete(cacheKey);
+                    reject("Môi trường trình duyệt đang tải kết nối Google Apps Script. Vui lòng thử lại sau 1 giây!");
+                    return;
+                }
+                let settled = false;
+                const safetyTimer = setTimeout(() => {
+                    if (!settled) {
+                        settled = true;
                         inflightLoginCache.delete(cacheKey);
-                        reject(err);
-                    })
-                    .checkLogin(user, pass);
+                        reject("Máy chủ phản hồi quá thời gian chờ (Timeout). Vui lòng bấm Truy cập hệ thống lần nữa!");
+                    }
+                }, 18000);
+
+                try {
+                    google.script.run
+                        .withSuccessHandler(res => {
+                            if (settled) return;
+                            settled = true;
+                            clearTimeout(safetyTimer);
+                            resolve(res);
+                        })
+                        .withFailureHandler(err => {
+                            if (settled) return;
+                            settled = true;
+                            clearTimeout(safetyTimer);
+                            inflightLoginCache.delete(cacheKey);
+                            reject(err);
+                        })
+                        .checkLogin(uClean, pClean);
+                } catch (syncErr) {
+                    settled = true;
+                    clearTimeout(safetyTimer);
+                    inflightLoginCache.delete(cacheKey);
+                    reject(syncErr);
+                }
             });
             inflightLoginCache.set(cacheKey, { promise, ts: Date.now() });
             return promise;
@@ -2070,7 +2104,7 @@
 
             if (res.role === 'admin') {
                 if (!isSilentSync) showP('view-admin');
-                if (res.initialDashboard) {
+                if (res.initialDashboard && !res.initialDashboard.error) {
                     renderAdminDataPayload(res.initialDashboard);
                 } else if (!isSilentSync) {
                     loadAdminData();
@@ -2087,7 +2121,7 @@
 
         function login() {
             const user = document.getElementById('u').value.trim();
-            const pass = document.getElementById('p').value;
+            const pass = document.getElementById('p').value.trim();
             const remember = document.getElementById('remMe').checked;
 
             if (!user || !pass) {
@@ -2099,12 +2133,14 @@
             const swrKey = 'nexus_swr_' + user.toLowerCase();
             let usedInstantSwr = false;
 
-            // 1. INSTANT STALE-WHILE-REVALIDATE (<15ms Zero-Spinner Transition on Repeat Login)
+            // 1. INSTANT STALE-WHILE-REVALIDATE (<15ms Zero-Spinner Transition on Repeat Login within valid TTL)
             try {
                 const cachedRaw = localStorage.getItem(swrKey);
                 if (cachedRaw) {
                     const cached = JSON.parse(cachedRaw);
-                    if (cached && cached.hash === credHash && cached.res && !cached.res.error) {
+                    const swrAgeMs = Date.now() - (cached?.ts || 0);
+                    const maxSwrAgeMs = (cached?.res?.role === 'admin') ? (4 * 3600 * 1000) : (24 * 3600 * 1000);
+                    if (cached && cached.hash === credHash && cached.res && !cached.res.error && swrAgeMs > 0 && swrAgeMs < maxSwrAgeMs) {
                         usedInstantSwr = true;
                         if (remember) localStorage.setItem('training_user', user);
                         else localStorage.removeItem('training_user');
@@ -2119,7 +2155,7 @@
                 showL(true);
             }
 
-            // 2. Attach to Speculative In-Flight Request or Warm V8 RAM Execution
+            // 2. Attach to In-Flight Request or Warm V8 RAM Execution
             getOrStartLoginPromise(user, pass)
                 .then(res => {
                     if (!usedInstantSwr) showL(false);
@@ -2140,12 +2176,15 @@
                         if (usedInstantSwr) {
                             logout();
                         }
-                        showToast(res?.error || "Sai thông tin đăng nhập!", "danger");
+                        showToast(res?.error || "Mã nhân viên hoặc mật khẩu không chính xác!", "danger");
                     }
                 })
                 .catch(err => {
-                    if (!usedInstantSwr) {
-                        showL(false);
+                    showL(false);
+                    if (usedInstantSwr) {
+                        // Keep UI open if offline/transient error, or notify user
+                        showToast("Đang dùng dữ liệu bộ nhớ đệm (Mạng chậm: " + err + ")", "warning");
+                    } else {
                         showToast("Lỗi kết nối máy chủ: " + err, "danger");
                     }
                 });
@@ -2224,8 +2263,19 @@
             if (!silent) showL(true);
             google.script.run.withSuccessHandler(data => {
                 if (!silent) showL(false);
-                if (data.error) {
-                    if (!silent) showToast(data.error, "danger");
+                if (!data || data.error) {
+                    const errMsg = data?.error || "Phiên làm việc đã hết hạn!";
+                    if (errMsg.includes("hết hạn") || errMsg.includes("quyền quản trị")) {
+                        try {
+                            sessionStorage.removeItem('nexus_session');
+                            localStorage.removeItem('nexus_swr_admin');
+                        } catch (e) { }
+                        session = {};
+                        showP('view-login');
+                        showToast("Phiên quản trị đã hết hạn. Vui lòng đăng nhập lại!", "warning");
+                        return;
+                    }
+                    if (!silent) showToast(errMsg, "danger");
                     return;
                 }
                 if (session && session.role === 'admin') {
