@@ -41,14 +41,14 @@
             --amber: #f59e0b;
             --rose: #f43f5e;
 
-            /* Light Liquid Glass System */
-            --bg-base: #f8fafc;
-            --bg-surface: rgba(255, 255, 255, 0.78);
-            --bg-surface-elevated: rgba(255, 255, 255, 0.92);
-            --bg-subtle: rgba(241, 245, 249, 0.65);
-            --border-glass: rgba(255, 255, 255, 0.85);
-            --border-subtle: rgba(226, 232, 240, 0.8);
-            --border-outer: rgba(15, 23, 42, 0.06);
+            /* Light Liquid Glass & High-Tech Cleanroom System */
+            --bg-base: #f0f4f9;
+            --bg-surface: rgba(255, 255, 255, 0.88);
+            --bg-surface-elevated: rgba(255, 255, 255, 0.96);
+            --bg-subtle: rgba(235, 242, 250, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.95);
+            --border-subtle: rgba(203, 213, 225, 0.8);
+            --border-outer: rgba(15, 23, 42, 0.08);
 
             /* Typography Colors */
             --text-heading: #090d16;
@@ -56,12 +56,12 @@
             --text-muted: #64748b;
 
             /* Optical Refraction & Specular Shadows */
-            --glass-blur: blur(20px) saturate(180%);
-            --shadow-glass: 0 20px 40px -15px rgba(15, 23, 42, 0.05),
-                            0 1px 3px 0 rgba(15, 23, 42, 0.03);
-            --shadow-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
-            --shadow-elevated: 0 25px 50px -12px rgba(15, 23, 42, 0.12),
-                               0 0 0 1px rgba(15, 23, 42, 0.04);
+            --glass-blur: blur(24px) saturate(180%);
+            --shadow-glass: 0 24px 48px -12px rgba(12, 101, 255, 0.12),
+                            0 8px 24px -8px rgba(15, 23, 42, 0.08);
+            --shadow-specular: inset 0 1px 0 0 rgba(255, 255, 255, 1);
+            --shadow-elevated: 0 30px 60px -15px rgba(12, 101, 255, 0.16),
+                               0 0 0 1px rgba(12, 101, 255, 0.08);
 
             --radius-card: 20px;
             --radius-btn: 12px;
@@ -72,22 +72,23 @@
         [data-theme="dark"] {
             /* 2026 Dark Mode (Deep Charcoal / VisionOS Optical Dark) */
             --bg-base: #07090e;
-            --bg-surface: rgba(16, 22, 34, 0.72);
-            --bg-surface-elevated: rgba(22, 30, 46, 0.9);
-            --bg-subtle: rgba(30, 41, 59, 0.5);
-            --border-glass: rgba(255, 255, 255, 0.12);
-            --border-subtle: rgba(255, 255, 255, 0.07);
+            --bg-surface: rgba(16, 22, 34, 0.78);
+            --bg-surface-elevated: rgba(22, 30, 46, 0.92);
+            --bg-subtle: rgba(30, 41, 59, 0.6);
+            --border-glass: rgba(255, 255, 255, 0.14);
+            --border-subtle: rgba(255, 255, 255, 0.08);
             --border-outer: rgba(0, 0, 0, 0.6);
 
             --text-heading: #f8fafc;
             --text-body: #cbd5e1;
             --text-muted: #94a3b8;
 
-            --glass-blur: blur(24px) saturate(190%);
-            --shadow-glass: 0 25px 50px -15px rgba(0, 0, 0, 0.6);
-            --shadow-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
-            --shadow-elevated: 0 30px 60px -15px rgba(0, 0, 0, 0.8),
-                               0 0 0 1px rgba(255, 255, 255, 0.08);
+            --glass-blur: blur(28px) saturate(190%);
+            --shadow-glass: 0 25px 50px -15px rgba(0, 0, 0, 0.65),
+                            0 0 40px -10px rgba(0, 224, 255, 0.08);
+            --shadow-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+            --shadow-elevated: 0 35px 70px -18px rgba(0, 0, 0, 0.85),
+                               0 0 0 1px rgba(0, 224, 255, 0.12);
         }
 
         /* --- BASE RESETS & PERFORMANCE OPTIMIZATIONS --- */
@@ -109,23 +110,31 @@
             position: relative;
         }
 
-        /* Ambient Dynamic Background (Zero GPU repaints on scroll) */
+        /* High-Precision Semiconductor Blueprint Canvas */
         .ambient-canvas {
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.65;
-            background: 
-                radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 90% 85%, rgba(79, 70, 229, 0.06) 0%, transparent 45%);
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 50% 12%, rgba(12, 101, 255, 0.12) 0%, transparent 55%),
+                radial-gradient(circle at 12% 85%, rgba(0, 224, 255, 0.09) 0%, transparent 45%),
+                radial-gradient(circle at 88% 80%, rgba(79, 70, 229, 0.08) 0%, transparent 45%),
+                radial-gradient(rgba(12, 101, 255, 0.12) 1.2px, transparent 1.2px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
+            background-position: 0 0, 0 0, 0 0, 0 0;
+            transition: background-color 0.3s ease;
         }
 
         [data-theme="dark"] .ambient-canvas {
-            opacity: 0.8;
-            background: 
-                radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
-                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 50% 12%, rgba(12, 101, 255, 0.22) 0%, transparent 55%),
+                radial-gradient(circle at 12% 85%, rgba(0, 224, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 88% 80%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(rgba(0, 224, 255, 0.18) 1.2px, transparent 1.2px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
         }
 
         /* --- TYPOGRAPHY ENGINE --- */
@@ -562,6 +571,67 @@
             transform: rotate(-3deg) scale(1.05);
         }
 
+        /* ==========================================================================
+           SEMICONDUCTOR & CIRCUIT BOARD GRAPHIC SYSTEM (SAMSUNG HI-TECH)
+           ========================================================================== */
+        .circuit-board-layer {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Light Mode Circuit Styling */
+        .circuit-bus-1 {
+            stroke: rgba(12, 101, 255, 0.28);
+        }
+        .circuit-bus-2 {
+            stroke: rgba(37, 99, 235, 0.22);
+        }
+        .circuit-bus-3 {
+            stroke: rgba(79, 70, 229, 0.18);
+        }
+        .circuit-bus-accent {
+            stroke: url(#circuitGrad);
+        }
+        .circuit-pad-ring {
+            stroke: #0c65ff;
+            opacity: 0.55;
+        }
+        .circuit-pad-dot {
+            fill: #0c65ff;
+            filter: drop-shadow(0 0 4px rgba(12, 101, 255, 0.45));
+        }
+        .circuit-socket {
+            color: #0c65ff;
+        }
+
+        /* Dark Mode Circuit Styling (Cyber Neon Sapphire & Cyan) */
+        [data-theme="dark"] .circuit-bus-1 {
+            stroke: rgba(0, 224, 255, 0.35);
+        }
+        [data-theme="dark"] .circuit-bus-2 {
+            stroke: rgba(12, 101, 255, 0.28);
+        }
+        [data-theme="dark"] .circuit-bus-3 {
+            stroke: rgba(0, 224, 255, 0.22);
+        }
+        [data-theme="dark"] .circuit-pad-ring {
+            stroke: #00e0ff;
+            opacity: 0.7;
+        }
+        [data-theme="dark"] .circuit-pad-dot {
+            fill: #00e0ff;
+            filter: drop-shadow(0 0 6px rgba(0, 224, 255, 0.8));
+        }
+        [data-theme="dark"] .circuit-socket {
+            color: #00e0ff;
+        }
+
         /* --- SIGNATURE FOOTER BRANDING (SLOGAN & COPYRIGHT) --- */
         .nexus-footer-brand {
             margin-top: 48px;
@@ -619,6 +689,94 @@
     <!-- FIXED AMBIENT CANVAS -->
     <div class="ambient-canvas"></div>
 
+    <!-- HIGH-TECH SEMICONDUCTOR CIRCUIT BOARD VECTOR LAYER -->
+    <svg class="circuit-board-layer" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="circuitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00E0FF" stop-opacity="0.6"/>
+                <stop offset="50%" stop-color="#0C65FF" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#4F46E5" stop-opacity="0.4"/>
+            </linearGradient>
+            <pattern id="pcbMicroGrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="0.7" stroke-dasharray="2 6" opacity="0.18"/>
+            </pattern>
+        </defs>
+
+        <!-- Semiconductor Wafer Micro-Grid Background -->
+        <rect width="100%" height="100%" fill="url(#pcbMicroGrid)" class="circuit-wire-grid" />
+
+        <!-- LEFT SIDE CIRCUIT BUS & VIAS -->
+        <g class="circuit-traces" stroke-linecap="round" stroke-linejoin="round">
+            <!-- Parallel Data Bus Lines -->
+            <path d="M -20,180 L 280,180 L 360,260 L 520,260" stroke-width="2" class="circuit-bus-1" />
+            <path d="M -20,205 L 260,205 L 340,285 L 500,285" stroke-width="1.5" class="circuit-bus-2" />
+            <path d="M -20,230 L 240,230 L 320,310 L 480,310" stroke-width="1.5" class="circuit-bus-3" />
+
+            <!-- Angled IC Traces -->
+            <path d="M 120,40 L 120,120 L 220,220 L 220,440 L 340,560 L 530,560" stroke-width="2" class="circuit-bus-accent" />
+            <path d="M 40,680 L 240,680 L 320,600 L 510,600" stroke-width="2" class="circuit-bus-2" />
+            <path d="M 160,880 L 280,760 L 460,760 L 520,700" stroke-width="1.8" class="circuit-bus-1" />
+
+            <!-- Solder Pads / Vias (Contact Points) -->
+            <circle cx="520" cy="260" r="4.5" fill="none" stroke-width="2.5" class="circuit-pad-ring" />
+            <circle cx="520" cy="260" r="2" class="circuit-pad-dot" />
+
+            <circle cx="500" cy="285" r="3.5" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="500" cy="285" r="1.5" class="circuit-pad-dot" />
+
+            <circle cx="480" cy="310" r="3.5" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="480" cy="310" r="1.5" class="circuit-pad-dot" />
+
+            <circle cx="530" cy="560" r="5" fill="none" stroke-width="2.5" class="circuit-pad-ring" />
+            <circle cx="530" cy="560" r="2.5" class="circuit-pad-dot" />
+
+            <circle cx="510" cy="600" r="4.5" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="510" cy="600" r="2" class="circuit-pad-dot" />
+
+            <circle cx="120" cy="40" r="4" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="120" cy="40" r="1.8" class="circuit-pad-dot" />
+        </g>
+
+        <!-- RIGHT SIDE CIRCUIT BUS & VIAS -->
+        <g class="circuit-traces" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M 1620,180 L 1320,180 L 1240,260 L 1080,260" stroke-width="2" class="circuit-bus-1" />
+            <path d="M 1620,205 L 1340,205 L 1260,285 L 1100,285" stroke-width="1.5" class="circuit-bus-2" />
+            <path d="M 1620,230 L 1360,230 L 1280,310 L 1120,310" stroke-width="1.5" class="circuit-bus-3" />
+
+            <path d="M 1480,40 L 1480,120 L 1380,220 L 1380,440 L 1260,560 L 1070,560" stroke-width="2" class="circuit-bus-accent" />
+            <path d="M 1560,680 L 1360,680 L 1280,600 L 1090,600" stroke-width="2" class="circuit-bus-2" />
+            <path d="M 1440,880 L 1320,760 L 1140,760 L 1080,700" stroke-width="1.8" class="circuit-bus-1" />
+
+            <!-- Solder Pads / Vias -->
+            <circle cx="1080" cy="260" r="4.5" fill="none" stroke-width="2.5" class="circuit-pad-ring" />
+            <circle cx="1080" cy="260" r="2" class="circuit-pad-dot" />
+
+            <circle cx="1100" cy="285" r="3.5" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="1100" cy="285" r="1.5" class="circuit-pad-dot" />
+
+            <circle cx="1120" cy="310" r="3.5" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="1120" cy="310" r="1.5" class="circuit-pad-dot" />
+
+            <circle cx="1070" cy="560" r="5" fill="none" stroke-width="2.5" class="circuit-pad-ring" />
+            <circle cx="1070" cy="560" r="2.5" class="circuit-pad-dot" />
+
+            <circle cx="1090" cy="600" r="4.5" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="1090" cy="600" r="2.5" class="circuit-pad-dot" />
+
+            <circle cx="1480" cy="40" r="4" fill="none" stroke-width="2" class="circuit-pad-ring" />
+            <circle cx="1480" cy="40" r="1.8" class="circuit-pad-dot" />
+        </g>
+
+        <!-- CENTER CHIP SOCKET OUTLINE & CORNER ALIGNMENT MARKS -->
+        <g class="circuit-socket" opacity="0.35">
+            <rect x="540" y="160" width="520" height="660" rx="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="8 12" />
+            <path d="M 525,145 L 555,145 M 540,130 L 540,160" stroke="currentColor" stroke-width="1.5" />
+            <path d="M 1045,145 L 1075,145 M 1060,130 L 1060,160" stroke="currentColor" stroke-width="1.5" />
+            <path d="M 525,835 L 555,835 M 540,820 L 540,850" stroke="currentColor" stroke-width="1.5" />
+            <path d="M 1045,835 L 1075,835 M 1060,820 L 1060,850" stroke="currentColor" stroke-width="1.5" />
+        </g>
+    </svg>
+
     <!-- GLOBAL TOAST STREAM -->
     <div id="nexus-toast-container"></div>
 
@@ -644,18 +802,22 @@
         <div class="liquid-glass p-4 p-md-5 mx-auto mt-4 mt-md-5" style="max-width: 440px;">
             <div class="text-center mb-4">
                 <div class="mb-3">
-                    <svg class="nexus-brand-logo" style="width: 200px; height: auto;" viewBox="0 0 170 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="nexus-brand-logo" style="width: 200px; height: auto;" viewBox="0 0 165 56" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M 36,27 L 46,21.5 L 36,16 L 26,21.5 Z" fill="url(#nexusCubeTop)" stroke="#00E0FF" stroke-width="1.2" stroke-linejoin="round"/>
                         <path d="M 26,21.5 L 36,27 L 36,38 L 26,32.5 Z" fill="url(#nexusCubeLeft)" stroke="#0C65FF" stroke-width="1.2" stroke-linejoin="round"/>
                         <path d="M 36,27 L 46,21.5 L 46,32.5 L 36,38 Z" fill="url(#nexusCubeRight)" stroke="#1E42A0" stroke-width="1.2" stroke-linejoin="round"/>
                         <path d="M 36,6 L 56,16 L 56,42 L 36,52 Z" stroke="#0C65FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
                         <path class="nexus-logo-bracket" d="M 16,16 L 16,42 L 36,52 L 36,30" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-                        <g transform="translate(72, 0)">
-                            <rect class="nexus-logo-text" x="0" y="10" width="7" height="28" rx="2.5" />
-                            <path class="nexus-logo-text" d="M 32,24 C 32,32.5 25.5,39 17,39 C 8.5,39 2,32.5 2,24 C 2,15.5 8.5,9 17,9 C 25.5,9 32,15.5 32,24 Z M 25,24 C 25,19.5 21.4,16 17,16 C 12.6,16 9,19.5 9,24 C 9,28.5 12.6,32 17,32 C 21.4,32 25,28.5 25,24 Z" />
-                            <path d="M 23,29 L 34,41.5 L 26,41.5 L 17,31 Z" fill="url(#nexusQTail)" />
-                            <path class="nexus-logo-text" d="M 64,15.5 C 62,11.5 57.5,9 52,9 C 43.5,9 37,15.5 37,24 C 37,32.5 43.5,39 52,39 C 57.5,39 62,36.5 64,32.5 L 57.5,32.5 C 56,34 54.5,35 52,35 C 47.5,35 44,30.5 44,24 C 44,17.5 47.5,13 52,13 C 54.5,13 56,14 57.5,15.5 Z" />
-                            <text class="nexus-logo-sub" x="0" y="49" font-size="11">NEXUS</text>
+                        <g transform="translate(68, 0)">
+                            <!-- Letter I -->
+                            <rect class="nexus-logo-text" x="2" y="10" width="6.5" height="28" rx="2.5" />
+                            <!-- Letter Q -->
+                            <path class="nexus-logo-text" d="M 45,24 C 45,32.5 38.5,39 30,39 C 21.5,39 15,32.5 15,24 C 15,15.5 21.5,9 30,9 C 38.5,9 45,15.5 45,24 Z M 38,24 C 38,19.5 34.4,16 30,16 C 25.6,16 22,19.5 22,24 C 22,28.5 25.6,32 30,32 C 34.4,32 38,28.5 38,24 Z" />
+                            <path d="M 36,29 L 47,41.5 L 39,41.5 L 30,31 Z" fill="url(#nexusQTail)" />
+                            <!-- Letter C -->
+                            <path class="nexus-logo-text" d="M 77,15.5 C 75,11.5 70.5,9 65,9 C 56.5,9 50,15.5 50,24 C 50,32.5 56.5,39 65,39 C 70.5,39 75,36.5 77,32.5 L 70.5,32.5 C 69,34 67.5,35 65,35 C 60.5,35 57,30.5 57,24 C 57,17.5 60.5,13 65,13 C 67.5,13 69,14 70.5,15.5 Z" />
+                            <!-- Subtitle: NEXUS -->
+                            <text class="nexus-logo-sub" x="2" y="49" font-size="10.5">NEXUS</text>
                         </g>
                     </svg>
                 </div>

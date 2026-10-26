@@ -1,0 +1,49 @@
+<svg viewBox="0 0 165 56" width="165" height="56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cubeTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E0FF" />
+      <stop offset="100%" stop-color="#0C65FF" />
+    </linearGradient>
+    <linearGradient id="cubeLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0C65FF" />
+      <stop offset="100%" stop-color="#1E42A0" />
+    </linearGradient>
+    <linearGradient id="cubeRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E42A0" />
+      <stop offset="100%" stop-color="#0B1220" />
+    </linearGradient>
+    <linearGradient id="qTail" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00E0FF" />
+      <stop offset="100%" stop-color="#0C65FF" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(0, 0)">
+    <!-- 3D Cube -->
+    <path d="M 36,27 L 46,21.5 L 36,16 L 26,21.5 Z" fill="url(#cubeTop)" stroke="#00E0FF" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M 26,21.5 L 36,27 L 36,38 L 26,32.5 Z" fill="url(#cubeLeft)" stroke="#0C65FF" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M 36,27 L 46,21.5 L 46,32.5 L 36,38 Z" fill="url(#cubeRight)" stroke="#1E42A0" stroke-width="1.2" stroke-linejoin="round"/>
+
+    <!-- Outer Hexagon Frame -->
+    <path d="M 36,6 L 56,16 L 56,42 L 36,52 Z" stroke="#0C65FF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Bracket N -->
+    <path d="M 16,16 L 16,42 L 36,52 L 36,30" stroke="#6B7280" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <!-- Typography: IQC -->
+    <g transform="translate(68, 0)">
+      <!-- Letter I -->
+      <rect x="2" y="10" width="6.5" height="28" rx="2.5" fill="#0B1220" />
+      
+      <!-- Letter Q -->
+      <path d="M 45,24 C 45,32.5 38.5,39 30,39 C 21.5,39 15,32.5 15,24 C 15,15.5 21.5,9 30,9 C 38.5,9 45,15.5 45,24 Z M 38,24 C 38,19.5 34.4,16 30,16 C 25.6,16 22,19.5 22,24 C 22,28.5 25.6,32 30,32 C 34.4,32 38,28.5 38,24 Z" fill="#0B1220" />
+      <path d="M 36,29 L 47,41.5 L 39,41.5 L 30,31 Z" fill="url(#qTail)" />
+      
+      <!-- Letter C -->
+      <path d="M 77,15.5 C 75,11.5 70.5,9 65,9 C 56.5,9 50,15.5 50,24 C 50,32.5 56.5,39 65,39 C 70.5,39 75,36.5 77,32.5 L 70.5,32.5 C 69,34 67.5,35 65,35 C 60.5,35 57,30.5 57,24 C 57,17.5 60.5,13 65,13 C 67.5,13 69,14 70.5,15.5 Z" fill="#0B1220" />
+
+      <!-- NEXUS text -->
+      <text x="2" y="49" fill="#0C65FF" font-family="'Plus Jakarta Sans', sans-serif" font-size="10.5" font-weight="900" letter-spacing="0.6em">NEXUS</text>
+    </g>
+  </g>
+</svg>
