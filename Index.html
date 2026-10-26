@@ -1209,6 +1209,7 @@
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
+                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="openQuickShareModal()" title="Mã QR & Link Ngắn (is.gd/iqcnexus)"><i class="fa-solid fa-qrcode text-primary"></i> <span class="d-none d-sm-inline">QR / Link ngắn</span></button>
                 <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()" title="Chế độ Sáng / Tối"><i class="fa-solid fa-moon" id="theme-btn-icon"></i></button>
                 <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-power-off"></i> Đăng xuất</button>
             </div>
@@ -1695,6 +1696,50 @@
         </div>
     </div>
 
+    <!-- MODAL 8: QUICK SHARE SHORT URL & QR CODE HUB -->
+    <div class="modal fade" id="modalQuickShareQR" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0"><i class="fa-solid fa-qrcode me-2 text-primary"></i>Cổng Truy Cập Nhanh & Mã QR</h5>
+                        <div class="small text-muted font-mono mt-1">Quét QR trên điện thoại hoặc sao chép Link ngắn</div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="p-3 d-inline-block rounded-4 border mb-3" style="background: #ffffff; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);">
+                        <img id="nexus-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&color=090d16&bgcolor=ffffff&data=https%3A%2F%2Fis.gd%2Fiqcnexus" alt="QR Code IQC Nexus" width="200" height="200" style="display: block; border-radius: 8px;" loading="lazy">
+                    </div>
+                    <div class="mb-3 text-start">
+                        <label class="form-label small fw-bold text-secondary mb-1">Link ngắn chính thức (Chỉ 14 ký tự - Dễ nhớ):</label>
+                        <div class="nexus-input-shell">
+                            <span class="nexus-input-icon"><i class="fa-solid fa-link text-primary"></i></span>
+                            <input type="text" id="short-url-primary" class="nexus-input-field font-mono fw-bold" value="https://is.gd/iqcnexus" readonly>
+                            <button class="nexus-input-action" type="button" onclick="copyShortPortalUrl('https://is.gd/iqcnexus')" title="Sao chép Link"><i class="fa-solid fa-copy text-primary"></i></button>
+                        </div>
+                    </div>
+                    <div class="mb-2 text-start">
+                        <label class="form-label small fw-semibold text-muted mb-1">Link dự phòng (Custom Alias):</label>
+                        <div class="nexus-input-shell">
+                            <span class="nexus-input-icon"><i class="fa-solid fa-shield-halved text-success"></i></span>
+                            <input type="text" class="nexus-input-field font-mono small" value="https://da.gd/iqc-nexus" readonly>
+                            <button class="nexus-input-action" type="button" onclick="copyShortPortalUrl('https://da.gd/iqc-nexus')" title="Sao chép Link dự phòng"><i class="fa-solid fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer d-flex justify-content-between">
+                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=16&color=090d16&bgcolor=ffffff&data=https%3A%2F%2Fis.gd%2Fiqcnexus" target="_blank" download="QR_IQC_Nexus.png" class="btn-nexus btn-nexus-secondary text-decoration-none">
+                        <i class="fa-solid fa-download text-primary"></i> Tải ảnh QR nét cao
+                    </a>
+                    <button class="btn-nexus btn-nexus-primary" onclick="copyShortPortalUrl('https://is.gd/iqcnexus')">
+                        <i class="fa-solid fa-copy"></i> Copy Link Ngắn
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPTS ENGINE -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -1714,9 +1759,10 @@
         let userCoursesMap = {};
 
         // Modals
-        let mUser, mCourse, mNewReg, mStats, mSign, mParticipants, mReminder;
+        let mUser, mCourse, mNewReg, mStats, mSign, mParticipants, mReminder, mQuickShare;
         let currentReminderData = null;
         let selectedReminderPart = 'ALL';
+        const OFFICIAL_SHORT_URL = 'https://is.gd/iqcnexus';
 
         // Signature Canvas State
         let signCanvas, signCtx;
@@ -1817,6 +1863,7 @@
             mSign = new bootstrap.Modal('#modalSign');
             mParticipants = new bootstrap.Modal('#modalParticipants');
             mReminder = new bootstrap.Modal('#modalReminderHub');
+            mQuickShare = new bootstrap.Modal('#modalQuickShareQR');
 
             // Re-calc canvas buffer on modal show
             const signModalEl = document.getElementById('modalSign');
@@ -2792,8 +2839,8 @@
                 msg += `\n`;
             });
 
-            const portalLink = data.webAppUrl || window.location.href;
-            msg += `👉 Đề nghị các Part Leader nhắc nhở nhân sự truy cập Cổng IQC Nexus hoàn thành ký xác nhận ngay:\n🔗 ${portalLink}\n`;
+            const portalLink = OFFICIAL_SHORT_URL || data.webAppUrl || window.location.href;
+            msg += `👉 Đề nghị các Part Leader nhắc nhở nhân sự truy cập Cổng IQC Nexus hoàn thành ký xác nhận ngay:\n🔗 Link ngắn: ${portalLink} (Dự phòng: https://da.gd/iqc-nexus)\n`;
             msg += `— Silence the ads. Let quality make the noise.`;
 
             document.getElementById('rem-message-box').value = msg;
@@ -2823,6 +2870,20 @@
                 box.select();
                 document.execCommand('copy');
                 showToast("Đã sao chép bản tin đôn đốc!", "success");
+            });
+        }
+
+        function openQuickShareModal() {
+            if (mQuickShare) mQuickShare.show();
+        }
+
+        function copyShortPortalUrl(urlToCopy = OFFICIAL_SHORT_URL) {
+            navigator.clipboard.writeText(urlToCopy).then(() => {
+                showToast(`Đã sao chép Link ngắn: <b>${urlToCopy}</b>`, "success");
+            }).catch(() => {
+                const el = document.getElementById('short-url-primary');
+                if (el) { el.select(); document.execCommand('copy'); }
+                showToast(`Đã sao chép Link ngắn: <b>${urlToCopy}</b>`, "success");
             });
         }
 

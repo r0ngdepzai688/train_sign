@@ -1,0 +1,18 @@
+{
+  "name": "IQC Nexus | Quality Intelligence Portal",
+  "short_name": "IQC Nexus",
+  "description": "Cổng ký xác nhận & Chứng thực đào tạo thông minh Samsung IQC • Silence the ads. Let quality make the noise.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#07090e",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

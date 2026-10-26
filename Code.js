@@ -9,6 +9,7 @@
 const ADMIN_PASS_DEFAULT = "@nhd16488";
 const USER_DEFAULT_PASS_DEFAULT = "@iqc6368";
 const SPREADSHEET_ID_DEFAULT = "15K3FetZvSMPRKLNp9I7kyPLCeAIpreWNeeG7uerW3wk";
+const SHORT_PORTAL_URL_DEFAULT = "https://is.gd/iqcnexus";
 const RECIPIENT_EMAILS_DEFAULT = 'hien.pt1@samsung.com,qcteam.iqctraining@gmail.com,dinh.hnhung@samsung.com,dang.ngoc@samsung.com,nhung.tt2@samsung.com,an.pthi@samsung.com,haiduong17.nguyen@gmail.com';
 
 const _MEM_CACHE = {
@@ -1341,8 +1342,10 @@ function getReminderData(courseId, adminToken) {
             }))
             .sort((a, b) => b.pending - a.pending);
 
-        let webAppUrl = '';
-        try { webAppUrl = ScriptApp.getService().getUrl() || ''; } catch (e) { }
+        let webAppUrl = getProp('SHORT_PORTAL_URL', SHORT_PORTAL_URL_DEFAULT);
+        if (!webAppUrl) {
+            try { webAppUrl = ScriptApp.getService().getUrl() || SHORT_PORTAL_URL_DEFAULT; } catch (e) { webAppUrl = SHORT_PORTAL_URL_DEFAULT; }
+        }
 
         const scopeTitle = cFilter && courseMap[cFilter]
             ? courseMap[cFilter].name
