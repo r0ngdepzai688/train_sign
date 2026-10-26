@@ -110,7 +110,7 @@
             position: relative;
         }
 
-        /* High-Precision Semiconductor Blueprint Canvas */
+        /* High-Precision Semiconductor Blueprint Canvas (GPU Compositor Promoted) */
         .ambient-canvas {
             position: fixed;
             inset: 0;
@@ -124,6 +124,9 @@
                 radial-gradient(rgba(12, 101, 255, 0.12) 1.2px, transparent 1.2px);
             background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
             background-position: 0 0, 0 0, 0 0, 0 0;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            contain: strict;
             transition: background-color 0.3s ease;
         }
 
@@ -228,10 +231,32 @@
             border-color: rgba(0, 224, 255, 0.15);
         }
 
+        .liquid-glass-interactive {
+            will-change: transform;
+        }
+
         .liquid-glass-interactive:hover {
-            transform: translateY(-2px);
+            transform: translate3d(0, -2px, 0);
             border-color: rgba(37, 99, 235, 0.32);
             box-shadow: 0 28px 50px -12px rgba(12, 101, 255, 0.14), var(--shadow-specular);
+        }
+
+        /* GPU Virtualized List Row (Skips Offscreen Rasterization & Heavy Blur Overdraw) */
+        .nexus-gpu-row {
+            background: var(--bg-surface-elevated);
+            border-radius: 16px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04), var(--shadow-specular);
+            content-visibility: auto;
+            contain-intrinsic-size: 0 76px;
+            contain: layout style paint;
+            transform: translate3d(0, 0, 0);
+            transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), border-color 0.2s ease;
+        }
+
+        .nexus-gpu-row:hover {
+            border-color: rgba(37, 99, 235, 0.3);
+            transform: translate3d(0, -1px, 0);
         }
 
         /* --- EYEBROW MICRO-PILL & FLOATING ISLAND HEADER --- */
@@ -684,6 +709,9 @@
             pointer-events: none;
             z-index: 0;
             opacity: 0.95;
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            contain: strict;
             transition: opacity 0.3s ease;
         }
 
@@ -706,7 +734,8 @@
         }
         .circuit-pad-dot {
             fill: #0c65ff;
-            filter: drop-shadow(0 0 4px rgba(12, 101, 255, 0.45));
+            stroke: rgba(12, 101, 255, 0.32);
+            stroke-width: 3px;
         }
         .circuit-socket {
             color: #0c65ff;
@@ -728,7 +757,8 @@
         }
         [data-theme="dark"] .circuit-pad-dot {
             fill: #00e0ff;
-            filter: drop-shadow(0 0 6px rgba(0, 224, 255, 0.8));
+            stroke: rgba(0, 224, 255, 0.45);
+            stroke-width: 3.5px;
         }
         [data-theme="dark"] .circuit-socket {
             color: #00e0ff;
@@ -2080,7 +2110,7 @@
                 const safeId = String(u[1]).replace(/'/g, "\\'");
                 const isActive = u[6] === 'Active';
                 h += `
-                <div class="liquid-glass mb-2 py-3 px-4">
+                <div class="nexus-gpu-row mb-2 py-3 px-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="d-flex align-items-center gap-2">
@@ -2450,12 +2480,15 @@
             mSign.show();
         }
 
-        // --- RETINA & QUADRATIC BÉZIER VECTOR SIGNATURE ENGINE ---
+        // --- GPU-ACCELERATED DESYNCHRONIZED RETINA & BÉZIER VECTOR SIGNATURE ENGINE ---
+        let signCanvasRect = null;
+
         function initSignatureCanvas() {
             signCanvas = document.getElementById('sign-canvas');
             if (!signCanvas) return;
 
-            signCtx = signCanvas.getContext('2d');
+            // Hint GPU direct scanout (desynchronized: true) to bypass DOM compositor queue (<8ms touch-to-glass latency)
+            signCtx = signCanvas.getContext('2d', { desynchronized: true }) || signCanvas.getContext('2d');
             const rect = signCanvas.parentElement.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
 
@@ -2474,6 +2507,7 @@
             signCtx.strokeStyle = '#0F172A';
 
             clearCanvas();
+            signCanvasRect = signCanvas.getBoundingClientRect();
 
             // Touch & Pointer Binding
             signCanvas.onpointerdown = startStroke;
@@ -2483,7 +2517,7 @@
         }
 
         function getCanvasPos(e) {
-            const rect = signCanvas.getBoundingClientRect();
+            const rect = signCanvasRect || (signCanvasRect = signCanvas.getBoundingClientRect());
             return {
                 x: e.clientX - rect.left,
                 y: e.clientY - rect.top
@@ -2491,6 +2525,7 @@
         }
 
         function startStroke(e) {
+            signCanvasRect = signCanvas.getBoundingClientRect();
             isDrawing = true;
             hasSigned = true;
             points = [getCanvasPos(e)];
@@ -2498,16 +2533,26 @@
 
         function moveStroke(e) {
             if (!isDrawing) return;
-            points.push(getCanvasPos(e));
+            const coalesced = (e.getCoalescedEvents && e.getCoalescedEvents()) || [e];
+            let hasPath = false;
+            signCtx.beginPath();
 
-            if (points.length >= 3) {
-                const len = points.length;
-                const xc = (points[len - 2].x + points[len - 1].x) / 2;
-                const yc = (points[len - 2].y + points[len - 1].y) / 2;
+            for (let i = 0; i < coalesced.length; i++) {
+                points.push(getCanvasPos(coalesced[i]));
+                if (points.length >= 3) {
+                    const len = points.length;
+                    const xc = (points[len - 2].x + points[len - 1].x) / 2;
+                    const yc = (points[len - 2].y + points[len - 1].y) / 2;
+                    const prevMidX = len >= 4 ? (points[len - 3].x + points[len - 2].x) / 2 : points[len - 3].x;
+                    const prevMidY = len >= 4 ? (points[len - 3].y + points[len - 2].y) / 2 : points[len - 3].y;
 
-                signCtx.beginPath();
-                signCtx.moveTo(points[len - 3].x, points[len - 3].y);
-                signCtx.quadraticCurveTo(points[len - 2].x, points[len - 2].y, xc, yc);
+                    signCtx.moveTo(prevMidX, prevMidY);
+                    signCtx.quadraticCurveTo(points[len - 2].x, points[len - 2].y, xc, yc);
+                    hasPath = true;
+                }
+            }
+
+            if (hasPath) {
                 signCtx.stroke();
             }
         }
