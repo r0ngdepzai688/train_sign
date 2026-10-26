@@ -4,69 +4,89 @@
 <head>
     <base target="_top">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <title>IQC Nexus | Hệ Thống Đào Tạo & Ký Số Doanh Nghiệp</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+    <title>IQC Nexus | Enterprise Quality Intelligence & Signature Platform</title>
 
-    <!-- Google Fonts: Inter (Single Typography System) -->
+    <!-- Typography: Plus Jakarta Sans (Executive High-End Sans) + JetBrains Mono (Precision Metrics) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap 5 CSS & FontAwesome Icons -->
+    <!-- Bootstrap 5 CSS & FontAwesome 6 Pro Vector Glyphs -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- Quill Editor & SheetJS -->
+    <!-- Quill Snow Editor & SheetJS Excel Engine -->
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
     <style>
         /* ==========================================================================
-           IQC NEXUS DESIGN TOKENS (LIGHT & DARK MODE)
+           2026 LIQUID GLASS & HIGH-AGENCY DESIGN TOKENS (VISION-OS & LINEAR CORE)
            ========================================================================== */
         :root {
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            /* Brand & Semantic Palette */
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --accent: #4f46e5;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --emerald: #10b981;
+            --amber: #f59e0b;
+            --rose: #f43f5e;
 
-            /* Light Mode Tokens */
-            --bg-page: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-subtle: #f1f5f9;
-            --border-color: #e2e8f0;
-            --border-subtle: #f1f5f9;
-            --text-main: #0f172a;
-            --text-secondary: #475569;
+            /* Light Liquid Glass System */
+            --bg-base: #f8fafc;
+            --bg-surface: rgba(255, 255, 255, 0.78);
+            --bg-surface-elevated: rgba(255, 255, 255, 0.92);
+            --bg-subtle: rgba(241, 245, 249, 0.65);
+            --border-glass: rgba(255, 255, 255, 0.85);
+            --border-subtle: rgba(226, 232, 240, 0.8);
+            --border-outer: rgba(15, 23, 42, 0.06);
+
+            /* Typography Colors */
+            --text-heading: #090d16;
+            --text-body: #334155;
             --text-muted: #64748b;
-            --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 
-            --radius-card: 16px;
+            /* Optical Refraction & Specular Shadows */
+            --glass-blur: blur(20px) saturate(180%);
+            --shadow-glass: 0 20px 40px -15px rgba(15, 23, 42, 0.05),
+                            0 1px 3px 0 rgba(15, 23, 42, 0.03);
+            --shadow-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+            --shadow-elevated: 0 25px 50px -12px rgba(15, 23, 42, 0.12),
+                               0 0 0 1px rgba(15, 23, 42, 0.04);
+
+            --radius-card: 20px;
             --radius-btn: 12px;
             --radius-input: 12px;
-            --max-width: 1400px;
+            --spring: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         [data-theme="dark"] {
-            /* Dark Mode Tokens (Independent design, no simple inversion) */
-            --bg-page: #0b0f17;
-            --bg-surface: #121826;
-            --bg-subtle: #1e293b;
-            --border-color: #1e293b;
-            --border-subtle: #334155;
-            --text-main: #f8fafc;
-            --text-secondary: #cbd5e1;
+            /* 2026 Dark Mode (Deep Charcoal / VisionOS Optical Dark) */
+            --bg-base: #07090e;
+            --bg-surface: rgba(16, 22, 34, 0.72);
+            --bg-surface-elevated: rgba(22, 30, 46, 0.9);
+            --bg-subtle: rgba(30, 41, 59, 0.5);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-outer: rgba(0, 0, 0, 0.6);
+
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
             --text-muted: #94a3b8;
-            --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+
+            --glass-blur: blur(24px) saturate(190%);
+            --shadow-glass: 0 25px 50px -15px rgba(0, 0, 0, 0.6);
+            --shadow-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+            --shadow-elevated: 0 30px 60px -15px rgba(0, 0, 0, 0.8),
+                               0 0 0 1px rgba(255, 255, 255, 0.08);
         }
 
-        /* --- BASE STYLES --- */
+        /* --- BASE RESETS & PERFORMANCE OPTIMIZATIONS --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -75,172 +95,247 @@
         }
 
         body {
-            font-family: var(--font-family);
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            min-height: 100vh;
+            font-family: var(--font-sans);
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            min-height: 100dvh; /* Mobile browser address bar stability */
             line-height: 1.5;
-            transition: background-color 0.25s ease, color 0.25s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* --- TYPOGRAPHY --- */
+        /* Ambient Dynamic Background (Zero GPU repaints on scroll) */
+        .ambient-canvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.65;
+            background: 
+                radial-gradient(circle at 10% 15%, rgba(37, 99, 235, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 90% 85%, rgba(79, 70, 229, 0.06) 0%, transparent 45%);
+        }
+
+        [data-theme="dark"] .ambient-canvas {
+            opacity: 0.8;
+            background: 
+                radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+        }
+
+        /* --- TYPOGRAPHY ENGINE --- */
         h1, h2, h3, h4, h5, h6 {
-            color: var(--text-main);
-            font-weight: 600;
-            letter-spacing: -0.02em;
+            color: var(--text-heading);
+            font-weight: 700;
+            letter-spacing: -0.03em;
         }
 
-        /* --- APP CONTAINER --- */
+        .font-mono {
+            font-family: var(--font-mono) !important;
+        }
+
+        /* --- PAGE CONTAINERS --- */
         .page {
             display: none;
-            max-width: var(--max-width);
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 24px 16px;
         }
 
         @media (min-width: 768px) {
             .page {
-                padding: 32px 24px;
+                padding: 36px 32px;
             }
         }
 
         .page.active {
             display: block;
-            animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: springReveal 0.45s var(--spring);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- NEXUS CARDS --- */
-        .nexus-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-card);
-            box-shadow: var(--shadow-card);
-            padding: 20px;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        @media (min-width: 768px) {
-            .nexus-card {
-                padding: 24px;
+        @keyframes springReveal {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(0.99);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
         }
 
-        /* --- AI EXECUTIVE BRIEF BANNER --- */
-        .nexus-ai-brief {
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(79, 70, 229, 0.05) 100%);
-            border: 1px solid rgba(37, 99, 235, 0.2);
+        /* --- LIQUID GLASS REFRACTION CONTAINERS --- */
+        .liquid-glass {
+            background: var(--bg-surface);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border-radius: var(--radius-card);
-            padding: 16px 20px;
-            margin-bottom: 24px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-glass), var(--shadow-specular);
+            position: relative;
+            transition: transform 0.25s var(--spring), box-shadow 0.25s var(--spring), border-color 0.25s ease;
         }
 
-        [data-theme="dark"] .nexus-ai-brief {
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(79, 70, 229, 0.1) 100%);
+        .liquid-glass-elevated {
+            background: var(--bg-surface-elevated);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--radius-card);
+            border: 1px solid var(--border-glass);
+            box-shadow: var(--shadow-elevated), var(--shadow-specular);
+        }
+
+        .liquid-glass-interactive:hover {
+            transform: translateY(-2px);
             border-color: rgba(37, 99, 235, 0.3);
+            box-shadow: 0 25px 45px -12px rgba(15, 23, 42, 0.08), var(--shadow-specular);
         }
 
-        /* --- BUTTONS --- */
+        /* --- AI INTELLIGENCE STREAM BANNER --- */
+        .nexus-ai-stream {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(79, 70, 229, 0.04) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.18);
+            border-radius: var(--radius-card);
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-specular);
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .nexus-ai-stream {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.16) 0%, rgba(16, 185, 129, 0.06) 100%);
+            border-color: rgba(37, 99, 235, 0.28);
+        }
+
+        /* Perpetual breathing live beacon */
+        .live-beacon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 10px;
+            height: 10px;
+        }
+
+        .live-beacon-core {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--emerald);
+        }
+
+        .live-beacon-pulse {
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background-color: var(--emerald);
+            opacity: 0.6;
+            animation: beaconPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes beaconPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(2); opacity: 0; }
+        }
+
+        /* --- TACTILE HIGH-AGENCY BUTTONS --- */
         .btn-nexus {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
-            font-weight: 500;
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
             padding: 10px 18px;
             border-radius: var(--radius-btn);
             border: 1px solid transparent;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: transform 0.18s var(--spring), box-shadow 0.18s ease, background-color 0.2s ease, border-color 0.2s ease;
             text-decoration: none;
             gap: 8px;
+            user-select: none;
+        }
+
+        .btn-nexus:active {
+            transform: scale(0.975) translateY(1px);
         }
 
         .btn-nexus-primary {
             background-color: var(--primary);
             color: #ffffff !important;
-            border-color: var(--primary);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
         .btn-nexus-primary:hover {
             background-color: var(--primary-hover);
-            border-color: var(--primary-hover);
+            box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.45),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
         .btn-nexus-secondary {
-            background-color: transparent;
-            color: var(--text-main) !important;
-            border-color: var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-heading) !important;
+            border-color: var(--border-subtle);
+            box-shadow: var(--shadow-specular);
         }
 
         .btn-nexus-secondary:hover {
             background-color: var(--bg-subtle);
-            border-color: var(--border-subtle);
+            border-color: rgba(37, 99, 235, 0.25);
         }
 
         .btn-nexus-danger {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: var(--danger) !important;
-            border-color: rgba(239, 68, 68, 0.2);
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--rose) !important;
+            border-color: rgba(244, 63, 94, 0.2);
         }
 
         .btn-nexus-danger:hover {
-            background-color: var(--danger);
+            background-color: var(--rose);
             color: #ffffff !important;
+            border-color: var(--rose);
         }
 
-        /* --- INPUT CONTROLS --- */
+        /* --- PRECISION INPUT SYSTEM --- */
         .form-control, .form-select {
             background-color: var(--bg-surface);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
+            color: var(--text-heading);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-input);
-            padding: 11px 16px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            padding: 12px 16px;
+            font-size: 0.92rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
 
         [data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
-            background-color: #161e2e;
-            color: var(--text-main);
-            border-color: var(--border-color);
+            background-color: rgba(26, 35, 54, 0.6);
+            color: var(--text-heading);
+            border-color: var(--border-subtle);
         }
 
         .form-control:focus, .form-select:focus {
-            background-color: var(--bg-surface);
-            color: var(--text-main);
+            background-color: var(--bg-surface-elevated);
+            color: var(--text-heading);
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
         }
 
-        /* --- KPI SUMMARY TILES --- */
-        .kpi-tile {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-card);
-            padding: 16px;
-        }
-
-        .kpi-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            line-height: 1.2;
-            color: var(--text-main);
-        }
-
-        /* --- SIGNATURE CANVAS (HIGH-PERFORMANCE RETINA TOUCH) --- */
-        .signature-wrapper {
+        /* --- RETINA-GRADE SIGNATURE PAD WRAPPER --- */
+        .signature-glass-dock {
             position: relative;
             background-color: #ffffff;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(15, 23, 42, 0.12);
+            box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.03);
             overflow: hidden;
-            touch-action: none; /* Block browser pull-to-refresh & scroll */
+            touch-action: none; /* Block browser swipe & pinch */
         }
 
         #sign-canvas {
@@ -252,299 +347,340 @@
             touch-action: none;
         }
 
-        /* --- TOAST NOTIFICATION CONTAINER --- */
+        /* Watermark Guide Line in Canvas */
+        .signature-watermark {
+            position: absolute;
+            bottom: 38px;
+            left: 24px;
+            right: 24px;
+            height: 1px;
+            border-bottom: 1px dashed rgba(15, 23, 42, 0.18);
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            color: rgba(15, 23, 42, 0.35);
+            font-size: 0.72rem;
+            font-family: var(--font-mono);
+            user-select: none;
+        }
+
+        /* --- PROGRESS METER --- */
+        .progress-meter {
+            height: 6px;
+            background-color: var(--bg-subtle);
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #38bdf8);
+            border-radius: 999px;
+            transition: width 0.4s var(--spring);
+        }
+
+        /* --- TOAST SYSTEM (NON-BLOCKING LUXURY FEEDBACK) --- */
         #nexus-toast-container {
             position: fixed;
             top: 24px;
             right: 24px;
-            z-index: 1090;
+            z-index: 2000;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-width: 90vw;
-            width: 380px;
+            max-width: 92vw;
+            width: 400px;
             pointer-events: none;
         }
 
         .nexus-toast {
             pointer-events: auto;
-            background-color: var(--bg-surface);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            background: var(--bg-surface-elevated);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            color: var(--text-heading);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), var(--shadow-specular);
             padding: 14px 18px;
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            font-size: 0.9rem;
-            animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 0.88rem;
+            animation: toastFlyIn 0.35s var(--spring);
         }
 
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
+        @keyframes toastFlyIn {
+            from { transform: translateX(110%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* --- GLOBAL SPINNER LOADER --- */
+        /* --- SHIMMER LOADER --- */
         #loader {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(11, 15, 23, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1100;
+            background: rgba(7, 9, 14, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2100;
             align-items: center;
             justify-content: center;
             flex-direction: column;
             color: #ffffff;
         }
 
-        .spinner-nexus {
-            width: 42px;
-            height: 42px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            border-top-color: #3b82f6;
+        .loader-ring {
+            width: 46px;
+            height: 46px;
+            border: 3px solid rgba(255, 255, 255, 0.15);
+            border-top-color: #38bdf8;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.75s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* --- TABS --- */
+        /* Modern Segmented Navigation Tabs */
         .nexus-tabs {
             display: flex;
-            background-color: var(--bg-subtle);
-            padding: 4px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 5px;
             border-radius: 14px;
-            gap: 4px;
+            gap: 6px;
         }
 
         .nexus-tab-item {
             flex: 1;
             padding: 10px 16px;
             text-align: center;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: var(--text-secondary);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
+            user-select: none;
         }
 
         .nexus-tab-item.active {
-            background-color: var(--bg-surface);
+            background: var(--bg-surface-elevated);
             color: var(--primary);
-            box-shadow: var(--shadow-subtle);
-            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05), var(--shadow-specular);
         }
 
-        /* Progress Bar */
-        .progress-nexus {
-            height: 6px;
-            background-color: var(--border-color);
-            border-radius: 999px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-nexus-bar {
-            height: 100%;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        /* Floating Action Button */
-        .fab-btn {
+        /* Floating Action Button (FAB) */
+        .fab-trigger {
             position: fixed;
-            bottom: 28px;
-            right: 28px;
-            width: 54px;
-            height: 54px;
+            bottom: 30px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background-color: var(--primary);
             color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 12px 28px -4px rgba(37, 99, 235, 0.45),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.35);
             border: none;
             cursor: pointer;
             z-index: 100;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: transform 0.2s var(--spring), background-color 0.2s ease;
         }
 
-        .fab-btn:active {
+        .fab-trigger:active {
             transform: scale(0.92);
         }
 
-        /* Responsive Modal tweaks */
+        /* Modal Customization */
         .modal-content {
-            background-color: var(--bg-surface);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
+            background: var(--bg-surface-elevated);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-glass);
             border-radius: var(--radius-card);
+            box-shadow: var(--shadow-elevated), var(--shadow-specular);
+            color: var(--text-heading);
         }
 
         .modal-header, .modal-footer {
-            border-color: var(--border-color);
+            border-color: var(--border-subtle);
         }
 
         [data-theme="dark"] .table {
-            color: var(--text-main);
-            border-color: var(--border-color);
+            color: var(--text-body);
+            border-color: var(--border-subtle);
         }
 
         [data-theme="dark"] .table-light {
-            background-color: #161e2e;
-            color: var(--text-secondary);
-            border-color: var(--border-color);
+            background-color: rgba(26, 35, 54, 0.7);
+            color: var(--text-muted);
+            border-color: var(--border-subtle);
         }
     </style>
 </head>
 
 <body>
-    <!-- TOAST NOTIFICATION CONTAINER -->
+    <!-- FIXED AMBIENT CANVAS -->
+    <div class="ambient-canvas"></div>
+
+    <!-- GLOBAL TOAST STREAM -->
     <div id="nexus-toast-container"></div>
 
-    <!-- GLOBAL PROGRESS LOADER -->
+    <!-- GLOBAL HIGH-PRECISION LOADER -->
     <div id="loader">
-        <div class="spinner-nexus"></div>
-        <div class="mt-3 small font-monospace text-light">IQC NEXUS | ĐANG XỬ LÝ...</div>
+        <div class="loader-ring"></div>
+        <div class="mt-3 small font-mono text-light tracking-wide">IQC NEXUS • ENGINE RUNNING</div>
     </div>
 
-    <!-- 1. LOGIN VIEW -->
+    <!-- ==========================================================================
+         1. LOGIN VIEWPORT (ASYMMETRIC ENTERPRISE SECURITY)
+         ========================================================================== -->
     <div id="view-login" class="page active">
-        <div class="nexus-card mx-auto mt-4 mt-md-5" style="max-width: 420px;">
+        <div class="liquid-glass p-4 p-md-5 mx-auto mt-4 mt-md-5" style="max-width: 440px;">
             <div class="text-center mb-4">
-                <div class="d-inline-flex p-3 rounded-4 bg-primary bg-opacity-10 text-primary mb-3">
-                    <i class="fa-solid fa-shield-halved fa-2x"></i>
+                <div class="d-inline-flex p-3 rounded-4 mb-3" style="background: rgba(37, 99, 235, 0.1); color: var(--primary);">
+                    <i class="fa-solid fa-cube fa-2x"></i>
                 </div>
-                <h4 class="fw-bold mb-1">IQC Nexus Training</h4>
-                <p class="text-muted small">Hệ thống ký xác nhận đào tạo tiêu chuẩn chất lượng</p>
+                <h3 class="fw-bold mb-1">IQC Nexus Training</h3>
+                <p class="text-muted small">Cổng ký xác nhận & Chứng thực đào tạo thông minh</p>
             </div>
 
             <div class="mb-3">
-                <label class="form-label small text-secondary">Mã nhân viên (User ID)</label>
+                <label class="form-label small fw-semibold text-secondary">Mã nhân viên (User ID)</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: var(--radius-input) 0 0 var(--radius-input);"><i class="fa fa-user"></i></span>
-                    <input type="text" id="u" class="form-control border-start-0" placeholder="VD: 10545998" style="border-radius: 0 var(--radius-input) var(--radius-input) 0;">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: var(--radius-input) 0 0 var(--radius-input);"><i class="fa-solid fa-id-badge"></i></span>
+                    <input type="text" id="u" class="form-control border-start-0 font-mono" placeholder="10545998" style="border-radius: 0 var(--radius-input) var(--radius-input) 0;">
                 </div>
             </div>
 
             <div class="mb-3">
-                <label class="form-label small text-secondary">Mật khẩu</label>
+                <label class="form-label small fw-semibold text-secondary">Mật khẩu</label>
                 <div class="input-group">
-                    <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: var(--radius-input) 0 0 var(--radius-input);"><i class="fa fa-lock"></i></span>
+                    <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: var(--radius-input) 0 0 var(--radius-input);"><i class="fa-solid fa-key"></i></span>
                     <input type="password" id="p" class="form-control border-start-0 border-end-0" placeholder="••••••••">
-                    <button class="btn btn-nexus-secondary border-start-0" type="button" onclick="toggPass()" style="border-radius: 0 var(--radius-input) var(--radius-input) 0;"><i class="fa fa-eye" id="eye-icon"></i></button>
+                    <button class="btn btn-nexus-secondary border-start-0" type="button" onclick="toggPass()" style="border-radius: 0 var(--radius-input) var(--radius-input) 0;"><i class="fa-solid fa-eye" id="eye-icon"></i></button>
                 </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="remMe">
-                    <label class="form-check-label small text-secondary" for="remMe">Ghi nhớ</label>
+                <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="remMe" style="cursor: pointer;">
+                    <label class="form-check-label small text-secondary" for="remMe" style="cursor: pointer;">Ghi nhớ phiên</label>
                 </div>
-                <a href="javascript:void(0)" class="small text-primary text-decoration-none" onclick="notifyDefaultPass()">Quên mật khẩu?</a>
+                <a href="javascript:void(0)" class="small text-primary text-decoration-none fw-medium" onclick="notifyDefaultPass()">Quên mật khẩu?</a>
             </div>
 
             <button class="btn-nexus btn-nexus-primary w-100 py-2 mb-3" onclick="login()">
-                <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>Đăng nhập
+                <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>Truy cập hệ thống
             </button>
 
-            <div class="text-center">
-                <span class="small text-muted">Chưa có tài khoản? </span>
-                <a href="javascript:void(0)" class="small text-primary fw-semibold text-decoration-none" onclick="showP('view-reg')">Đăng ký mới</a>
+            <div class="text-center pt-2">
+                <span class="small text-muted">Nhân sự mới? </span>
+                <a href="javascript:void(0)" class="small text-primary fw-bold text-decoration-none" onclick="showP('view-reg')">Tạo tài khoản mới</a>
             </div>
         </div>
-        <div class="text-center small text-muted mt-4">Enterprise Quality Engineering • IQC Nexus Platform</div>
+        <div class="text-center small text-muted font-mono mt-4">Enterprise Quality Engineering • Standard Release 2026</div>
     </div>
 
-    <!-- 2. REGISTRATION VIEW -->
+    <!-- ==========================================================================
+         2. REGISTRATION VIEWPORT
+         ========================================================================== -->
     <div id="view-reg" class="page">
-        <div class="nexus-card mx-auto mt-4" style="max-width: 520px;">
+        <div class="liquid-glass p-4 p-md-5 mx-auto mt-4" style="max-width: 520px;">
             <div class="mb-4">
-                <a href="javascript:void(0)" class="text-decoration-none small text-muted d-inline-flex align-items-center gap-1 mb-2" onclick="showP('view-login')">
-                    <i class="fa fa-arrow-left"></i> Quay lại Đăng nhập
+                <a href="javascript:void(0)" class="text-decoration-none small text-muted d-inline-flex align-items-center gap-2 mb-2" onclick="showP('view-login')">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại Đăng nhập
                 </a>
-                <h4 class="fw-bold mb-1">Đăng ký nhân viên mới</h4>
-                <p class="text-muted small">Cung cấp thông tin để cấp quyền và phân bổ nội dung đào tạo</p>
+                <h4 class="fw-bold mb-1">Đăng ký thành viên IQC</h4>
+                <p class="text-muted small">Cung cấp thông tin để cấp quyền và đồng bộ danh mục đào tạo</p>
             </div>
 
             <div class="mb-3">
-                <label class="form-label small text-secondary">Mã nhân viên (hoặc CCCD đối với Vendor) <span class="text-danger">*</span></label>
-                <input type="text" id="reg-id" class="form-control" placeholder="VD: 10545998">
+                <label class="form-label small fw-semibold text-secondary">Mã nhân viên (hoặc CCCD nếu là Vendor) <span class="text-danger">*</span></label>
+                <input type="text" id="reg-id" class="form-control font-mono" placeholder="VD: 10545998">
             </div>
 
             <div class="mb-3">
-                <label class="form-label small text-secondary">Họ và tên đầy đủ <span class="text-danger">*</span></label>
-                <input type="text" id="reg-name" class="form-control" placeholder="VD: Nguyễn Hải Đường">
+                <label class="form-label small fw-semibold text-secondary">Họ và tên đầy đủ <span class="text-danger">*</span></label>
+                <input type="text" id="reg-name" class="form-control" placeholder="Nguyễn Hải Đường">
             </div>
 
             <div class="row g-2 mb-4">
                 <div class="col-4">
-                    <label class="form-label small text-secondary">Company</label>
+                    <label class="form-label small fw-semibold text-secondary">Company</label>
                     <input type="text" id="reg-com" class="form-control" placeholder="SEV">
                 </div>
                 <div class="col-4">
-                    <label class="form-label small text-secondary">Group</label>
+                    <label class="form-label small fw-semibold text-secondary">Group</label>
                     <input type="text" id="reg-group" class="form-control" placeholder="IQC G">
                 </div>
                 <div class="col-4">
-                    <label class="form-label small text-secondary">Part</label>
+                    <label class="form-label small fw-semibold text-secondary">Part</label>
                     <input type="text" id="reg-part" class="form-control" placeholder="IQC 1P">
                 </div>
             </div>
 
-            <button class="btn-nexus btn-nexus-primary w-100 py-2 mb-3" onclick="doRegister()">
-                <i class="fa-solid fa-check me-2"></i>Hoàn tất đăng ký
+            <button class="btn-nexus btn-nexus-primary w-100 py-2 mb-2" onclick="doRegister()">
+                <i class="fa-solid fa-circle-check me-2"></i>Đăng ký tài khoản
             </button>
         </div>
     </div>
 
-    <!-- 3. ADMIN PORTAL VIEW -->
+    <!-- ==========================================================================
+         3. ADMIN EXECUTIVE DASHBOARD
+         ========================================================================== -->
     <div id="view-admin" class="page">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <!-- Top App Bar -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom" style="border-color: var(--border-subtle) !important;">
             <div class="d-flex align-items-center gap-3">
-                <div class="p-2 rounded-3 bg-primary text-white"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="p-2 rounded-3 text-white" style="background: var(--primary);">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
                 <div>
-                    <h4 class="fw-bold mb-0">IQC Executive Portal</h4>
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.75rem;">Admin Session Active</span>
+                    <h4 class="fw-bold mb-0">IQC Executive Command</h4>
+                    <div class="d-flex align-items-center gap-2 mt-1">
+                        <span class="live-beacon"><span class="live-beacon-pulse"></span><span class="live-beacon-core"></span></span>
+                        <span class="small font-mono text-muted" style="font-size: 0.76rem;">AUTHENTICATED SESSION</span>
+                    </div>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
-                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()" title="Đổi giao diện"><i class="fa-solid fa-moon" id="theme-btn-icon"></i></button>
-                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
+                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()" title="Chế độ Sáng / Tối"><i class="fa-solid fa-moon" id="theme-btn-icon"></i></button>
+                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-power-off"></i> Đăng xuất</button>
             </div>
         </div>
 
-        <!-- AI Executive Brief -->
-        <div class="nexus-ai-brief" id="admin-ai-brief">
+        <!-- AI Executive Stream Banner -->
+        <div class="nexus-ai-stream" id="admin-ai-brief">
             <div class="d-flex align-items-start gap-3">
-                <div class="text-primary mt-1"><i class="fa-solid fa-wand-magic-sparkles fa-lg"></i></div>
+                <div class="mt-1" style="color: var(--primary);"><i class="fa-solid fa-bolt-lightning fa-lg"></i></div>
                 <div class="flex-grow-1">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <h6 class="fw-bold mb-0 text-primary">Tóm tắt Thông minh & Dự báo Rủi ro Đào tạo</h6>
-                        <span class="small text-muted font-monospace" id="brief-timestamp">Thời gian thực</span>
+                        <h6 class="fw-bold mb-0" style="color: var(--primary);">AI Executive Summary & Risk Predictor</h6>
+                        <span class="small text-muted font-mono" id="brief-timestamp">Syncing...</span>
                     </div>
-                    <div class="small text-secondary" id="brief-text">
-                        Đang phân tích dữ liệu khóa học, tiến độ hoàn thành và các trường hợp có nguy cơ quá hạn...
+                    <div class="small" id="brief-text" style="color: var(--text-body);">
+                        Đang đối chiếu dữ liệu khóa học, tiến độ hoàn thành và phân tích các lượt tồn đọng...
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Tabs -->
+        <!-- Segmented Navigation -->
         <div class="nexus-tabs mb-4">
             <div class="nexus-tab-item active" id="btn-c" onclick="switchTab('c')">
-                <i class="fa-solid fa-graduation-cap me-2"></i>Khóa đào tạo
+                <i class="fa-solid fa-layer-group me-2"></i>Khóa đào tạo & Báo cáo
             </div>
             <div class="nexus-tab-item" id="btn-u" onclick="switchTab('u')">
-                <i class="fa-solid fa-users-gear me-2"></i>Quản lý nhân viên
+                <i class="fa-solid fa-users me-2"></i>Quản trị nhân sự
             </div>
         </div>
 
@@ -553,7 +689,7 @@
             <div class="d-flex flex-wrap gap-2 mb-4">
                 <button class="btn-nexus btn-nexus-primary" onclick="openCourseModal()"><i class="fa-solid fa-plus"></i> Tạo khóa mới</button>
                 <button class="btn-nexus btn-nexus-secondary" onclick="exportConsoleReminder()"><i class="fa-solid fa-file-excel text-success"></i> Xuất nhắc nhở (Excel)</button>
-                <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminData()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+                <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminData()"><i class="fa-solid fa-rotate"></i> Đồng bộ</button>
             </div>
             <div id="list-c"></div>
         </div>
@@ -562,35 +698,37 @@
         <div id="tab-u" style="display:none">
             <div class="d-flex flex-wrap gap-2 mb-3">
                 <button class="btn-nexus btn-nexus-primary" onclick="openUserModal()"><i class="fa-solid fa-user-plus"></i> Thêm nhân viên</button>
-                <button class="btn-nexus btn-nexus-secondary" onclick="openUserStats()"><i class="fa-solid fa-chart-pie"></i> Thống kê theo Part & Xóa</button>
+                <button class="btn-nexus btn-nexus-secondary" onclick="openUserStats()"><i class="fa-solid fa-chart-column"></i> Thống kê theo Part & Xóa</button>
                 <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminUsers()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
             </div>
             <div class="mb-4">
                 <input type="text" id="searchU" class="form-control" placeholder="Tìm kiếm nhanh nhân viên theo Tên hoặc Mã số..." onkeyup="filterUsers()">
             </div>
             <div id="list-u"></div>
-            <button class="fab-btn" onclick="openUserModal()" title="Thêm nhân viên"><i class="fa fa-user-plus fa-lg"></i></button>
+            <button class="fab-trigger" onclick="openUserModal()" title="Thêm nhân viên"><i class="fa-solid fa-user-plus fa-lg"></i></button>
         </div>
     </div>
 
-    <!-- 4. USER PORTAL VIEW -->
+    <!-- ==========================================================================
+         4. USER MOBILE TRAINING PORTAL
+         ========================================================================== -->
     <div id="view-user" class="page">
-        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom" style="border-color: var(--border-subtle) !important;">
             <div>
-                <h4 class="fw-bold mb-0">Nhiệm Vụ Đào Tạo</h4>
-                <div class="small text-secondary" id="user-info-display">Nhân viên IQC</div>
+                <h4 class="fw-bold mb-0">Nhiệm Vụ Ký Xác Nhận</h4>
+                <div class="small font-mono text-muted" id="user-info-display">Nhân viên IQC</div>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
-                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
+                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-power-off"></i> Đăng xuất</button>
             </div>
         </div>
 
-        <div class="nexus-ai-brief mb-4">
+        <div class="nexus-ai-stream mb-4">
             <div class="d-flex align-items-center gap-3">
-                <div class="text-primary"><i class="fa-solid fa-circle-info fa-lg"></i></div>
-                <div class="small text-secondary">
-                    Vui lòng đọc kỹ nội dung bài học, tích chọn ô cam kết chất lượng và ký xác nhận điện tử trước thời hạn kết thúc của từng khóa đào tạo.
+                <div style="color: var(--primary);"><i class="fa-solid fa-circle-info fa-lg"></i></div>
+                <div class="small" style="color: var(--text-body);">
+                    Vui lòng đọc kỹ nội dung bài học, tích chọn ô cam kết chất lượng và ký xác nhận điện tử trước thời hạn kết thúc.
                 </div>
             </div>
         </div>
@@ -599,50 +737,52 @@
     </div>
 
     <!-- ==========================================================================
-         MODALS & DIALOGS
+         MODALS & DIALOGS (VISION-OS STYLE REFRACTION)
          ========================================================================== -->
 
-    <!-- SIGNATURE MODAL (MOBILE-OPTIMIZED WITH SMOOTH BÉZIER CURVES) -->
+    <!-- SIGNATURE MODAL (HIGH-PRECISION BÉZIER TOUCH PAD) -->
     <div class="modal fade" id="modalSign" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold text-primary">
-                        <i class="fa-solid fa-file-signature me-2"></i>Nội dung & Ký xác nhận
+                        <i class="fa-solid fa-signature me-2"></i>Nội dung & Ký chứng thực
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-3 p-md-4">
-                    <div class="small text-secondary fw-semibold mb-2">1. NỘI DUNG ĐÀO TẠO TIÊU CHUẨN</div>
-                    <div id="sign-course-content" class="p-3 mb-4 rounded-3 border" style="background-color: var(--bg-subtle); max-height: 240px; overflow-y: auto;">
-                        <div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang tải nội dung...</div>
+                    <div class="small text-secondary fw-bold mb-2">1. TIÊU CHUẨN ĐÀO TẠO</div>
+                    <div id="sign-course-content" class="p-3 mb-4 rounded-3 border" style="background: var(--bg-subtle); max-height: 240px; overflow-y: auto;">
+                        <div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang đồng bộ nội dung...</div>
                     </div>
 
-                    <div class="border-top pt-3">
-                        <div class="small text-secondary fw-semibold mb-2">2. CAM KẾT & CHỮ KÝ SỐ</div>
-                        <div class="form-check p-3 mb-3 rounded-3 border" style="background-color: var(--bg-subtle);">
+                    <div class="border-top pt-3" style="border-color: var(--border-subtle) !important;">
+                        <div class="small text-secondary fw-bold mb-2">2. CAM KẾT & CHỮ KÝ ĐIỆN TỬ</div>
+                        <div class="form-check p-3 mb-3 rounded-3 border" style="background: var(--bg-subtle);">
                             <input class="form-check-input" type="checkbox" id="commitCheck" style="transform: scale(1.2); cursor: pointer;">
                             <label class="form-check-label small fw-medium ms-2" for="commitCheck" style="cursor: pointer;">
-                                Tôi xin cam kết đã đọc, hiểu rõ toàn bộ nội dung đào tạo bên trên và tuân thủ nghiêm ngặt trong công việc.
+                                Tôi cam kết đã đọc, hiểu rõ toàn bộ nội dung đào tạo trên và áp dụng nghiêm ngặt vào quy trình sản xuất.
                             </label>
                         </div>
 
-                        <label class="form-label small text-secondary d-flex justify-content-between align-items-center">
+                        <label class="form-label small text-secondary d-flex justify-content-between align-items-center mb-2">
                             <span>Vẽ chữ ký của bạn vào khung bên dưới:</span>
-                            <span class="badge bg-secondary-subtle text-secondary font-monospace" style="font-size: 0.7rem;">Cảm ứng mượt • Retina</span>
+                            <span class="badge font-mono" style="background: rgba(37, 99, 235, 0.1); color: var(--primary); font-size: 0.72rem;">Bézier Vector • Retina</span>
                         </label>
 
-                        <div class="signature-wrapper mb-2">
+                        <div class="signature-glass-dock mb-2">
                             <canvas id="sign-canvas"></canvas>
+                            <div class="signature-watermark">
+                                <span>KHUNG KÝ XÁC NHẬN</span>
+                                <span>IQC NEXUS SIGN ENGINE</span>
+                            </div>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted"><i class="fa-solid fa-hand-pointer me-1"></i>Dùng ngón tay hoặc bút cảm ứng</small>
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn-nexus btn-nexus-secondary py-1 px-3 text-danger border-danger-subtle" onclick="clearCanvas()">
-                                    <i class="fa-solid fa-eraser me-1"></i>Xóa ký lại
-                                </button>
-                            </div>
+                            <button type="button" class="btn-nexus btn-nexus-secondary py-1 px-3 text-danger" onclick="clearCanvas()">
+                                <i class="fa-solid fa-eraser me-1"></i>Xóa ký lại
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -656,7 +796,7 @@
         </div>
     </div>
 
-    <!-- COURSE CREATION / EDIT MODAL -->
+    <!-- COURSE MODAL -->
     <div class="modal fade" id="modalCourse" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -666,25 +806,25 @@
                 </div>
                 <div class="modal-body p-3 p-md-4">
                     <div class="mb-3">
-                        <label class="form-label small text-secondary">Tên khóa đào tạo</label>
+                        <label class="form-label small fw-semibold text-secondary">Tên khóa đào tạo</label>
                         <input type="text" id="mc-name" class="form-control" placeholder="Ví dụ: IQC 1P_Đào tạo tiêu chuẩn ngoại quan màn hình">
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
-                            <label class="form-label small text-secondary">Ngày bắt đầu</label>
-                            <input type="date" id="mc-start" class="form-control">
+                            <label class="form-label small fw-semibold text-secondary">Ngày bắt đầu</label>
+                            <input type="date" id="mc-start" class="form-control font-mono">
                         </div>
                         <div class="col-6">
-                            <label class="form-label small text-secondary">Ngày kết thúc</label>
-                            <input type="date" id="mc-end" class="form-control">
+                            <label class="form-label small fw-semibold text-secondary">Ngày kết thúc</label>
+                            <input type="date" id="mc-end" class="form-control font-mono">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label small text-secondary">Nội dung / Yêu cầu tiêu chuẩn</label>
+                        <label class="form-label small fw-semibold text-secondary">Nội dung chi tiết</label>
                         <div id="editor-container" style="height: 160px; background-color: var(--bg-surface);"></div>
                     </div>
 
-                    <div id="course-target-container" class="border-top pt-3 mt-3">
+                    <div id="course-target-container" class="border-top pt-3 mt-3" style="border-color: var(--border-subtle) !important;">
                         <label class="form-label small fw-bold text-secondary">ĐỐI TƯỢNG PHÂN BỔ ĐÀO TẠO</label>
                         <select id="target-type" class="form-select mb-3" onchange="toggleTargetUI()">
                             <option value="filter">Gán theo Đơn vị (Company / Group / Part)</option>
@@ -708,7 +848,7 @@
                                 <label class="small text-muted">Nhập mã NV hoặc tải danh sách từ file Excel:</label>
                                 <input type="file" id="target-excel-file" class="form-control mb-2" accept=".xlsx, .xls" onchange="handleExcelUpload(this)">
                             </div>
-                            <textarea id="tf-list" class="form-control" rows="3" placeholder="Các mã NV phân cách bằng dấu phẩy..."></textarea>
+                            <textarea id="tf-list" class="form-control font-mono" rows="3" placeholder="Các mã NV phân cách bằng dấu phẩy..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -731,73 +871,67 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-3 p-md-4">
-                    <ul class="nav nav-pills nav-fill mb-3" id="userModalTabs">
-                        <li class="nav-item">
-                            <button class="nav-link active py-2" id="tab-manual-btn" data-bs-toggle="pill" data-bs-target="#tab-manual" type="button">Thủ công</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link py-2" id="tab-import-btn" data-bs-toggle="pill" data-bs-target="#tab-import" type="button">Import Excel</button>
-                        </li>
-                    </ul>
+                    <div class="nexus-tabs mb-3" id="userModalTabs">
+                        <div class="nexus-tab-item active" id="tab-manual-btn" onclick="switchUserTab('manual')">Thủ công</div>
+                        <div class="nexus-tab-item" id="tab-import-btn" onclick="switchUserTab('import')">Import Excel</div>
+                    </div>
 
-                    <div class="tab-content">
-                        <!-- Manual Tab -->
-                        <div class="tab-pane fade show active" id="tab-manual">
-                            <div class="mb-2"><input type="text" id="mu-name" class="form-control" placeholder="Họ và tên"></div>
-                            <div class="mb-2"><input type="text" id="mu-id" class="form-control" placeholder="Mã nhân viên"></div>
-                            <div class="row g-2 mb-2">
-                                <div class="col-4"><input type="text" id="mu-com" class="form-control" placeholder="Company"></div>
-                                <div class="col-4"><input type="text" id="mu-group" class="form-control" placeholder="Group"></div>
-                                <div class="col-4"><input type="text" id="mu-part" class="form-control" placeholder="Part"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small text-secondary">Trạng thái</label>
-                                <select id="mu-status" class="form-select">
-                                    <option value="Active">Active (Hoạt động)</option>
-                                    <option value="Inactive">Inactive (Khóa)</option>
-                                </select>
-                            </div>
-
-                            <div class="border-top pt-3 mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="small fw-bold text-secondary">Gán khóa học ban đầu</span>
-                                    <div class="form-check m-0">
-                                        <input class="form-check-input" type="checkbox" id="check-all-manual" onchange="toggleAllCourses('manual-courses', this.checked)">
-                                        <label class="form-check-label small" for="check-all-manual">Chọn tất cả</label>
-                                    </div>
-                                </div>
-                                <div id="manual-courses" class="p-2 border rounded-3" style="max-height: 140px; overflow-y: auto;"></div>
-                            </div>
-
-                            <button class="btn-nexus btn-nexus-primary w-100" onclick="saveUserSubmit()">
-                                <i class="fa-solid fa-floppy-disk me-1"></i>Lưu nhân viên
-                            </button>
+                    <!-- Manual Form -->
+                    <div id="tab-manual-pane">
+                        <div class="mb-2"><input type="text" id="mu-name" class="form-control" placeholder="Họ và tên"></div>
+                        <div class="mb-2"><input type="text" id="mu-id" class="form-control font-mono" placeholder="Mã nhân viên"></div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-4"><input type="text" id="mu-com" class="form-control" placeholder="Company"></div>
+                            <div class="col-4"><input type="text" id="mu-group" class="form-control" placeholder="Group"></div>
+                            <div class="col-4"><input type="text" id="mu-part" class="form-control" placeholder="Part"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-secondary">Trạng thái</label>
+                            <select id="mu-status" class="form-select">
+                                <option value="Active">Active (Hoạt động)</option>
+                                <option value="Inactive">Inactive (Khóa)</option>
+                            </select>
                         </div>
 
-                        <!-- Import Excel Tab -->
-                        <div class="tab-pane fade" id="tab-import">
-                            <div class="p-3 mb-3 rounded-3 border" style="background-color: var(--bg-subtle);">
-                                <label class="form-label small text-secondary mb-1">Chọn file Excel (.xlsx, .xls):</label>
-                                <p class="text-muted" style="font-size: 0.8rem;">Yêu cầu có các cột: <b>Name, ID, Company, Group, Part</b></p>
-                                <input type="file" id="user-import-file" class="form-control" accept=".xlsx, .xls">
-                            </div>
-                            <div id="import-preview" class="small text-muted mb-3" style="max-height: 120px; overflow-y: auto;"></div>
-
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span class="small fw-bold text-secondary">Gán khóa học cho danh sách import:</span>
-                                    <div class="form-check m-0">
-                                        <input class="form-check-input" type="checkbox" id="check-all-import" onchange="toggleAllCourses('import-courses', this.checked)">
-                                        <label class="form-check-label small" for="check-all-import">Chọn tất cả</label>
-                                    </div>
+                        <div class="border-top pt-3 mb-3" style="border-color: var(--border-subtle) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-bold text-secondary">Gán khóa học ban đầu</span>
+                                <div class="form-check m-0">
+                                    <input class="form-check-input" type="checkbox" id="check-all-manual" onchange="toggleAllCourses('manual-courses', this.checked)">
+                                    <label class="form-check-label small" for="check-all-manual">Chọn tất cả</label>
                                 </div>
-                                <div id="import-courses" class="p-2 border rounded-3" style="max-height: 140px; overflow-y: auto;"></div>
                             </div>
-
-                            <button class="btn-nexus btn-nexus-primary w-100" onclick="importUsersFile()">
-                                <i class="fa-solid fa-file-import me-1"></i>Tiến hành Import
-                            </button>
+                            <div id="manual-courses" class="p-2 border rounded-3" style="max-height: 140px; overflow-y: auto;"></div>
                         </div>
+
+                        <button class="btn-nexus btn-nexus-primary w-100" onclick="saveUserSubmit()">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>Lưu thông tin
+                        </button>
+                    </div>
+
+                    <!-- Import Excel Form -->
+                    <div id="tab-import-pane" style="display:none;">
+                        <div class="p-3 mb-3 rounded-3 border" style="background: var(--bg-subtle);">
+                            <label class="form-label small text-secondary mb-1">Chọn file Excel (.xlsx, .xls):</label>
+                            <p class="text-muted" style="font-size: 0.8rem;">Yêu cầu có các cột: <b>Name, ID, Company, Group, Part</b></p>
+                            <input type="file" id="user-import-file" class="form-control" accept=".xlsx, .xls">
+                        </div>
+                        <div id="import-preview" class="small text-muted mb-3" style="max-height: 120px; overflow-y: auto;"></div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-bold text-secondary">Gán khóa học cho danh sách import:</span>
+                                <div class="form-check m-0">
+                                    <input class="form-check-input" type="checkbox" id="check-all-import" onchange="toggleAllCourses('import-courses', this.checked)">
+                                    <label class="form-check-label small" for="check-all-import">Chọn tất cả</label>
+                                </div>
+                            </div>
+                            <div id="import-courses" class="p-2 border rounded-3" style="max-height: 140px; overflow-y: auto;"></div>
+                        </div>
+
+                        <button class="btn-nexus btn-nexus-primary w-100" onclick="importUsersFile()">
+                            <i class="fa-solid fa-file-import me-1"></i>Tiến hành Import
+                        </button>
                     </div>
                 </div>
             </div>
@@ -812,7 +946,7 @@
                     <h5 class="modal-title fw-bold"><i class="fa-solid fa-users me-2 text-primary"></i>Danh sách học viên</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="p-3 border-bottom">
+                <div class="p-3 border-bottom" style="border-color: var(--border-subtle) !important;">
                     <input type="text" id="searchPart" class="form-control" placeholder="Tìm nhanh học viên theo Tên hoặc Mã số..." onkeyup="filterParticipants()">
                 </div>
                 <div class="modal-body p-0">
@@ -834,43 +968,43 @@
         </div>
     </div>
 
-    <!-- USER STATS & BATCH PURGE MODAL -->
+    <!-- USER STATS MODAL -->
     <div class="modal fade" id="modalUserStats" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Thống kê & Quản trị Nhân sự</h5>
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-chart-column me-2 text-primary"></i>Thống kê Nhân sự theo Part</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-3 p-md-4">
-                    <div class="kpi-tile mb-4 d-flex justify-content-between align-items-center">
+                    <div class="liquid-glass p-3 mb-4 d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="small text-muted mb-1">Tổng số nhân viên hoạt động</div>
-                            <div class="kpi-value text-primary" id="stats-total">0</div>
+                            <div class="small text-muted mb-1">Tổng số nhân sự hoạt động</div>
+                            <div class="h3 fw-bold font-mono mb-0" style="color: var(--primary);" id="stats-total">0</div>
                         </div>
-                        <div class="p-3 rounded-4 bg-primary bg-opacity-10 text-primary">
-                            <i class="fa-solid fa-users fa-2x"></i>
+                        <div class="p-3 rounded-4 text-primary" style="background: rgba(37, 99, 235, 0.1);">
+                            <i class="fa-solid fa-users-viewfinder fa-2x"></i>
                         </div>
                     </div>
 
-                    <div class="small text-secondary fw-semibold mb-2">DANH SÁCH THEO BỘ PHẬN (PART)</div>
+                    <div class="small text-secondary fw-bold mb-2">DANH SÁCH BỘ PHẬN</div>
                     <div class="table-responsive mb-4" style="max-height: 280px;">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light sticky-top">
                                 <tr>
                                     <th>Bộ phận (Part)</th>
                                     <th class="text-center">Số lượng</th>
-                                    <th class="text-end pe-3">Xóa theo Part</th>
+                                    <th class="text-end pe-3">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody id="list-stats-part"></tbody>
                         </table>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
-                        <small class="text-muted"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>Hành động xóa sẽ dọn dẹp các lượt phân công chưa ký.</small>
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                        <small class="text-muted"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>Xóa danh sách sẽ dọn dẹp các phân công chưa ký.</small>
                         <button class="btn-nexus btn-nexus-danger" onclick="deleteAllUsersConfirm()">
-                            <i class="fa-solid fa-trash-can me-1"></i>Xóa toàn bộ nhân viên
+                            <i class="fa-solid fa-trash-can me-1"></i>Xóa toàn bộ nhân sự
                         </button>
                     </div>
                 </div>
@@ -883,20 +1017,20 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-user-clock me-2"></i>Duyệt nhân viên mới đăng ký</h5>
+                    <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-user-clock me-2"></i>Duyệt nhân viên mới</h5>
                 </div>
                 <div class="modal-body p-3 p-md-4">
-                    <div class="nexus-ai-brief mb-3 py-2 px-3">
-                        <div class="small text-secondary">
-                            Các nhân sự dưới đây vừa tạo tài khoản. Bạn có thể chọn khóa học phân bổ ngay và kích hoạt tài khoản cho họ.
+                    <div class="nexus-ai-stream mb-3 py-2 px-3">
+                        <div class="small" style="color: var(--text-body);">
+                            Các nhân sự sau đây vừa tạo tài khoản. Bạn có thể phân bổ khóa học đào tạo ngay lập tức và kích hoạt tài khoản cho họ.
                         </div>
                     </div>
 
-                    <div class="small text-secondary fw-semibold mb-2">1. Nhân viên chờ duyệt:</div>
+                    <div class="small text-secondary fw-bold mb-2">1. Danh sách nhân sự:</div>
                     <div id="new-reg-list" class="d-flex flex-wrap gap-2 p-2 border rounded-3 mb-3" style="max-height: 100px; overflow-y: auto;"></div>
 
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small text-secondary fw-semibold">2. Gán khóa học:</span>
+                        <span class="small text-secondary fw-bold">2. Gán khóa học:</span>
                         <div class="form-check m-0">
                             <input class="form-check-input" type="checkbox" id="check-all-new-reg" onchange="toggleAllCourses('new-reg-courses', this.checked)">
                             <label class="form-check-label small" for="check-all-new-reg">Chọn tất cả</label>
@@ -905,19 +1039,19 @@
                     <div id="new-reg-courses" class="p-2 border rounded-3 mb-3" style="max-height: 160px; overflow-y: auto;"></div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-nexus btn-nexus-secondary" onclick="submitNewRegProcess(true)">Chỉ kích hoạt (Không gán)</button>
+                    <button class="btn-nexus btn-nexus-secondary" onclick="submitNewRegProcess(true)">Chỉ kích hoạt (Bỏ qua gán)</button>
                     <button class="btn-nexus btn-nexus-primary" onclick="submitNewRegProcess(false)">Xác nhận gán & Kích hoạt</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPTS -->
+    <!-- SCRIPTS ENGINE -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // ==========================================================================
-        // STATE & INITIALIZATION
+        // SYSTEM STATE & INITIALIZATION
         // ==========================================================================
         let session = {};
         let allUsers = [];
@@ -935,7 +1069,7 @@
         let isDrawing = false;
         let hasSigned = false;
         let pendingSignatureCourseID = null;
-        let points = []; // Bézier curve points
+        let points = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             mUser = new bootstrap.Modal('#modalUser');
@@ -951,41 +1085,41 @@
                 modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]] }
             });
 
-            // Init Canvas on Modal Show to get exact dimensions
+            // Re-calc canvas buffer on modal show
             const signModalEl = document.getElementById('modalSign');
             signModalEl.addEventListener('shown.bs.modal', () => {
                 initSignatureCanvas();
             });
 
-            // Remember user login
+            // Remember login
             const savedUser = localStorage.getItem('training_user');
             if (savedUser) {
                 document.getElementById('u').value = savedUser;
                 document.getElementById('remMe').checked = true;
             }
 
-            // Enter key trigger login
+            // Keyboard Shortcuts
             const enterTrigger = (e) => { if (e.key === 'Enter') login(); };
             document.getElementById('u').addEventListener('keyup', enterTrigger);
             document.getElementById('p').addEventListener('keyup', enterTrigger);
 
-            // Apply saved theme
+            // Apply theme
             const savedTheme = localStorage.getItem('nexus_theme') || 'light';
             setTheme(savedTheme);
         });
 
         // ==========================================================================
-        // TOAST NOTIFICATION & UI HELPERS
+        // UI & NOTIFICATION SYSTEM
         // ==========================================================================
         function showToast(message, type = 'info') {
             const container = document.getElementById('nexus-toast-container');
             const toast = document.createElement('div');
             toast.className = 'nexus-toast';
 
-            let icon = 'fa-info-circle text-primary';
-            if (type === 'success') icon = 'fa-check-circle text-success';
+            let icon = 'fa-circle-info text-primary';
+            if (type === 'success') icon = 'fa-circle-check text-success';
             else if (type === 'warning') icon = 'fa-triangle-exclamation text-warning';
-            else if (type === 'danger' || type === 'error') icon = 'fa-circle-xmark text-danger';
+            else if (type === 'danger' || type === 'error') icon = 'fa-circle-exclamation text-danger';
 
             toast.innerHTML = `
                 <i class="fa-solid ${icon} fa-lg mt-1"></i>
@@ -995,9 +1129,10 @@
             container.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3800);
         }
 
         function showL(state) {
@@ -1030,15 +1165,23 @@
             const icon = document.getElementById('eye-icon');
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.className = 'fa fa-eye-slash';
+                icon.className = 'fa-solid fa-eye-slash';
             } else {
                 input.type = 'password';
-                icon.className = 'fa fa-eye';
+                icon.className = 'fa-solid fa-eye';
             }
         }
 
         function notifyDefaultPass() {
-            showToast("Mật khẩu mặc định dành cho nhân viên: <b>@iqc6368</b>", "info");
+            showToast("Mật khẩu mặc định hệ thống: <b>@iqc6368</b>", "info");
+        }
+
+        function switchUserTab(tab) {
+            const isManual = tab === 'manual';
+            document.getElementById('tab-manual-btn').classList.toggle('active', isManual);
+            document.getElementById('tab-import-btn').classList.toggle('active', !isManual);
+            document.getElementById('tab-manual-pane').style.display = isManual ? 'block' : 'none';
+            document.getElementById('tab-import-pane').style.display = !isManual ? 'block' : 'none';
         }
 
         // ==========================================================================
@@ -1050,7 +1193,7 @@
             const remember = document.getElementById('remMe').checked;
 
             if (!user || !pass) {
-                showToast("Vui lòng nhập Mã nhân viên và Mật khẩu!", "warning");
+                showToast("Vui lòng nhập đầy đủ Mã nhân viên và Mật khẩu!", "warning");
                 return;
             }
 
@@ -1069,9 +1212,9 @@
                         showP('view-user');
                         loadUserCourses();
                     }
-                    showToast(`Xin chào ${res.user}!`, "success");
+                    showToast(`Xác thực thành công. Xin chào ${res.user}!`, "success");
                 } else {
-                    showToast(res?.error || "Đăng nhập thất bại!", "danger");
+                    showToast(res?.error || "Sai thông tin đăng nhập!", "danger");
                 }
             }).withFailureHandler(err => {
                 showL(false);
@@ -1083,7 +1226,7 @@
             session = {};
             document.getElementById('p').value = '';
             showP('view-login');
-            showToast("Đã đăng xuất thành công.", "info");
+            showToast("Đã kết thúc phiên làm việc an toàn.", "info");
         }
 
         function doRegister() {
@@ -1094,7 +1237,7 @@
             const part = document.getElementById('reg-part').value.trim();
 
             if (!id || !name) {
-                showToast("Vui lòng nhập Mã nhân viên và Họ tên!", "warning");
+                showToast("Vui lòng cung cấp Mã nhân viên và Họ tên!", "warning");
                 return;
             }
 
@@ -1104,7 +1247,7 @@
                 if (res.error) {
                     showToast(res.error, "danger");
                 } else {
-                    showToast("Đăng ký thành công! Hãy đăng nhập với mật khẩu mặc định: @iqc6368", "success");
+                    showToast("Đăng ký thành công! Hãy đăng nhập bằng mật khẩu: @iqc6368", "success");
                     showP('view-login');
                     document.getElementById('u').value = id;
                     document.getElementById('p').value = "@iqc6368";
@@ -1116,7 +1259,7 @@
         }
 
         // ==========================================================================
-        // ADMIN DASHBOARD & COURSE MANAGEMENT
+        // ADMIN DASHBOARD & COURSES
         // ==========================================================================
         function switchTab(t) {
             document.getElementById('tab-u').style.display = t === 'u' ? 'block' : 'none';
@@ -1141,35 +1284,28 @@
                 availableCoursesGlobal = data.availableCourses || [];
                 allUsers = data.allUsers || [];
 
-                // Render Course Selector
                 renderCourseSelection('manual-courses', availableCoursesGlobal);
                 renderCourseSelection('import-courses', availableCoursesGlobal);
 
-                // Prompt New Regs
                 if (data.newRegisters && data.newRegisters.length > 0) {
                     newRegUserIDs = data.newRegisters.map(u => u[1]);
                     renderNewRegModal(data.newRegisters, availableCoursesGlobal);
                     mNewReg.show();
                 }
 
-                // AI Executive Summary
                 renderAIBrief(data.courses, data.allUsers);
-
-                // Render Courses List
                 renderCourseCards(data.courses);
-
-                // Render Filters
                 renderFilters(data.filters);
 
             }).withFailureHandler(e => {
                 showL(false);
-                showToast("Lỗi tải dữ liệu quản trị: " + e, "danger");
+                showToast("Lỗi đồng bộ: " + e, "danger");
             }).getAdminDashboardData(session.token);
         }
 
         function renderAIBrief(courses, users) {
             if (!courses || courses.length === 0) {
-                document.getElementById('brief-text').innerHTML = "Chưa có dữ liệu khóa học nào để phân tích.";
+                document.getElementById('brief-text').innerHTML = "Chưa ghi nhận khóa học nào trong cơ sở dữ liệu.";
                 return;
             }
             const total = courses.length;
@@ -1178,50 +1314,50 @@
             const pending = courses.filter(c => c.status === 'Pending').length;
             const totalPendingSigns = courses.reduce((acc, c) => acc + (c.pendingCount || 0), 0);
 
-            let riskHtml = `Tổng hợp: <b>${total}</b> khóa đào tạo (<b>${opening}</b> đang mở, <b>${completed}</b> hoàn tất). `;
+            let brief = `Tổng quan: <b>${total}</b> khóa đào tạo (<b>${opening}</b> đang mở, <b>${completed}</b> hoàn thành). `;
             if (pending > 0 || totalPendingSigns > 0) {
-                riskHtml += `<span class="text-danger fw-semibold"><i class="fa-solid fa-triangle-exclamation me-1"></i>Cảnh báo: Hiện có ${totalPendingSigns} lượt chữ ký chưa hoàn thành</span>, trong đó có ${pending} khóa đã quá hạn. Đề xuất: Thực hiện <b>Xuất nhắc nhở (Excel)</b> để đôn đốc các Part.`;
+                brief += `<span class="text-danger fw-semibold"><i class="fa-solid fa-triangle-exclamation me-1"></i>Tồn đọng: ${totalPendingSigns} lượt chữ ký chưa hoàn tất</span> (bao gồm ${pending} khóa đã quá hạn). Đề xuất: Thực hiện <b>Xuất nhắc nhở (Excel)</b> để gửi đôn đốc các Part.`;
             } else {
-                riskHtml += `<span class="text-success fw-semibold"><i class="fa-solid fa-circle-check me-1"></i>Trạng thái hoàn hảo: Tất cả các lượt phân bổ đã hoàn thành 100%.</span>`;
+                brief += `<span class="text-success fw-semibold"><i class="fa-solid fa-circle-check me-1"></i>Trạng thái hoàn hảo: Tất cả các lượt phân bổ đã hoàn thành 100%.</span>`;
             }
 
-            document.getElementById('brief-text').innerHTML = riskHtml;
+            document.getElementById('brief-text').innerHTML = brief;
             document.getElementById('brief-timestamp').innerText = new Date().toLocaleTimeString('vi-VN');
         }
 
         function renderCourseCards(stats) {
             const container = document.getElementById('list-c');
             if (!stats || stats.length === 0) {
-                container.innerHTML = '<div class="text-center p-5 text-muted">Chưa có khóa học nào được tạo.</div>';
+                container.innerHTML = '<div class="liquid-glass text-center p-5 text-muted">Chưa có khóa học nào được khởi tạo.</div>';
                 return;
             }
 
-            const statusColors = {
-                'Plan': 'bg-secondary-subtle text-secondary border-secondary-subtle',
-                'Opening': 'bg-primary-subtle text-primary border-primary-subtle',
-                'Pending': 'bg-warning-subtle text-warning border-warning-subtle',
-                'Complete': 'bg-success-subtle text-success border-success-subtle'
+            const statusBadges = {
+                'Plan': 'bg-secondary-subtle text-secondary',
+                'Opening': 'bg-primary-subtle text-primary',
+                'Pending': 'bg-warning-subtle text-warning',
+                'Complete': 'bg-success-subtle text-success'
             };
 
             let h = '';
             stats.forEach(s => {
-                const badge = statusColors[s.status] || 'bg-light text-dark';
+                const badge = statusBadges[s.status] || 'bg-light text-dark';
                 const isChecked = s.signEnabled ? 'checked' : '';
 
                 h += `
-                <div class="nexus-card mb-3">
+                <div class="liquid-glass liquid-glass-interactive p-4 mb-3">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <div>
-                            <h6 class="fw-bold mb-1">${s.name}</h6>
-                            <div class="small text-muted"><i class="fa-regular fa-calendar me-1"></i>Thời hạn: ${s.start} đến ${s.end}</div>
+                            <h5 class="fw-bold mb-1">${s.name}</h5>
+                            <div class="small text-muted"><i class="fa-regular fa-clock me-1"></i>Thời hạn: ${s.start} đến ${s.end}</div>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge border ${badge}" style="font-size: 0.75rem;">${s.status.toUpperCase()}</span>
+                            <span class="badge ${badge} font-mono" style="font-size: 0.74rem;">${s.status.toUpperCase()}</span>
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-nexus-secondary py-1 px-2" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px;">
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 14px;">
                                     <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="openParticipantModal('${s.id}')"><i class="fa-solid fa-users me-2 text-primary"></i>Danh sách học viên</a></li>
-                                    <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="editCourse('${s.id}')"><i class="fa-solid fa-pen-to-square me-2 text-secondary"></i>Sửa thông tin</a></li>
+                                    <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="editCourse('${s.id}')"><i class="fa-solid fa-pen-to-square me-2 text-secondary"></i>Chỉnh sửa thông tin</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item py-2 text-danger" href="javascript:void(0)" onclick="delCourse('${s.id}')"><i class="fa-solid fa-trash me-2"></i>Xóa khóa học</a></li>
                                 </ul>
@@ -1229,17 +1365,17 @@
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border mb-3" style="background-color: var(--bg-subtle);">
-                        <span class="small fw-medium text-secondary">Cho phép nhân viên ký:</span>
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border mb-3" style="background: var(--bg-subtle);">
+                        <span class="small fw-semibold text-secondary">Cho phép nhân viên ký xác nhận:</span>
                         <div class="form-check form-switch m-0">
                             <input class="form-check-input" type="checkbox" onchange="toggleCourseSign('${s.id}', this)" ${isChecked}>
                         </div>
                     </div>
 
-                    <div class="progress-nexus">
-                        <div class="progress-nexus-bar" style="width: ${s.percent}%;"></div>
+                    <div class="progress-meter">
+                        <div class="progress-meter-fill" style="width: ${s.percent}%;"></div>
                     </div>
-                    <div class="d-flex justify-content-between small fw-medium mb-3">
+                    <div class="d-flex justify-content-between small fw-semibold font-mono mb-3">
                         <span>Tiến độ: <b>${s.percent}%</b></span>
                         <span class="${s.pendingCount > 0 ? 'text-danger' : 'text-success'}">Chưa ký: <b>${s.pendingCount}</b></span>
                     </div>
@@ -1260,7 +1396,7 @@
         function toggleCourseSign(id, el) {
             const val = el.checked;
             google.script.run.withFailureHandler(e => {
-                showToast("Lỗi cập nhật trạng thái ký: " + e, "danger");
+                showToast("Lỗi lưu trạng thái: " + e, "danger");
                 el.checked = !val;
             }).updateCourseSignStatus(id, val, session.token);
         }
@@ -1327,7 +1463,7 @@
             };
 
             if (!data.name || !data.start || !data.end) {
-                showToast("Vui lòng nhập tên khóa học và khoảng thời gian hiệu lực!", "warning");
+                showToast("Vui lòng nhập tên khóa học và ngày hiệu lực!", "warning");
                 return;
             }
 
@@ -1345,7 +1481,7 @@
                 if (res.action === 'updated') {
                     showToast("Cập nhật thông tin khóa học thành công!", "success");
                 } else {
-                    showToast(`Tạo thành công và gán cho ${res.count} nhân viên!`, "success");
+                    showToast(`Tạo thành công và phân bổ cho ${res.count} nhân sự!`, "success");
                 }
                 loadAdminData();
             }).withFailureHandler(e => {
@@ -1389,7 +1525,7 @@
         }
 
         // ==========================================================================
-        // USER MANAGEMENT (ADMIN)
+        // USER DIRECTORY (ADMIN)
         // ==========================================================================
         function loadAdminUsers() {
             showL(true);
@@ -1409,7 +1545,7 @@
         function renderUsers(users) {
             const container = document.getElementById('list-u');
             if (!users || users.length === 0) {
-                container.innerHTML = '<div class="text-center p-5 text-muted">Không tìm thấy nhân viên nào.</div>';
+                container.innerHTML = '<div class="liquid-glass text-center p-5 text-muted">Không tìm thấy nhân viên nào.</div>';
                 return;
             }
 
@@ -1418,12 +1554,12 @@
                 const safeId = String(u[1]).replace(/'/g, "\\'");
                 const isActive = u[6] === 'Active';
                 h += `
-                <div class="nexus-card mb-2 py-3">
+                <div class="liquid-glass mb-2 py-3 px-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="fw-bold">${u[0]}</span>
-                                <span class="badge bg-secondary-subtle text-secondary font-monospace" style="font-size: 0.7rem;">${u[1]}</span>
+                                <span class="badge bg-secondary-subtle text-secondary font-mono" style="font-size: 0.72rem;">${u[1]}</span>
                                 <span class="badge ${isActive ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}" style="font-size: 0.65rem;">${u[6]}</span>
                             </div>
                             <div class="small text-muted mt-1">${u[2] || '-'} • ${u[3] || '-'} • ${u[4] || '-'}</div>
@@ -1457,7 +1593,7 @@
             const tabs = document.getElementById('userModalTabs');
             if (isEdit) {
                 tabs.style.display = 'none';
-                new bootstrap.Tab(document.getElementById('tab-manual-btn')).show();
+                switchUserTab('manual');
                 const u = allUsers.find(x => String(x[1]) === String(uid));
                 if (u) {
                     document.getElementById('mu-name').value = u[0];
@@ -1470,7 +1606,7 @@
                 }
             } else {
                 tabs.style.display = 'flex';
-                new bootstrap.Tab(document.getElementById('tab-manual-btn')).show();
+                switchUserTab('manual');
                 document.getElementById('mu-name').value = '';
                 document.getElementById('mu-id').value = '';
                 document.getElementById('mu-id').disabled = false;
@@ -1494,7 +1630,7 @@
             };
 
             if (!u.name || !u.id) {
-                showToast("Vui lòng nhập đầy đủ Tên và Mã nhân viên!", "warning");
+                showToast("Vui lòng nhập Tên và Mã nhân viên!", "warning");
                 return;
             }
 
@@ -1512,7 +1648,7 @@
                     mUser.hide();
                     loadAdminUsers();
                 } else {
-                    showToast(res.error || "Lỗi lưu nhân viên", "danger");
+                    showToast(res.error || "Lỗi lưu nhân sự", "danger");
                 }
             }).withFailureHandler(e => {
                 showL(false);
@@ -1581,7 +1717,7 @@
                 }
 
                 if (users.length === 0) {
-                    showToast("Không đọc được dữ liệu nhân viên hợp lệ nào!", "warning");
+                    showToast("Không có hàng dữ liệu nhân viên hợp lệ nào!", "warning");
                     return;
                 }
 
@@ -1606,7 +1742,7 @@
         }
 
         // ==========================================================================
-        // STATS & BATCH PURGE
+        // STATS & BULK CLEANUP
         // ==========================================================================
         function openUserStats() {
             showL(true);
@@ -1620,7 +1756,7 @@
                         h += `
                         <tr>
                             <td class="fw-semibold">${part}</td>
-                            <td class="text-center"><span class="badge bg-secondary-subtle text-secondary font-monospace">${res.stats[part]}</span></td>
+                            <td class="text-center"><span class="badge bg-secondary-subtle text-secondary font-mono">${res.stats[part]}</span></td>
                             <td class="text-end pe-3">
                                 <button class="btn btn-sm btn-nexus-danger py-1 px-2" onclick="deleteByPart('${part}')">
                                     <i class="fa-solid fa-trash me-1"></i>Xóa Part
@@ -1644,7 +1780,7 @@
                     showL(false);
                     if (res.error) showToast(res.error, "danger");
                     else {
-                        showToast(`Đã dọn dẹp ${res.count} nhân viên thuộc ${part}.`, "success");
+                        showToast(`Đã dọn dẹp ${res.count} nhân sự thuộc ${part}.`, "success");
                         openUserStats();
                         loadAdminData();
                     }
@@ -1675,7 +1811,7 @@
         }
 
         // ==========================================================================
-        // EXPORT REPORTS
+        // EXPORT ENGINE
         // ==========================================================================
         function exportConsoleReminder() {
             showL(true);
@@ -1715,7 +1851,7 @@
         }
 
         // ==========================================================================
-        // USER PORTAL & SIGNATURE ENGINE
+        // USER PORTAL & BÉZIER VECTOR SIGNATURE ENGINE
         // ==========================================================================
         function loadUserCourses() {
             if (session.user) {
@@ -1727,7 +1863,7 @@
                 const container = document.getElementById('user-course-list');
                 if (!courses || courses.length === 0) {
                     container.innerHTML = `
-                    <div class="nexus-card text-center py-5">
+                    <div class="liquid-glass text-center py-5">
                         <i class="fa-solid fa-circle-check fa-3x text-success mb-3"></i>
                         <h5 class="fw-bold">Bạn đã hoàn thành tất cả nhiệm vụ!</h5>
                         <p class="text-muted small">Hiện không có khóa đào tạo nào cần ký xác nhận bổ sung.</p>
@@ -1742,12 +1878,12 @@
                         `<button class="btn-nexus btn-nexus-secondary disabled opacity-50" style="cursor: not-allowed;"><i class="fa-solid fa-lock"></i> Chưa mở ký</button>`;
 
                     h += `
-                    <div class="nexus-card mb-3">
+                    <div class="liquid-glass p-4 mb-3">
                         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                             <div>
-                                <h6 class="fw-bold mb-1">${c.name}</h6>
-                                <div class="small text-muted mb-2"><i class="fa-regular fa-calendar me-1"></i>Thời gian: ${c.start} - ${c.end}</div>
-                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.75rem;">Chờ ký xác nhận</span>
+                                <h5 class="fw-bold mb-1">${c.name}</h5>
+                                <div class="small text-muted mb-2"><i class="fa-regular fa-clock me-1"></i>Thời gian: ${c.start} đến ${c.end}</div>
+                                <span class="badge bg-warning-subtle text-warning font-mono" style="font-size: 0.72rem;">CHỜ KÝ XÁC NHẬN</span>
                             </div>
                             <div>${actionBtn}</div>
                         </div>
@@ -1763,7 +1899,7 @@
         function openSignModal(courseId) {
             pendingSignatureCourseID = courseId;
             document.getElementById('commitCheck').checked = false;
-            document.getElementById('sign-course-content').innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang tải nội dung...</div>';
+            document.getElementById('sign-course-content').innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang đồng bộ nội dung...</div>';
             clearCanvas();
             mSign.show();
 
@@ -1772,7 +1908,7 @@
             }).getCourseDetails(courseId);
         }
 
-        // --- HIGH-DPI & BÉZIER CURVE SMOOTH SIGNATURE ENGINE ---
+        // --- RETINA & QUADRATIC BÉZIER VECTOR SIGNATURE ENGINE ---
         function initSignatureCanvas() {
             signCanvas = document.getElementById('sign-canvas');
             if (!signCanvas) return;
@@ -1781,7 +1917,6 @@
             const rect = signCanvas.parentElement.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
 
-            // Set display size and buffer size for Retina sharpness
             const displayWidth = rect.width;
             const displayHeight = 220;
 
@@ -1791,14 +1926,14 @@
             signCanvas.style.height = displayHeight + 'px';
 
             signCtx.scale(dpr, dpr);
-            signCtx.lineWidth = 2.5;
+            signCtx.lineWidth = 2.6;
             signCtx.lineCap = 'round';
             signCtx.lineJoin = 'round';
             signCtx.strokeStyle = '#0F172A';
 
             clearCanvas();
 
-            // Bind Event Listeners with Touch Prevention
+            // Touch & Pointer Binding
             signCanvas.onpointerdown = startStroke;
             signCanvas.onpointermove = moveStroke;
             signCanvas.onpointerup = endStroke;
@@ -1854,7 +1989,7 @@
                 return;
             }
             if (!document.getElementById('commitCheck').checked) {
-                showToast("Vui lòng tích chọn ô cam kết chất lượng trước khi xác nhận!", "warning");
+                showToast("Vui lòng tích chọn ô cam kết tiêu chuẩn trước khi xác nhận!", "warning");
                 return;
             }
 
@@ -1892,7 +2027,7 @@
                 <div class="form-check py-1">
                     <input class="form-check-input course-check-${containerId}" type="checkbox" value="${c.id}" id="${containerId}-${c.id}">
                     <label class="form-check-label small" for="${containerId}-${c.id}">
-                        <span class="badge bg-secondary-subtle text-secondary me-1" style="font-size: 0.65rem;">${c.status}</span> ${c.name}
+                        <span class="badge bg-secondary-subtle text-secondary font-mono me-1" style="font-size: 0.65rem;">${c.status}</span> ${c.name}
                     </label>
                 </div>`;
             });
@@ -1906,7 +2041,7 @@
         function renderNewRegModal(users, courses) {
             let uHtml = '';
             users.forEach(u => {
-                uHtml += `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">${u[0]} (${u[1]})</span>`;
+                uHtml += `<span class="badge font-mono border px-2 py-1" style="background: rgba(37, 99, 235, 0.1); color: var(--primary); border-color: rgba(37, 99, 235, 0.25) !important;">${u[0]} (${u[1]})</span>`;
             });
             document.getElementById('new-reg-list').innerHTML = uHtml || '<span class="text-muted small">Không có người dùng nào.</span>';
             renderCourseSelection('new-reg-courses', courses);
@@ -1923,7 +2058,7 @@
                 mNewReg.hide();
                 if (res.error) showToast(res.error, "danger");
                 else {
-                    showToast("Đã kích hoạt và gán khóa học thành công!", "success");
+                    showToast("Đã kích hoạt và phân bổ khóa học thành công!", "success");
                     loadAdminData();
                 }
             }).withFailureHandler(e => {
@@ -1935,7 +2070,7 @@
         let currentParticipants = [];
         function openParticipantModal(cid) {
             document.getElementById('searchPart').value = '';
-            document.getElementById('list-participants').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang tải...</td></tr>';
+            document.getElementById('list-participants').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang đồng bộ...</td></tr>';
             mParticipants.show();
 
             google.script.run.withSuccessHandler(list => {
@@ -1960,12 +2095,12 @@
                 const cid = u.courseId;
 
                 if (u.signed) {
-                    statusBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa fa-check me-1"></i>Đã ký</span><br><small class="text-muted" style="font-size: 0.7rem;">${new Date(u.signTime).toLocaleString('vi-VN')}</small>`;
+                    statusBadge = `<span class="badge bg-success-subtle text-success"><i class="fa fa-check me-1"></i>Đã ký</span><br><small class="text-muted font-mono" style="font-size: 0.7rem;">${new Date(u.signTime).toLocaleString('vi-VN')}</small>`;
                 } else if (u.exception) {
-                    statusBadge = `<span class="badge bg-warning-subtle text-warning border border-warning-subtle">${u.exception}</span>`;
+                    statusBadge = `<span class="badge bg-warning-subtle text-warning">${u.exception}</span>`;
                     actionBtn = `<button class="btn btn-sm btn-nexus-secondary py-0 px-2" onclick="setException('${cid}', '${u.uid}', '${u.name}')">Sửa lý do</button>`;
                 } else {
-                    statusBadge = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Chưa tham gia</span>`;
+                    statusBadge = `<span class="badge bg-danger-subtle text-danger">Chưa tham gia</span>`;
                     actionBtn = `<button class="btn btn-sm btn-nexus-danger py-0 px-2" onclick="setException('${cid}', '${u.uid}', '${u.name}')">Báo vắng</button>`;
                 }
 
@@ -1973,7 +2108,7 @@
                 <tr>
                     <td class="ps-3">
                         <div class="fw-semibold">${u.name}</div>
-                        <div class="small text-muted font-monospace">${u.uid}</div>
+                        <div class="small text-muted font-mono">${u.uid}</div>
                     </td>
                     <td>
                         <div class="small">${u.com || '-'} > ${u.group || '-'}</div>
