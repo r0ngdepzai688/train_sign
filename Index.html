@@ -1,579 +1,829 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi" data-theme="light">
 
 <head>
     <base target="_top">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>IQC Nexus | Hệ Thống Đào Tạo & Ký Số Doanh Nghiệp</title>
+
+    <!-- Google Fonts: Inter (Single Typography System) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Dancing+Script:wght@500;600;700&family=Montserrat:wght@600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS & FontAwesome Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Quill Editor & SheetJS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
     <style>
+        /* ==========================================================================
+           IQC NEXUS DESIGN TOKENS (LIGHT & DARK MODE)
+           ========================================================================== */
         :root {
-            --primary: #4f46e5;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            /* Much subtler background: Neutral Slate/Blue Gray */
-            --bg-light: #f8fafc;
-            --text-main: #334155;
-            /* Slate-700 for softer text */
-            --glass-bg: rgba(255, 255, 255, 0.85);
-            /* More opaque for readability */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --accent: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+
+            /* Light Mode Tokens */
+            --bg-page: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --border-color: #e2e8f0;
+            --border-subtle: #f1f5f9;
+            --text-main: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+
+            --radius-card: 16px;
+            --radius-btn: 12px;
+            --radius-input: 12px;
+            --max-width: 1400px;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Mode Tokens (Independent design, no simple inversion) */
+            --bg-page: #0b0f17;
+            --bg-surface: #121826;
+            --bg-subtle: #1e293b;
+            --border-color: #1e293b;
+            --border-subtle: #334155;
+            --text-main: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --shadow-subtle: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- BASE STYLES --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: #f8fafc;
-            /* Very subtle, professional mesh gradient (low saturation, high opacity) */
-            background-image:
-                radial-gradient(at 0% 0%, hsla(252, 40%, 96%, 1) 0, transparent 50%),
-                radial-gradient(at 100% 0%, hsla(220, 40%, 96%, 1) 0, transparent 50%),
-                radial-gradient(at 100% 100%, hsla(200, 40%, 96%, 1) 0, transparent 50%),
-                radial-gradient(at 0% 100%, hsla(280, 40%, 96%, 1) 0, transparent 50%);
-            background-attachment: fixed;
-            background-size: 100% 100%;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 300;
-            /* Thin/Light Weight */
+            font-family: var(--font-family);
+            background-color: var(--bg-page);
             color: var(--text-main);
             min-height: 100vh;
+            line-height: 1.5;
+            transition: background-color 0.25s ease, color 0.25s ease;
+            overflow-x: hidden;
         }
 
-        /* Enforcing lighter weights for headings too */
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-weight: 500;
-            /* Regular/Medium instead of Bold */
-            color: #1e293b;
+        /* --- TYPOGRAPHY --- */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-main);
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
+        /* --- APP CONTAINER --- */
         .page {
             display: none;
-            padding: 30px 15px;
-            max-width: 1200px;
+            max-width: var(--max-width);
             margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        @media (min-width: 768px) {
+            .page {
+                padding: 32px 24px;
+            }
         }
 
         .page.active {
             display: block;
-            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .glass-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            /* Softer shadow */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .glass-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-            /* Subtle hover lift */
+        /* --- NEXUS CARDS --- */
+        .nexus-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            box-shadow: var(--shadow-card);
+            padding: 20px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .btn-main {
-            background: var(--primary-gradient);
-            color: white;
+        @media (min-width: 768px) {
+            .nexus-card {
+                padding: 24px;
+            }
+        }
+
+        /* --- AI EXECUTIVE BRIEF BANNER --- */
+        .nexus-ai-brief {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(79, 70, 229, 0.05) 100%);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: var(--radius-card);
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        [data-theme="dark"] .nexus-ai-brief {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(79, 70, 229, 0.1) 100%);
+            border-color: rgba(37, 99, 235, 0.3);
+        }
+
+        /* --- BUTTONS --- */
+        .btn-nexus {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: var(--radius-btn);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            gap: 8px;
+        }
+
+        .btn-nexus-primary {
+            background-color: var(--primary);
+            color: #ffffff !important;
+            border-color: var(--primary);
+        }
+
+        .btn-nexus-primary:hover {
+            background-color: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-nexus-secondary {
+            background-color: transparent;
+            color: var(--text-main) !important;
+            border-color: var(--border-color);
+        }
+
+        .btn-nexus-secondary:hover {
+            background-color: var(--bg-subtle);
+            border-color: var(--border-subtle);
+        }
+
+        .btn-nexus-danger {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger) !important;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-nexus-danger:hover {
+            background-color: var(--danger);
+            color: #ffffff !important;
+        }
+
+        /* --- INPUT CONTROLS --- */
+        .form-control, .form-select {
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-input);
+            padding: 11px 16px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        [data-theme="dark"] .form-control, [data-theme="dark"] .form-select {
+            background-color: #161e2e;
+            color: var(--text-main);
+            border-color: var(--border-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        /* --- KPI SUMMARY TILES --- */
+        .kpi-tile {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 16px;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--text-main);
+        }
+
+        /* --- SIGNATURE CANVAS (HIGH-PERFORMANCE RETINA TOUCH) --- */
+        .signature-wrapper {
+            position: relative;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
             border-radius: 12px;
-            /* Slightly less rounded */
-            padding: 12px;
-            border: none;
+            overflow: hidden;
+            touch-action: none; /* Block browser pull-to-refresh & scroll */
+        }
+
+        #sign-canvas {
+            display: block;
             width: 100%;
-            font-weight: 400;
-            /* Lighter text */
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+            height: 220px;
+            background-color: #ffffff;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        /* --- TOAST NOTIFICATION CONTAINER --- */
+        #nexus-toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1090;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 90vw;
+            width: 380px;
+            pointer-events: none;
+        }
+
+        .nexus-toast {
+            pointer-events: auto;
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            padding: 14px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 0.9rem;
+            animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* --- GLOBAL SPINNER LOADER --- */
+        #loader {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 15, 23, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #ffffff;
+        }
+
+        .spinner-nexus {
+            width: 42px;
+            height: 42px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* --- TABS --- */
+        .nexus-tabs {
+            display: flex;
+            background-color: var(--bg-subtle);
+            padding: 4px;
+            border-radius: 14px;
+            gap: 4px;
+        }
+
+        .nexus-tab-item {
+            flex: 1;
+            padding: 10px 16px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .btn-main:active {
-            transform: scale(0.97);
-            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+        .nexus-tab-item.active {
+            background-color: var(--bg-surface);
+            color: var(--primary);
+            box-shadow: var(--shadow-subtle);
+            font-weight: 600;
         }
 
-        .btn-primary {
-            background: var(--primary-gradient);
-            border: none;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        /* Progress Bar */
+        .progress-nexus {
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 10px 0;
         }
 
-        .form-control {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            border-radius: 14px;
-            padding: 12px 15px;
-            font-size: 0.95rem;
-            transition: all 0.2s;
+        .progress-nexus-bar {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
         }
 
-        .form-control:focus {
-            background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-            border-color: #818cf8;
-        }
-
-        .user-card {
-            border-left: 5px solid #cbd5e1;
-        }
-
-        .user-card.active-status {
-            border-left-color: #10b981;
-        }
-
-        .user-card.inactive-status {
-            border-left-color: #f43f5e;
-        }
-
-        .fab {
+        /* Floating Action Button */
+        .fab-btn {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 55px;
-            height: 55px;
-            border-radius: 20px;
-            background: var(--primary-gradient);
-            color: white;
+            bottom: 28px;
+            right: 28px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
             border: none;
+            cursor: pointer;
             z-index: 100;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.2s, background-color 0.2s;
         }
 
-        .fab:hover {
-            transform: scale(1.1) rotate(5deg);
+        .fab-btn:active {
+            transform: scale(0.92);
         }
 
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+        /* Responsive Modal tweaks */
+        .modal-content {
+            background-color: var(--bg-surface);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
         }
 
-        /* Progress Bar Custom */
-        .p-bar-container {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 20px;
-            height: 10px;
-            overflow: hidden;
-            margin: 12px 0;
+        .modal-header, .modal-footer {
+            border-color: var(--border-color);
         }
 
-        .p-bar-fill {
-            height: 100%;
-            background: var(--primary-gradient);
-            border-radius: 20px;
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        [data-theme="dark"] .table {
+            color: var(--text-main);
+            border-color: var(--border-color);
         }
 
-        .course-card-admin {
-            border-left: none;
-            /* Remove old border */
-            position: relative;
-            overflow: hidden;
-        }
-
-        .course-card-admin::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 6px;
-            background: var(--primary-gradient);
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px) scale(0.98);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* Watermark */
-        .watermark-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Ctext x='50%25' y='50%25' fill='rgba(51, 65, 85, 0.05)' font-size='24' font-family='Outfit, sans-serif' font-weight='bold' text-anchor='middle' alignment-baseline='middle' transform='rotate(-45 150 150)'%3ENGUYEN HAI DUONG%3C/text%3E%3C/svg%3E");
-            background-repeat: repeat;
+        [data-theme="dark"] .table-light {
+            background-color: #161e2e;
+            color: var(--text-secondary);
+            border-color: var(--border-color);
         }
     </style>
 </head>
 
 <body>
-    <div class="watermark-overlay"></div>
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="nexus-toast-container"></div>
 
-    <div id="loader" class="loading">
-        <div class="text-center">
-            <div class="spinner-border text-primary"></div>
-            <div class="small mt-2 fw-bold text-primary">ĐANG XỬ LÝ...</div>
-        </div>
+    <!-- GLOBAL PROGRESS LOADER -->
+    <div id="loader">
+        <div class="spinner-nexus"></div>
+        <div class="mt-3 small font-monospace text-light">IQC NEXUS | ĐANG XỬ LÝ...</div>
     </div>
 
+    <!-- 1. LOGIN VIEW -->
     <div id="view-login" class="page active">
-        <div class="glass-card p-4 mx-auto mt-5" style="max-width: 380px;">
-            <h3 class="text-center fw-bold mb-4 text-primary"
-                style="font-family: 'Montserrat', sans-serif; letter-spacing: 0.5px;">IQC G TRAINING CONFIRMATION SYSTEM
-            </h3>
+        <div class="nexus-card mx-auto mt-4 mt-md-5" style="max-width: 420px;">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex p-3 rounded-4 bg-primary bg-opacity-10 text-primary mb-3">
+                    <i class="fa-solid fa-shield-halved fa-2x"></i>
+                </div>
+                <h4 class="fw-bold mb-1">IQC Nexus Training</h4>
+                <p class="text-muted small">Hệ thống ký xác nhận đào tạo tiêu chuẩn chất lượng</p>
+            </div>
+
             <div class="mb-3">
-                <input type="text" id="u" class="form-control" placeholder="Mã nhân viên">
+                <label class="form-label small text-secondary">Mã nhân viên (User ID)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: var(--radius-input) 0 0 var(--radius-input);"><i class="fa fa-user"></i></span>
+                    <input type="text" id="u" class="form-control border-start-0" placeholder="VD: 10545998" style="border-radius: 0 var(--radius-input) var(--radius-input) 0;">
+                </div>
             </div>
-            <div class="input-group mb-2">
-                <input type="password" id="p" class="form-control" placeholder="Mật khẩu">
-                <button class="btn btn-outline-secondary" onclick="togg()"><i class="fa fa-eye"></i></button>
+
+            <div class="mb-3">
+                <label class="form-label small text-secondary">Mật khẩu</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-radius: var(--radius-input) 0 0 var(--radius-input);"><i class="fa fa-lock"></i></span>
+                    <input type="password" id="p" class="form-control border-start-0 border-end-0" placeholder="••••••••">
+                    <button class="btn btn-nexus-secondary border-start-0" type="button" onclick="toggPass()" style="border-radius: 0 var(--radius-input) var(--radius-input) 0;"><i class="fa fa-eye" id="eye-icon"></i></button>
+                </div>
             </div>
-            <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="remMe">
-                <label class="form-check-label small" for="remMe">Ghi nhớ tài khoản</label>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remMe">
+                    <label class="form-check-label small text-secondary" for="remMe">Ghi nhớ</label>
+                </div>
+                <a href="javascript:void(0)" class="small text-primary text-decoration-none" onclick="notifyDefaultPass()">Quên mật khẩu?</a>
             </div>
-            <button class="btn-main mb-3" onclick="login()">ĐĂNG NHẬP</button>
-            <div class="d-flex justify-content-between small px-1">
-                <a href="#" class="text-decoration-none"
-                    onclick="alert('Mật khẩu mặc định: @iqc6368'); return false;">Quên mật khẩu?</a>
-                <a href="javascript:void(0)" class="text-decoration-none fw-bold" onclick="showP('view-reg')">Đăng ký
-                    mới</a>
+
+            <button class="btn-nexus btn-nexus-primary w-100 py-2 mb-3" onclick="login()">
+                <i class="fa-solid fa-arrow-right-to-bracket me-2"></i>Đăng nhập
+            </button>
+
+            <div class="text-center">
+                <span class="small text-muted">Chưa có tài khoản? </span>
+                <a href="javascript:void(0)" class="small text-primary fw-semibold text-decoration-none" onclick="showP('view-reg')">Đăng ký mới</a>
             </div>
         </div>
-        <div class="text-center small text-muted mt-4 pb-2">Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</div>
+        <div class="text-center small text-muted mt-4">Enterprise Quality Engineering • IQC Nexus Platform</div>
     </div>
 
-    <!-- REGISTRATION VIEW -->
+    <!-- 2. REGISTRATION VIEW -->
     <div id="view-reg" class="page">
-        <div class="glass-card p-4 mx-auto mt-4" style="max-width: 500px;">
-            <h4 class="text-center fw-bold mb-4 text-primary">ĐĂNG KÝ TÀI KHOẢN</h4>
+        <div class="nexus-card mx-auto mt-4" style="max-width: 520px;">
+            <div class="mb-4">
+                <a href="javascript:void(0)" class="text-decoration-none small text-muted d-inline-flex align-items-center gap-1 mb-2" onclick="showP('view-login')">
+                    <i class="fa fa-arrow-left"></i> Quay lại Đăng nhập
+                </a>
+                <h4 class="fw-bold mb-1">Đăng ký nhân viên mới</h4>
+                <p class="text-muted small">Cung cấp thông tin để cấp quyền và phân bổ nội dung đào tạo</p>
+            </div>
 
             <div class="mb-3">
-                <label>Mã nhân viên <span class="text-danger">*</span></label>
+                <label class="form-label small text-secondary">Mã nhân viên (hoặc CCCD đối với Vendor) <span class="text-danger">*</span></label>
                 <input type="text" id="reg-id" class="form-control" placeholder="VD: 10545998">
             </div>
+
             <div class="mb-3">
-                <label>Họ và tên <span class="text-danger">*</span></label>
+                <label class="form-label small text-secondary">Họ và tên đầy đủ <span class="text-danger">*</span></label>
                 <input type="text" id="reg-name" class="form-control" placeholder="VD: Nguyễn Hải Đường">
             </div>
-            <div class="row g-2 mb-3">
+
+            <div class="row g-2 mb-4">
                 <div class="col-4">
-                    <label>Company</label>
-                    <input type="text" id="reg-com" class="form-control" placeholder="VD: SEV">
+                    <label class="form-label small text-secondary">Company</label>
+                    <input type="text" id="reg-com" class="form-control" placeholder="SEV">
                 </div>
                 <div class="col-4">
-                    <label>Group</label>
-                    <input type="text" id="reg-group" class="form-control" placeholder="VD: IQC G">
+                    <label class="form-label small text-secondary">Group</label>
+                    <input type="text" id="reg-group" class="form-control" placeholder="IQC G">
                 </div>
                 <div class="col-4">
-                    <label>Part</label>
-                    <input type="text" id="reg-part" class="form-control" placeholder="VD: IQC 1P">
+                    <label class="form-label small text-secondary">Part</label>
+                    <input type="text" id="reg-part" class="form-control" placeholder="IQC 1P">
                 </div>
             </div>
 
-            <div class="text-center text-primary mb-3"
-                style="font-family: 'Dancing Script', cursive; font-size: 1.3rem;">
-                <i class="fa fa-pencil-alt me-2"></i>Với nhân viên Vendor, hãy nhập CCCD thay cho mã nhân viên
-            </div>
-            <button class="btn-main mb-3" onclick="doRegister()">ĐĂNG KÝ</button>
-            <div class="text-center">
-                <a href="javascript:void(0)" class="text-decoration-none small" onclick="showP('view-login')">Quay lại
-                    đăng nhập</a>
-            </div>
+            <button class="btn-nexus btn-nexus-primary w-100 py-2 mb-3" onclick="doRegister()">
+                <i class="fa-solid fa-check me-2"></i>Hoàn tất đăng ký
+            </button>
         </div>
-        <div class="text-center small text-muted mt-4 pb-2">Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</div>
     </div>
 
+    <!-- 3. ADMIN PORTAL VIEW -->
     <div id="view-admin" class="page">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="fw-bold mb-0">Admin Dashboard</h4>
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
             <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="logout()">Thoát</button>
+                <div class="p-2 rounded-3 bg-primary text-white"><i class="fa-solid fa-chart-line"></i></div>
+                <div>
+                    <h4 class="fw-bold mb-0">IQC Executive Portal</h4>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.75rem;">Admin Session Active</span>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()" title="Đổi giao diện"><i class="fa-solid fa-moon" id="theme-btn-icon"></i></button>
+                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
             </div>
         </div>
 
-
-        <div class="glass-card p-2 mb-4">
-            <ul class="nav nav-pills nav-fill">
-                <li class="nav-item"><a class="nav-link active" id="btn-c" onclick="switchTab('c')">Khóa học</a></li>
-                <li class="nav-item"><a class="nav-link" id="btn-u" onclick="switchTab('u')">Nhân viên</a></li>
-            </ul>
+        <!-- AI Executive Brief -->
+        <div class="nexus-ai-brief" id="admin-ai-brief">
+            <div class="d-flex align-items-start gap-3">
+                <div class="text-primary mt-1"><i class="fa-solid fa-wand-magic-sparkles fa-lg"></i></div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="fw-bold mb-0 text-primary">Tóm tắt Thông minh & Dự báo Rủi ro Đào tạo</h6>
+                        <span class="small text-muted font-monospace" id="brief-timestamp">Thời gian thực</span>
+                    </div>
+                    <div class="small text-secondary" id="brief-text">
+                        Đang phân tích dữ liệu khóa học, tiến độ hoàn thành và các trường hợp có nguy cơ quá hạn...
+                    </div>
+                </div>
+            </div>
         </div>
 
+        <!-- Navigation Tabs -->
+        <div class="nexus-tabs mb-4">
+            <div class="nexus-tab-item active" id="btn-c" onclick="switchTab('c')">
+                <i class="fa-solid fa-graduation-cap me-2"></i>Khóa đào tạo
+            </div>
+            <div class="nexus-tab-item" id="btn-u" onclick="switchTab('u')">
+                <i class="fa-solid fa-users-gear me-2"></i>Quản lý nhân viên
+            </div>
+        </div>
+
+        <!-- TAB: COURSES -->
         <div id="tab-c">
-            <div class="d-flex gap-2 mb-3">
-                <button class="btn btn-primary w-100 py-2 rounded-3" onclick="openCourseModal()"><i
-                        class="fa fa-plus-circle me-2"></i>Tạo khóa mới</button>
-                <button class="btn btn-outline-primary w-100 py-2 rounded-3" onclick="exportConsoleReminder()"><i
-                        class="fa fa-bullhorn me-2"></i>Nhắc nhở</button>
-                <button class="btn btn-light border" onclick="loadAdminData()"><i class="fa fa-sync"></i></button>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn-nexus btn-nexus-primary" onclick="openCourseModal()"><i class="fa-solid fa-plus"></i> Tạo khóa mới</button>
+                <button class="btn-nexus btn-nexus-secondary" onclick="exportConsoleReminder()"><i class="fa-solid fa-file-excel text-success"></i> Xuất nhắc nhở (Excel)</button>
+                <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminData()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
             </div>
             <div id="list-c"></div>
         </div>
 
+        <!-- TAB: USERS -->
         <div id="tab-u" style="display:none">
-            <div class="d-flex gap-2 mb-3">
-                <button class="btn btn-primary flex-grow-1 py-2 rounded-3" onclick="openUserModal()"><i
-                        class="fa fa-user-plus me-2"></i>Thêm nhân viên</button>
-                <button class="btn btn-outline-primary flex-grow-1 py-2 rounded-3" onclick="openUserStats()"><i
-                        class="fa fa-chart-pie me-2"></i>Thống kê & Quản lý</button>
-                <button class="btn btn-light border" onclick="loadAdminData()"><i class="fa fa-sync"></i></button>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <button class="btn-nexus btn-nexus-primary" onclick="openUserModal()"><i class="fa-solid fa-user-plus"></i> Thêm nhân viên</button>
+                <button class="btn-nexus btn-nexus-secondary" onclick="openUserStats()"><i class="fa-solid fa-chart-pie"></i> Thống kê theo Part & Xóa</button>
+                <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminUsers()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
             </div>
-            <input type="text" id="searchU" class="form-control mb-3 shadow-sm border-0"
-                placeholder="Tìm tên hoặc ID..." onkeyup="filterUsers()">
+            <div class="mb-4">
+                <input type="text" id="searchU" class="form-control" placeholder="Tìm kiếm nhanh nhân viên theo Tên hoặc Mã số..." onkeyup="filterUsers()">
+            </div>
             <div id="list-u"></div>
-            <!-- FAB kept for mobile convenience -->
-            <button class="fab" onclick="openUserModal()"><i class="fa fa-user-plus fa-lg"></i></button>
+            <button class="fab-btn" onclick="openUserModal()" title="Thêm nhân viên"><i class="fa fa-user-plus fa-lg"></i></button>
         </div>
-        <div class="text-center small text-muted mt-4 pb-2">Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</div>
     </div>
 
-    <!-- USER DASHBOARD -->
+    <!-- 4. USER PORTAL VIEW -->
     <div id="view-user" class="page">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
             <div>
-                <h4 class="fw-bold mb-0">Khóa đào tạo của tôi</h4>
-                <div class="small text-muted" id="user-info-display">Welcome</div>
+                <h4 class="fw-bold mb-0">Nhiệm Vụ Đào Tạo</h4>
+                <div class="small text-secondary" id="user-info-display">Nhân viên IQC</div>
             </div>
-            <button class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="logout()">Thoát</button>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
+                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
+            </div>
         </div>
+
+        <div class="nexus-ai-brief mb-4">
+            <div class="d-flex align-items-center gap-3">
+                <div class="text-primary"><i class="fa-solid fa-circle-info fa-lg"></i></div>
+                <div class="small text-secondary">
+                    Vui lòng đọc kỹ nội dung bài học, tích chọn ô cam kết chất lượng và ký xác nhận điện tử trước thời hạn kết thúc của từng khóa đào tạo.
+                </div>
+            </div>
+        </div>
+
         <div id="user-course-list"></div>
-        <div class="text-center small text-muted mt-4 pb-2">Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</div>
     </div>
 
-    <!-- SIGNATURE MODAL -->
-    <div class="modal fade" id="modalSign" data-bs-backdrop="static">
+    <!-- ==========================================================================
+         MODALS & DIALOGS
+         ========================================================================== -->
+
+    <!-- SIGNATURE MODAL (MOBILE-OPTIMIZED WITH SMOOTH BÉZIER CURVES) -->
+    <div class="modal fade" id="modalSign" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-primary"><i class="fa fa-file-contract me-2"></i>Nội dung đào
-                        tạo</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary">
+                        <i class="fa-solid fa-file-signature me-2"></i>Nội dung & Ký xác nhận
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div id="sign-course-content" class="mb-4 p-3 bg-light rounded-3" style="min-height: 100px;"></div>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="small text-secondary fw-semibold mb-2">1. NỘI DUNG ĐÀO TẠO TIÊU CHUẨN</div>
+                    <div id="sign-course-content" class="p-3 mb-4 rounded-3 border" style="background-color: var(--bg-subtle); max-height: 240px; overflow-y: auto;">
+                        <div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang tải nội dung...</div>
+                    </div>
 
                     <div class="border-top pt-3">
-                        <div class="form-check mb-3 p-3 bg-light border rounded-3 d-flex align-items-center">
-                            <input class="form-check-input my-0" type="checkbox" id="commitCheck"
-                                style="transform: scale(1.3); cursor: pointer; flex-shrink: 0;">
-                            <label class="form-check-label fw-bold text-primary ps-3" for="commitCheck"
-                                style="cursor: pointer; line-height: 1.3; font-family: 'Dancing Script', cursive; font-size: 1.25rem;">
-                                Tôi xin cam kết đã đọc và hiểu nội dung bên trên và cam kết thực hiện
+                        <div class="small text-secondary fw-semibold mb-2">2. CAM KẾT & CHỮ KÝ SỐ</div>
+                        <div class="form-check p-3 mb-3 rounded-3 border" style="background-color: var(--bg-subtle);">
+                            <input class="form-check-input" type="checkbox" id="commitCheck" style="transform: scale(1.2); cursor: pointer;">
+                            <label class="form-check-label small fw-medium ms-2" for="commitCheck" style="cursor: pointer;">
+                                Tôi xin cam kết đã đọc, hiểu rõ toàn bộ nội dung đào tạo bên trên và tuân thủ nghiêm ngặt trong công việc.
                             </label>
                         </div>
-                        <label class="d-block fw-bold mb-2">KÝ XÁC NHẬN</label>
-                        <div class="border rounded-3 bg-white d-flex justify-content-center" style="cursor: crosshair;">
-                            <canvas id="sign-canvas" width="600" height="200"
-                                style="touch-action: none; max-width: 100%;"></canvas>
+
+                        <label class="form-label small text-secondary d-flex justify-content-between align-items-center">
+                            <span>Vẽ chữ ký của bạn vào khung bên dưới:</span>
+                            <span class="badge bg-secondary-subtle text-secondary font-monospace" style="font-size: 0.7rem;">Cảm ứng mượt • Retina</span>
+                        </label>
+
+                        <div class="signature-wrapper mb-2">
+                            <canvas id="sign-canvas"></canvas>
                         </div>
-                        <div class="d-flex justify-content-between mt-2">
-                            <small class="text-muted"><i class="fa fa-info-circle me-1"></i>Ký vào khung trên</small>
-                            <button class="btn btn-sm btn-light text-danger" onclick="clearCanvas()">Xóa ký lại</button>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="fa-solid fa-hand-pointer me-1"></i>Dùng ngón tay hoặc bút cảm ứng</small>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn-nexus btn-nexus-secondary py-1 px-3 text-danger border-danger-subtle" onclick="clearCanvas()">
+                                    <i class="fa-solid fa-eraser me-1"></i>Xóa ký lại
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button class="btn btn-light" data-bs-dismiss="modal">Đóng</button>
-                    <button class="btn btn-main" style="width: auto" onclick="submitSignature()">XÁC NHẬN HOÀN
-                        THÀNH</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn-nexus btn-nexus-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn-nexus btn-nexus-primary" onclick="submitSignature()">
+                        <i class="fa-solid fa-circle-check me-1"></i>Xác nhận hoàn thành
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalCourse" data-bs-backdrop="static">
+    <!-- COURSE CREATION / EDIT MODAL -->
+    <div class="modal fade" id="modalCourse" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content p-4 rounded-4 border-0 shadow-lg">
-                <h5 class="fw-bold mb-4 text-primary"><i class="fa fa-book me-2"></i>Thiết lập khóa đào tạo</h5>
-                <div class="row g-3">
-                    <div class="col-md-12">
-                        <label>Tên khóa học</label>
-                        <input type="text" id="mc-name" class="form-control"
-                            placeholder="Ví dụ: IQC 1P_Đào tạo tiêu chuẩn ngoại quan">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="courseModalTitle"><i class="fa-solid fa-book-bookmark me-2 text-primary"></i>Thiết lập khóa đào tạo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Tên khóa đào tạo</label>
+                        <input type="text" id="mc-name" class="form-control" placeholder="Ví dụ: IQC 1P_Đào tạo tiêu chuẩn ngoại quan màn hình">
                     </div>
-                    <!-- ID is now auto-generated -->
-                    <div class="col-6">
-                        <label>Ngày bắt đầu</label>
-                        <input type="date" id="mc-start" class="form-control">
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small text-secondary">Ngày bắt đầu</label>
+                            <input type="date" id="mc-start" class="form-control">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small text-secondary">Ngày kết thúc</label>
+                            <input type="date" id="mc-end" class="form-control">
+                        </div>
                     </div>
-                    <div class="col-6">
-                        <label>Ngày kết thúc</label>
-                        <input type="date" id="mc-end" class="form-control">
-                    </div>
-                    <div class="col-12">
-                        <label>Nội dung / Thông điệp</label>
-                        <div id="editor-container" style="height: 150px; background:white;"></div>
+                    <div class="mb-3">
+                        <label class="form-label small text-secondary">Nội dung / Yêu cầu tiêu chuẩn</label>
+                        <div id="editor-container" style="height: 160px; background-color: var(--bg-surface);"></div>
                     </div>
 
-                    <div class="col-12 border-top pt-3 mt-3">
-                        <label class="d-block mb-2 text-dark fw-bold">ĐỐI TƯỢNG THAM GIA</label>
+                    <div id="course-target-container" class="border-top pt-3 mt-3">
+                        <label class="form-label small fw-bold text-secondary">ĐỐI TƯỢNG PHÂN BỔ ĐÀO TẠO</label>
                         <select id="target-type" class="form-select mb-3" onchange="toggleTargetUI()">
-                            <option value="filter">Gán theo Đơn vị (Com/Group/Part)</option>
-                            <option value="list">Gán theo danh sách mã NV chỉ định</option>
+                            <option value="filter">Gán theo Đơn vị (Company / Group / Part)</option>
+                            <option value="list">Gán theo danh sách Mã nhân viên chỉ định</option>
                         </select>
 
                         <div id="ui-target-filter" class="row g-2">
                             <div class="col-4">
-                                <select id="tf-com" class="form-select">
-                                    <option value="">-- Company --</option>
-                                </select>
+                                <select id="tf-com" class="form-select"><option value="">-- Company --</option></select>
                             </div>
                             <div class="col-4">
-                                <select id="tf-group" class="form-select">
-                                    <option value="">-- Group --</option>
-                                </select>
+                                <select id="tf-group" class="form-select"><option value="">-- Group --</option></select>
                             </div>
                             <div class="col-4">
-                                <select id="tf-part" class="form-select">
-                                    <option value="">-- Part --</option>
-                                </select>
+                                <select id="tf-part" class="form-select"><option value="">-- Part --</option></select>
                             </div>
                         </div>
 
                         <div id="ui-target-list" style="display:none">
                             <div class="mb-2">
-                                <label class="small text-muted">Nhập mã hoặc tải file Excel (cột A)</label>
-                                <input type="file" id="target-excel-file" class="form-control form-control-sm mb-2"
-                                    accept=".xlsx, .xls" onchange="handleExcelUpload(this)">
+                                <label class="small text-muted">Nhập mã NV hoặc tải danh sách từ file Excel:</label>
+                                <input type="file" id="target-excel-file" class="form-control mb-2" accept=".xlsx, .xls" onchange="handleExcelUpload(this)">
                             </div>
-                            <textarea id="tf-list" class="form-control" rows="3"
-                                placeholder="Các mã nhân viên sẽ hiển thị tại đây..."></textarea>
+                            <textarea id="tf-list" class="form-control" rows="3" placeholder="Các mã NV phân cách bằng dấu phẩy..."></textarea>
                         </div>
                     </div>
                 </div>
-                <div class="mt-4 d-flex gap-2">
-                    <button class="btn btn-light flex-grow-1" data-bs-dismiss="modal">Hủy</button>
-                    <button class="btn-main flex-grow-1" onclick="saveNewCourse()">XÁC NHẬN TẠO</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="modalUser">
-        <div class="modal-dialog modal-dialog-centered p-3">
-            <div class="modal-content p-4 rounded-4 border-0 shadow-lg">
-                <h5 class="fw-bold mb-3" id="userModalTitle">Thông tin nhân viên</h5>
-
-                <ul class="nav nav-tabs mb-3" id="userModalTabs">
-                    <li class="nav-item">
-                        <button class="nav-link active" id="tab-manual-btn" data-bs-toggle="tab"
-                            data-bs-target="#tab-manual" type="button">Thủ công</button>
-                    </li>
-                    <li class="nav-item">
-                        <button class="nav-link" id="tab-import-btn" data-bs-toggle="tab" data-bs-target="#tab-import"
-                            type="button">Từ Excel</button>
-                    </li>
-                </ul>
-
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="tab-manual">
-                        <input type="text" id="mu-name" class="form-control mb-2" placeholder="Họ và tên">
-                        <input type="text" id="mu-id" class="form-control mb-2" placeholder="Mã nhân viên">
-                        <input type="text" id="mu-com" class="form-control mb-2" placeholder="Công ty">
-                        <input type="text" id="mu-group" class="form-control mb-2" placeholder="Group">
-                        <input type="text" id="mu-part" class="form-control mb-2" placeholder="Part">
-                        <select id="mu-status" class="form-select mb-3">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-
-                        <div class="border-top pt-3 mb-3">
-                            <h6 class="fw-bold d-flex justify-content-between">
-                                Gán khóa học (Tùy chọn)
-                                <div class="form-check form-check-inline m-0">
-                                    <input class="form-check-input" type="checkbox" id="check-all-manual"
-                                        onchange="toggleAllCourses('manual-courses', this.checked)">
-                                    <label class="form-check-label small fw-normal" for="check-all-manual">Chọn tất
-                                        cả</label>
-                                </div>
-                            </h6>
-                            <div id="manual-courses"
-                                style="max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
-                            </div>
-                        </div>
-
-                        <button class="btn-main" onclick="saveUser()">Lưu lại</button>
-                    </div>
-
-                    <div class="tab-pane fade" id="tab-import">
-                        <div class="mb-3">
-                            <label class="form-label small text-muted">File Excel (.xlsx) gồm các cột: Name, ID, Com,
-                                Group, Part</label>
-                            <input type="file" id="user-import-file" class="form-control" accept=".xlsx, .xls">
-                        </div>
-                        <div id="import-preview" class="small text-muted mb-3"
-                            style="max-height: 150px; overflow-y: auto;"></div>
-
-                        <div class="mb-3">
-                            <h6 class="fw-bold d-flex justify-content-between">
-                                Gán khóa học (Tùy chọn)
-                                <div class="form-check form-check-inline m-0">
-                                    <input class="form-check-input" type="checkbox" id="check-all-import"
-                                        onchange="toggleAllCourses('import-courses', this.checked)">
-                                    <label class="form-check-label small fw-normal" for="check-all-import">Chọn tất
-                                        cả</label>
-                                </div>
-                            </h6>
-                            <div id="import-courses"
-                                style="max-height: 150px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px;">
-                            </div>
-                        </div>
-
-                        <button class="btn-main" onclick="importUsersFile()">Upload & Import</button>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-nexus btn-nexus-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn-nexus btn-nexus-primary" onclick="saveNewCourse()">
+                        <i class="fa-solid fa-floppy-disk me-1"></i>Lưu khóa học
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="modalParticipants">
+    <!-- USER MODAL (MANUAL & EXCEL IMPORT) -->
+    <div class="modal fade" id="modalUser" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="userModalTitle">Thông tin nhân viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <ul class="nav nav-pills nav-fill mb-3" id="userModalTabs">
+                        <li class="nav-item">
+                            <button class="nav-link active py-2" id="tab-manual-btn" data-bs-toggle="pill" data-bs-target="#tab-manual" type="button">Thủ công</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link py-2" id="tab-import-btn" data-bs-toggle="pill" data-bs-target="#tab-import" type="button">Import Excel</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Manual Tab -->
+                        <div class="tab-pane fade show active" id="tab-manual">
+                            <div class="mb-2"><input type="text" id="mu-name" class="form-control" placeholder="Họ và tên"></div>
+                            <div class="mb-2"><input type="text" id="mu-id" class="form-control" placeholder="Mã nhân viên"></div>
+                            <div class="row g-2 mb-2">
+                                <div class="col-4"><input type="text" id="mu-com" class="form-control" placeholder="Company"></div>
+                                <div class="col-4"><input type="text" id="mu-group" class="form-control" placeholder="Group"></div>
+                                <div class="col-4"><input type="text" id="mu-part" class="form-control" placeholder="Part"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-secondary">Trạng thái</label>
+                                <select id="mu-status" class="form-select">
+                                    <option value="Active">Active (Hoạt động)</option>
+                                    <option value="Inactive">Inactive (Khóa)</option>
+                                </select>
+                            </div>
+
+                            <div class="border-top pt-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-bold text-secondary">Gán khóa học ban đầu</span>
+                                    <div class="form-check m-0">
+                                        <input class="form-check-input" type="checkbox" id="check-all-manual" onchange="toggleAllCourses('manual-courses', this.checked)">
+                                        <label class="form-check-label small" for="check-all-manual">Chọn tất cả</label>
+                                    </div>
+                                </div>
+                                <div id="manual-courses" class="p-2 border rounded-3" style="max-height: 140px; overflow-y: auto;"></div>
+                            </div>
+
+                            <button class="btn-nexus btn-nexus-primary w-100" onclick="saveUserSubmit()">
+                                <i class="fa-solid fa-floppy-disk me-1"></i>Lưu nhân viên
+                            </button>
+                        </div>
+
+                        <!-- Import Excel Tab -->
+                        <div class="tab-pane fade" id="tab-import">
+                            <div class="p-3 mb-3 rounded-3 border" style="background-color: var(--bg-subtle);">
+                                <label class="form-label small text-secondary mb-1">Chọn file Excel (.xlsx, .xls):</label>
+                                <p class="text-muted" style="font-size: 0.8rem;">Yêu cầu có các cột: <b>Name, ID, Company, Group, Part</b></p>
+                                <input type="file" id="user-import-file" class="form-control" accept=".xlsx, .xls">
+                            </div>
+                            <div id="import-preview" class="small text-muted mb-3" style="max-height: 120px; overflow-y: auto;"></div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-bold text-secondary">Gán khóa học cho danh sách import:</span>
+                                    <div class="form-check m-0">
+                                        <input class="form-check-input" type="checkbox" id="check-all-import" onchange="toggleAllCourses('import-courses', this.checked)">
+                                        <label class="form-check-label small" for="check-all-import">Chọn tất cả</label>
+                                    </div>
+                                </div>
+                                <div id="import-courses" class="p-2 border rounded-3" style="max-height: 140px; overflow-y: auto;"></div>
+                            </div>
+
+                            <button class="btn-nexus btn-nexus-primary w-100" onclick="importUsersFile()">
+                                <i class="fa-solid fa-file-import me-1"></i>Tiến hành Import
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PARTICIPANTS MODAL -->
+    <div class="modal fade" id="modalParticipants" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content p-0 rounded-4 border-0 shadow-lg overflow-hidden">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold"><i class="fa fa-users me-2"></i>Danh sách học viên</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-users me-2 text-primary"></i>Danh sách học viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <!-- Search Box -->
-                <div class="p-2 bg-light border-bottom">
-                    <input type="text" id="searchPart" class="form-control form-control-sm"
-                        placeholder="Tìm tên hoặc mã nhân viên..." onkeyup="filterParticipants()">
+                <div class="p-3 border-bottom">
+                    <input type="text" id="searchPart" class="form-control" placeholder="Tìm nhanh học viên theo Tên hoặc Mã số..." onkeyup="filterParticipants()">
                 </div>
                 <div class="modal-body p-0">
-                    <div class="table-responsive" style="max-height: 500px">
-                        <table class="table table-hover mb-0 align-middle">
+                    <div class="table-responsive" style="max-height: 480px;">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light sticky-top">
                                 <tr>
-                                    <th class="ps-4">Nhân viên</th>
-                                    <th>Đơn vị</th>
+                                    <th class="ps-3">Học viên</th>
+                                    <th>Bộ phận</th>
                                     <th>Trạng thái</th>
-                                    <th class="text-end pe-4">Hành động</th>
+                                    <th class="text-end pe-3">Hành động</th>
                                 </tr>
                             </thead>
                             <tbody id="list-participants"></tbody>
@@ -583,118 +833,258 @@
             </div>
         </div>
     </div>
-    </div>
 
-    <!-- NEW REGISTRATION MODAL -->
-    <div class="modal fade" id="modalNewReg" data-bs-backdrop="static">
+    <!-- USER STATS & BATCH PURGE MODAL -->
+    <div class="modal fade" id="modalUserStats" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content p-4 rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 p-0 mb-3">
-                    <h5 class="fw-bold text-primary"><i class="fa fa-user-plus me-2"></i>Nhân viên mới đăng ký</h5>
-                </div>
-                <div class="alert alert-info small"><i class="fa fa-info-circle me-1"></i>Các nhân viên dưới đây vừa
-                    đăng ký. Hãy chọn khóa học để gán cho họ (nếu cần) và kích hoạt tài khoản.</div>
-
-                <h6 class="fw-bold border-bottom pb-2">1. Danh sách nhân viên</h6>
-                <div id="new-reg-list" class="mb-3 d-flex flex-wrap gap-2" style="max-height: 100px; overflow-y: auto;">
-                </div>
-
-                <h6 class="fw-bold border-bottom pb-2 mt-3 d-flex justify-content-between">
-                    <span>2. Chọn khóa học cần gán</span>
-                    <div class="form-check form-check-inline m-0">
-                        <input class="form-check-input" type="checkbox" id="check-all-new-reg"
-                            onchange="toggleAllCourses('new-reg-courses', this.checked)">
-                        <label class="form-check-label small fw-normal" for="check-all-new-reg">Chọn tất cả</label>
-                    </div>
-                </h6>
-                <div id="new-reg-courses" class="mb-3" style="max-height: 200px; overflow-y: auto;"></div>
-
-                <div class="d-flex gap-2 justify-content-end mt-3">
-                    <button class="btn btn-light" onclick="submitNewRegProcess(true)">Bỏ qua (Chỉ kích hoạt)</button>
-                    <button class="btn btn-main" style="width:auto" onclick="submitNewRegProcess(false)">XÁC NHẬN GÁN &
-                        KÍCH HOẠT</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- USER STATS MODAL -->
-    <div class="modal fade" id="modalUserStats" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content p-4 rounded-4 border-0 shadow-lg">
-                <div class="modal-header border-0 p-0 mb-3">
-                    <h5 class="fw-bold text-primary"><i class="fa fa-chart-pie me-2"></i>Thống kê & Quản lý nhân viên
-                    </h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-chart-pie me-2 text-primary"></i>Thống kê & Quản trị Nhân sự</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-
-                <div class="row g-3 mb-4">
-                    <div class="col-12">
-                        <div class="p-3 bg-light rounded-3 d-flex justify-content-between align-items-center border">
-                            <div>
-                                <h6 class="text-muted mb-1">Tổng số nhân viên (Hợp lệ)</h6>
-                                <h3 class="fw-bold mb-0 text-primary" id="stats-total">...</h3>
-                            </div>
-                            <i class="fa fa-users fa-2x text-primary opacity-25"></i>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="kpi-tile mb-4 d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small text-muted mb-1">Tổng số nhân viên hoạt động</div>
+                            <div class="kpi-value text-primary" id="stats-total">0</div>
+                        </div>
+                        <div class="p-3 rounded-4 bg-primary bg-opacity-10 text-primary">
+                            <i class="fa-solid fa-users fa-2x"></i>
                         </div>
                     </div>
-                </div>
 
-                <h6 class="fw-bold border-bottom pb-2">Danh sách theo Bộ phận (Part)</h6>
-                <div class="table-responsive mb-3" style="max-height: 300px;">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light sticky-top">
-                            <tr>
-                                <th>Bộ phận</th>
-                                <th class="text-center">Số lượng</th>
-                                <th class="text-end">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody id="list-stats-part"></tbody>
-                    </table>
-                </div>
+                    <div class="small text-secondary fw-semibold mb-2">DANH SÁCH THEO BỘ PHẬN (PART)</div>
+                    <div class="table-responsive mb-4" style="max-height: 280px;">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light sticky-top">
+                                <tr>
+                                    <th>Bộ phận (Part)</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end pe-3">Xóa theo Part</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-stats-part"></tbody>
+                        </table>
+                    </div>
 
-                <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                    <small class="text-muted"><i class="fa fa-info-circle me-1"></i>Hành động xóa không thể hoàn
-                        tác.</small>
-                    <button class="btn btn-outline-danger" onclick="deleteAllUsers()">
-                        <i class="fa fa-trash-alt me-2"></i>XÓA TOÀN BỘ USER
-                    </button>
+                    <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                        <small class="text-muted"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>Hành động xóa sẽ dọn dẹp các lượt phân công chưa ký.</small>
+                        <button class="btn-nexus btn-nexus-danger" onclick="deleteAllUsersConfirm()">
+                            <i class="fa-solid fa-trash-can me-1"></i>Xóa toàn bộ nhân viên
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- NEW REGISTRATIONS MODAL -->
+    <div class="modal fade" id="modalNewReg" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-user-clock me-2"></i>Duyệt nhân viên mới đăng ký</h5>
+                </div>
+                <div class="modal-body p-3 p-md-4">
+                    <div class="nexus-ai-brief mb-3 py-2 px-3">
+                        <div class="small text-secondary">
+                            Các nhân sự dưới đây vừa tạo tài khoản. Bạn có thể chọn khóa học phân bổ ngay và kích hoạt tài khoản cho họ.
+                        </div>
+                    </div>
+
+                    <div class="small text-secondary fw-semibold mb-2">1. Nhân viên chờ duyệt:</div>
+                    <div id="new-reg-list" class="d-flex flex-wrap gap-2 p-2 border rounded-3 mb-3" style="max-height: 100px; overflow-y: auto;"></div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small text-secondary fw-semibold">2. Gán khóa học:</span>
+                        <div class="form-check m-0">
+                            <input class="form-check-input" type="checkbox" id="check-all-new-reg" onchange="toggleAllCourses('new-reg-courses', this.checked)">
+                            <label class="form-check-label small" for="check-all-new-reg">Chọn tất cả</label>
+                        </div>
+                    </div>
+                    <div id="new-reg-courses" class="p-2 border rounded-3 mb-3" style="max-height: 160px; overflow-y: auto;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-nexus btn-nexus-secondary" onclick="submitNewRegProcess(true)">Chỉ kích hoạt (Không gán)</button>
+                    <button class="btn-nexus btn-nexus-primary" onclick="submitNewRegProcess(false)">Xác nhận gán & Kích hoạt</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        let allUsers = [], mUser, mCourse, mNewReg, session = {}, quill;
+        // ==========================================================================
+        // STATE & INITIALIZATION
+        // ==========================================================================
+        let session = {};
+        let allUsers = [];
         let availableCoursesGlobal = [];
         let newRegUserIDs = [];
+        let validationID = null;
+        let editingCourseID = null;
+        let quill = null;
+
+        // Modals
+        let mUser, mCourse, mNewReg, mStats, mSign, mParticipants;
+
+        // Signature Canvas State
+        let signCanvas, signCtx;
+        let isDrawing = false;
+        let hasSigned = false;
+        let pendingSignatureCourseID = null;
+        let points = []; // Bézier curve points
 
         document.addEventListener('DOMContentLoaded', () => {
             mUser = new bootstrap.Modal('#modalUser');
             mCourse = new bootstrap.Modal('#modalCourse');
             mNewReg = new bootstrap.Modal('#modalNewReg');
             mStats = new bootstrap.Modal('#modalUserStats');
+            mSign = new bootstrap.Modal('#modalSign');
+            mParticipants = new bootstrap.Modal('#modalParticipants');
 
             // Init Quill
             quill = new Quill('#editor-container', {
                 theme: 'snow',
-                modules: { toolbar: [['bold', 'italic', 'underline'], ['link', 'image'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]] }
+                modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered' }, { 'list': 'bullet' }]] }
             });
 
+            // Init Canvas on Modal Show to get exact dimensions
+            const signModalEl = document.getElementById('modalSign');
+            signModalEl.addEventListener('shown.bs.modal', () => {
+                initSignatureCanvas();
+            });
+
+            // Remember user login
             const savedUser = localStorage.getItem('training_user');
             if (savedUser) {
                 document.getElementById('u').value = savedUser;
                 document.getElementById('remMe').checked = true;
             }
 
-            // Enter to Login
-            const triggerLogin = (e) => { if (e.key === 'Enter') login(); };
-            document.getElementById('u').addEventListener('keyup', triggerLogin);
-            document.getElementById('p').addEventListener('keyup', triggerLogin);
+            // Enter key trigger login
+            const enterTrigger = (e) => { if (e.key === 'Enter') login(); };
+            document.getElementById('u').addEventListener('keyup', enterTrigger);
+            document.getElementById('p').addEventListener('keyup', enterTrigger);
+
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('nexus_theme') || 'light';
+            setTheme(savedTheme);
         });
+
+        // ==========================================================================
+        // TOAST NOTIFICATION & UI HELPERS
+        // ==========================================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('nexus-toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'nexus-toast';
+
+            let icon = 'fa-info-circle text-primary';
+            if (type === 'success') icon = 'fa-check-circle text-success';
+            else if (type === 'warning') icon = 'fa-triangle-exclamation text-warning';
+            else if (type === 'danger' || type === 'error') icon = 'fa-circle-xmark text-danger';
+
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} fa-lg mt-1"></i>
+                <div class="flex-grow-1">${message}</div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function showL(state) {
+            document.getElementById('loader').style.display = state ? 'flex' : 'none';
+        }
+
+        function showP(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if (target) target.classList.add('active');
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            setTheme(next);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('nexus_theme', theme);
+            const icon = document.getElementById('theme-btn-icon');
+            if (icon) {
+                icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        }
+
+        function toggPass() {
+            const input = document.getElementById('p');
+            const icon = document.getElementById('eye-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa fa-eye';
+            }
+        }
+
+        function notifyDefaultPass() {
+            showToast("Mật khẩu mặc định dành cho nhân viên: <b>@iqc6368</b>", "info");
+        }
+
+        // ==========================================================================
+        // AUTHENTICATION
+        // ==========================================================================
+        function login() {
+            const user = document.getElementById('u').value.trim();
+            const pass = document.getElementById('p').value;
+            const remember = document.getElementById('remMe').checked;
+
+            if (!user || !pass) {
+                showToast("Vui lòng nhập Mã nhân viên và Mật khẩu!", "warning");
+                return;
+            }
+
+            showL(true);
+            google.script.run.withSuccessHandler(res => {
+                showL(false);
+                if (res && !res.error) {
+                    if (remember) localStorage.setItem('training_user', user);
+                    else localStorage.removeItem('training_user');
+
+                    session = res;
+                    if (res.role === 'admin') {
+                        showP('view-admin');
+                        loadAdminData();
+                    } else {
+                        showP('view-user');
+                        loadUserCourses();
+                    }
+                    showToast(`Xin chào ${res.user}!`, "success");
+                } else {
+                    showToast(res?.error || "Đăng nhập thất bại!", "danger");
+                }
+            }).withFailureHandler(err => {
+                showL(false);
+                showToast("Lỗi kết nối máy chủ: " + err, "danger");
+            }).checkLogin(user, pass);
+        }
+
+        function logout() {
+            session = {};
+            document.getElementById('p').value = '';
+            showP('view-login');
+            showToast("Đã đăng xuất thành công.", "info");
+        }
 
         function doRegister() {
             const id = document.getElementById('reg-id').value.trim();
@@ -703,450 +1093,203 @@
             const group = document.getElementById('reg-group').value.trim();
             const part = document.getElementById('reg-part').value.trim();
 
-            if (!id || !name) { alert("Vui lòng nhập Mã NV và Họ tên!"); return; }
+            if (!id || !name) {
+                showToast("Vui lòng nhập Mã nhân viên và Họ tên!", "warning");
+                return;
+            }
 
             showL(true);
             google.script.run.withSuccessHandler(res => {
                 showL(false);
                 if (res.error) {
-                    alert(res.error);
+                    showToast(res.error, "danger");
                 } else {
-                    alert("Đăng ký thành công! Bạn có thể đăng nhập ngay với mật khẩu mặc định.");
+                    showToast("Đăng ký thành công! Hãy đăng nhập với mật khẩu mặc định: @iqc6368", "success");
                     showP('view-login');
                     document.getElementById('u').value = id;
-                    document.getElementById('p').value = "@iqc6368"; // Auto-fill default pass
+                    document.getElementById('p').value = "@iqc6368";
                 }
-            }).withFailureHandler(e => { showL(false); alert("Lỗi: " + e); }).registerUser({
-                id: id, name: name, com: com, group: group, part: part
-            });
-        }
-
-        // Expose functions to global scope
-        window.delUser = delUser;
-        // window.editUser = editUser; // Removed as it was undefined before
-        window.saveUser = saveUser;
-        window.loadAdminData = loadAdminData;
-        window.filterUsers = filterUsers;
-        window.doRegister = doRegister; // Expose doRegister to global scope
-        window.openUserStats = openUserStats;
-
-        function showL(s) { document.getElementById('loader').style.display = s ? 'flex' : 'none'; }
-        function showP(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function filterUsers() {
-            const q = document.getElementById('searchU').value.toLowerCase();
-            const filtered = allUsers.filter(u =>
-                u[0].toLowerCase().includes(q) || // Name
-                u[1].toString().toLowerCase().includes(q) // ID
-            );
-            renderUsers(filtered);
-        }
-
-        function login() {
-            const user = document.getElementById('u').value, pass = document.getElementById('p').value;
-            const remember = document.getElementById('remMe').checked;
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
+            }).withFailureHandler(e => {
                 showL(false);
-                if (res && !res.error) {
-                    if (remember) localStorage.setItem('training_user', user);
-                    else localStorage.removeItem('training_user');
-                    session = res;
-                    if (res.role === 'admin') { showP('view-admin'); loadAdminData(); }
-                    else { showP('view-user'); loadUserCourses(); }
-                } else alert(res?.error || "Sai thông tin!");
-            }).checkLogin(user, pass);
+                showToast("Lỗi đăng ký: " + e, "danger");
+            }).registerUser({ id, name, com, group, part });
         }
 
-        // --- LAZY LOADING & PERFORMANCE ---
-        let loadedTabs = { c: false, u: false };
-
+        // ==========================================================================
+        // ADMIN DASHBOARD & COURSE MANAGEMENT
+        // ==========================================================================
         function switchTab(t) {
             document.getElementById('tab-u').style.display = t === 'u' ? 'block' : 'none';
             document.getElementById('tab-c').style.display = t === 'c' ? 'block' : 'none';
             document.getElementById('btn-u').classList.toggle('active', t === 'u');
             document.getElementById('btn-c').classList.toggle('active', t === 'c');
 
-            if (t === 'c' && !loadedTabs.c) loadAdminCourses();
-
-            // Optimized: Only load users if we haven't already (check array length)
-            if (t === 'u') {
-                if (!loadedTabs.u && (!allUsers || allUsers.length === 0)) {
-                    loadAdminUsers();
-                } else {
-                    // Already have data, just render if empty DOM (Safety)
-                    if (document.getElementById('list-u').innerHTML === '') renderUsers(allUsers);
-                }
+            if (t === 'u' && (!allUsers || allUsers.length === 0)) {
+                loadAdminUsers();
             }
-        }
-
-        function toggleTargetUI() {
-            const type = document.getElementById('target-type').value;
-            const filterUI = document.getElementById('ui-target-filter');
-            const listUI = document.getElementById('ui-target-list');
-            if (filterUI) filterUI.style.display = type === 'filter' ? 'flex' : 'none';
-            if (listUI) listUI.style.display = type === 'list' ? 'block' : 'none';
         }
 
         function loadAdminData() {
             showL(true);
             google.script.run.withSuccessHandler(data => {
                 showL(false);
-                loadedTabs.c = true;
-                loadedTabs.u = true; // Mark User tab as loaded as we now get full users list
+                if (data.error) {
+                    showToast(data.error, "danger");
+                    return;
+                }
 
-                // Store Available Courses for UI
                 availableCoursesGlobal = data.availableCourses || [];
-
-                // Store Users (Optimize: load once)
                 allUsers = data.allUsers || [];
 
-                // Render Course Selection in Manual Add
+                // Render Course Selector
                 renderCourseSelection('manual-courses', availableCoursesGlobal);
-                // Render Course Selection in Import Tab
                 renderCourseSelection('import-courses', availableCoursesGlobal);
 
-                // Check New Registers
+                // Prompt New Regs
                 if (data.newRegisters && data.newRegisters.length > 0) {
-                    newRegUserIDs = data.newRegisters.map(u => u[1]); // Store IDs
+                    newRegUserIDs = data.newRegisters.map(u => u[1]);
                     renderNewRegModal(data.newRegisters, availableCoursesGlobal);
                     mNewReg.show();
                 }
 
-                // Render Course List
-                const stats = data.courses;
-                if (stats.error) {
-                    document.getElementById('list-c').innerHTML = `<div class="alert alert-warning">${stats.error}</div>`;
-                } else if (!stats || stats.length === 0) {
-                    document.getElementById('list-c').innerHTML = '<p class="text-center p-4">Chưa có khóa học nào.</p>';
-                } else {
-                    const statusColors = { 'Plan': 'bg-secondary', 'Opening': 'bg-primary', 'Pending': 'bg-warning text-dark', 'Complete': 'bg-success' };
-                    let h = '';
-                    stats.forEach(s => {
-                        const badgeClass = statusColors[s.status] || 'bg-light text-dark border';
-                        const safeId = s.id;
-                        const isChecked = s.signEnabled ? 'checked' : '';
+                // AI Executive Summary
+                renderAIBrief(data.courses, data.allUsers);
 
-                        h += `<div class="glass-card p-3 mb-3 course-card-admin">
-                          <div class="d-flex justify-content-between">
-                            <h6 class="fw-bold mb-1 text-primary">${s.name}</h6>
-                            <div class="d-flex gap-2">
-                                <span class="badge ${badgeClass} border small">${s.status.toUpperCase()}</span>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-light py-0" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
-                                    <ul class="dropdown-menu shadow border-0">
-                                        <li><a class="dropdown-item" href="#" onclick="openParticipantModal('${safeId}'); return false;"><i class="fa fa-users me-2"></i>Danh sách học viên</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="editCourse('${safeId}'); return false;"><i class="fa fa-edit me-2"></i>Sửa thông tin</a></li>
-                                        <li><a class="dropdown-item text-danger" href="#" onclick="delCourse('${safeId}'); return false;"><i class="fa fa-trash me-2"></i>Xóa khóa học</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                          </div>
-                          <div class="small text-muted mb-2">Hạn: ${s.start} - ${s.end}</div>
-                          
-                          <div class="d-flex align-items-center mb-2 bg-light rounded p-2 border">
-                            <span class="small fw-bold me-2 text-secondary">Cho phép ký:</span>
-                            <div class="form-check form-switch mb-0">
-                                <input class="form-check-input" type="checkbox" onchange="toggleCourseSign('${safeId}', this)" ${isChecked}>
-                            </div>
-                          </div>
-
-                          <div class="p-bar-container"><div class="p-bar-fill" style="width: ${s.percent}%"></div></div>
-                          <div class="d-flex justify-content-between small fw-bold">
-                            <span>Hoàn thành: ${s.percent}%</span>
-                            <span class="text-danger">Chờ ký: ${s.pendingCount}</span>
-                          </div>
-                          <div class="mt-3 d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="exportRemind('${s.id}')"><i class="fa fa-bullhorn me-1"></i>Nhắc nhở</button>
-                            <button class="btn btn-sm btn-dark flex-grow-1" onclick="exportPDF('${s.id}')"><i class="fa fa-file-pdf me-1"></i>Báo cáo</button>
-                          </div>
-                        </div>`;
-                    });
-                    document.getElementById('list-c').innerHTML = h;
-                }
+                // Render Courses List
+                renderCourseCards(data.courses);
 
                 // Render Filters
                 renderFilters(data.filters);
 
-            }).withFailureHandler(e => { showL(false); }).getAdminDashboardData();
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi tải dữ liệu quản trị: " + e, "danger");
+            }).getAdminDashboardData(session.token);
         }
 
-        // --- NEW REGISTRATION LOGIC ---
-        function renderNewRegModal(users, courses) {
-            // Render Users
-            let uHtml = '';
-            users.forEach(u => {
-                uHtml += `<span class="badge bg-info text-dark border">${u[0]} (${u[1]})</span>`;
-            });
-            document.getElementById('new-reg-list').innerHTML = uHtml || '<span class="text-muted">Không có nhân viên nào.</span>';
-
-            // Render Courses
-            renderCourseSelection('new-reg-courses', courses);
-        }
-
-        function renderCourseSelection(containerId, courses) {
-            let html = '';
+        function renderAIBrief(courses, users) {
             if (!courses || courses.length === 0) {
-                html = '<div class="small text-muted text-center">Không có khóa học khả dụng (Plan, Opening, Pending)</div>';
+                document.getElementById('brief-text').innerHTML = "Chưa có dữ liệu khóa học nào để phân tích.";
+                return;
+            }
+            const total = courses.length;
+            const completed = courses.filter(c => c.status === 'Complete').length;
+            const opening = courses.filter(c => c.status === 'Opening').length;
+            const pending = courses.filter(c => c.status === 'Pending').length;
+            const totalPendingSigns = courses.reduce((acc, c) => acc + (c.pendingCount || 0), 0);
+
+            let riskHtml = `Tổng hợp: <b>${total}</b> khóa đào tạo (<b>${opening}</b> đang mở, <b>${completed}</b> hoàn tất). `;
+            if (pending > 0 || totalPendingSigns > 0) {
+                riskHtml += `<span class="text-danger fw-semibold"><i class="fa-solid fa-triangle-exclamation me-1"></i>Cảnh báo: Hiện có ${totalPendingSigns} lượt chữ ký chưa hoàn thành</span>, trong đó có ${pending} khóa đã quá hạn. Đề xuất: Thực hiện <b>Xuất nhắc nhở (Excel)</b> để đôn đốc các Part.`;
             } else {
-                courses.forEach(c => {
-                    html += `
-                    <div class="form-check">
-                        <input class="form-check-input course-check-${containerId}" type="checkbox" value="${c.id}" id="${containerId}-${c.id}">
-                        <label class="form-check-label small" for="${containerId}-${c.id}">
-                            [${c.status.toUpperCase()}] ${c.name}
-                        </label>
-                    </div>`;
-                });
-            }
-            document.getElementById(containerId).innerHTML = html;
-        }
-
-        function toggleAllCourses(containerId, checked) {
-            const checks = document.querySelectorAll(`.course-check-${containerId}`);
-            checks.forEach(c => c.checked = checked);
-        }
-
-        function submitNewRegProcess(skipAssignments) {
-            let selectedCourses = [];
-            if (!skipAssignments) {
-                const checks = document.querySelectorAll('.course-check-new-reg-courses:checked');
-                checks.forEach(c => selectedCourses.push(c.value));
+                riskHtml += `<span class="text-success fw-semibold"><i class="fa-solid fa-circle-check me-1"></i>Trạng thái hoàn hảo: Tất cả các lượt phân bổ đã hoàn thành 100%.</span>`;
             }
 
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
-                showL(false);
-                mNewReg.hide();
-                if (res.error) alert(res.error);
-                else {
-                    alert("Đã xử lý thành công!");
-                    loadAdminData(); // Reload to refresh user list/remove modal trigger
-                    if (loadedTabs.u) loadAdminUsers(); // Refresh user tab if open
-                }
-            }).processNewRegisters(newRegUserIDs, selectedCourses);
+            document.getElementById('brief-text').innerHTML = riskHtml;
+            document.getElementById('brief-timestamp').innerText = new Date().toLocaleTimeString('vi-VN');
         }
 
-        function saveUser(isEdit = false) { // Added isEdit parameter
-            const u = {
-                name: document.getElementById('mu-name').value,
-                id: document.getElementById('mu-id').value,
-                com: document.getElementById('mu-com').value,
-                group: document.getElementById('mu-group').value,
-                part: document.getElementById('mu-part').value,
-                status: document.getElementById('mu-status').value
+        function renderCourseCards(stats) {
+            const container = document.getElementById('list-c');
+            if (!stats || stats.length === 0) {
+                container.innerHTML = '<div class="text-center p-5 text-muted">Chưa có khóa học nào được tạo.</div>';
+                return;
+            }
+
+            const statusColors = {
+                'Plan': 'bg-secondary-subtle text-secondary border-secondary-subtle',
+                'Opening': 'bg-primary-subtle text-primary border-primary-subtle',
+                'Pending': 'bg-warning-subtle text-warning border-warning-subtle',
+                'Complete': 'bg-success-subtle text-success border-success-subtle'
             };
 
-            if (!u.name || !u.id) { alert("Thiếu tên hoặc mã NV"); return; }
+            let h = '';
+            stats.forEach(s => {
+                const badge = statusColors[s.status] || 'bg-light text-dark';
+                const isChecked = s.signEnabled ? 'checked' : '';
 
-            let courseIds = [];
-            if (!isEdit) { // Only collect courses for new users
-                const checks = document.querySelectorAll('.course-check-manual-courses:checked');
-                courseIds = Array.from(checks).map(c => c.value);
-            }
+                h += `
+                <div class="nexus-card mb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="fw-bold mb-1">${s.name}</h6>
+                            <div class="small text-muted"><i class="fa-regular fa-calendar me-1"></i>Thời hạn: ${s.start} đến ${s.end}</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge border ${badge}" style="font-size: 0.75rem;">${s.status.toUpperCase()}</span>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-nexus-secondary py-1 px-2" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px;">
+                                    <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="openParticipantModal('${s.id}')"><i class="fa-solid fa-users me-2 text-primary"></i>Danh sách học viên</a></li>
+                                    <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="editCourse('${s.id}')"><i class="fa-solid fa-pen-to-square me-2 text-secondary"></i>Sửa thông tin</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item py-2 text-danger" href="javascript:void(0)" onclick="delCourse('${s.id}')"><i class="fa-solid fa-trash me-2"></i>Xóa khóa học</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
-                showL(false);
-                mUser.hide();
-                alert(res);
-                loadAdminUsers();
-            }).saveUser(u, isEdit, courseIds); // Pass isEdit and courseIds
-        }
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border mb-3" style="background-color: var(--bg-subtle);">
+                        <span class="small fw-medium text-secondary">Cho phép nhân viên ký:</span>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" onchange="toggleCourseSign('${s.id}', this)" ${isChecked}>
+                        </div>
+                    </div>
 
-        // ... Existing loadAdminUsers ... 
-        function loadAdminUsers() {
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
-                showL(false);
-                loadedTabs.u = true;
-                if (res.error) alert(res.error);
-                else {
-                    allUsers = res || [];
-                    renderUsers(allUsers);
-                }
-            }).getAdminUsers();
-        }
+                    <div class="progress-nexus">
+                        <div class="progress-nexus-bar" style="width: ${s.percent}%;"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small fw-medium mb-3">
+                        <span>Tiến độ: <b>${s.percent}%</b></span>
+                        <span class="${s.pendingCount > 0 ? 'text-danger' : 'text-success'}">Chưa ký: <b>${s.pendingCount}</b></span>
+                    </div>
 
-
-        function renderFilters(filters) {
-            const fill = (id, list, label) => {
-                let h = `<option value="">-- Tất cả ${label} --</option>`;
-                list.forEach(i => h += `<option value="${i}">${i}</option>`);
-                document.getElementById(id).innerHTML = h;
-            };
-            if (filters) {
-                fill('tf-com', filters.com, 'Company');
-                fill('tf-group', filters.group, 'Group');
-                fill('tf-part', filters.part, 'Part');
-            }
+                    <div class="d-flex gap-2">
+                        <button class="btn-nexus btn-nexus-secondary flex-grow-1 py-1" onclick="exportRemindSingle('${s.id}')">
+                            <i class="fa-solid fa-bullhorn text-warning"></i> Nhắc nhở
+                        </button>
+                        <button class="btn-nexus btn-nexus-secondary flex-grow-1 py-1" onclick="exportPDF('${s.id}')">
+                            <i class="fa-solid fa-file-pdf text-danger"></i> Xuất PDF
+                        </button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = h;
         }
 
         function toggleCourseSign(id, el) {
             const val = el.checked;
             google.script.run.withFailureHandler(e => {
-                alert("Lỗi lưu trạng thái: " + e);
+                showToast("Lỗi cập nhật trạng thái ký: " + e, "danger");
                 el.checked = !val;
-            }).updateCourseSignStatus(id, val);
+            }).updateCourseSignStatus(id, val, session.token);
         }
-
-        function handleExcelUpload(input) {
-            if (!input.files || !input.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-
-                if (!rows || rows.length === 0) {
-                    alert("File trống!"); return;
-                }
-
-                // Header detection logic
-                let idColIndex = -1;
-                let startRow = 0;
-
-                // Scan first 5 rows for header
-                for (let i = 0; i < Math.min(rows.length, 5); i++) {
-                    const row = rows[i];
-                    // Find 'userID', 'id', 'user id', 'mã nhân viên', 'mã nv'
-                    idColIndex = row.findIndex(cell => {
-                        if (!cell) return false;
-                        const s = String(cell).trim().toLowerCase();
-                        return ['userid', 'user id', 'id', 'mã nhân viên', 'mã nv'].includes(s);
-                    });
-                    if (idColIndex !== -1) {
-                        startRow = i + 1;
-                        break;
-                    }
-                }
-
-                // If not found, try heuristics (e.g. if Col B seems to be IDs, or just fallback to Col A?)
-                // User requirement: "nhận diện data theo header", so we must enforce header or warn.
-                if (idColIndex === -1) {
-                    // Fallback check: Check if column 1 (B) looks like IDs (numeric/alphanumeric) if header missing?
-                    // But to be safe and strict as requested:
-                    alert("Không tìm thấy cột header 'userID' hoặc 'Mã nhân viên'!");
-                    return;
-                }
-
-                let ids = [];
-                for (let i = startRow; i < rows.length; i++) {
-                    const val = rows[i][idColIndex];
-                    if (val) ids.push(String(val).trim());
-                }
-
-                if (ids.length > 0) {
-                    document.getElementById('tf-list').value = ids.join(', ');
-                    alert(`Đã tìm thấy ${ids.length} mã nhân viên hợp lệ.`);
-                } else {
-                    alert("Không tìm thấy dữ liệu nhân viên nào trong cột ID.");
-                }
-            };
-            reader.readAsArrayBuffer(input.files[0]);
-        }
-
-        function renderAdminCourses() {
-            google.script.run.withSuccessHandler(stats => {
-                if (stats.error) {
-                    document.getElementById('list-c').innerHTML = `<div class="alert alert-warning">${stats.error}</div>`;
-                    return;
-                }
-                let h = '';
-                if (!stats || stats.length === 0) {
-                    document.getElementById('list-c').innerHTML = '<p class="text-center p-4">Chưa có khóa học nào.</p>';
-                    return;
-                }
-
-                const statusColors = {
-                    'Plan': 'bg-secondary',
-                    'Opening': 'bg-primary',
-                    'Pending': 'bg-warning text-dark',
-                    'Complete': 'bg-success'
-                };
-
-                stats.forEach(s => {
-                    const badgeClass = statusColors[s.status] || 'bg-light text-dark border';
-                    const safeId = s.id;
-                    const isChecked = s.signEnabled ? 'checked' : '';
-
-                    h += `
-        <div class="glass-card p-3 mb-3 course-card-admin">
-          <div class="d-flex justify-content-between">
-            <h6 class="fw-bold mb-1 text-primary">${s.name}</h6>
-            <div class="d-flex gap-2">
-                <span class="badge ${badgeClass} border small">${s.status.toUpperCase()}</span>
-                <div class="dropdown">
-                    <button class="btn btn-sm btn-light py-0" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
-                    <ul class="dropdown-menu shadow border-0">
-                        <li><a class="dropdown-item" href="#" onclick="openParticipantModal('${safeId}'); return false;"><i class="fa fa-users me-2"></i>Danh sách học viên</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="editCourse('${safeId}'); return false;"><i class="fa fa-edit me-2"></i>Sửa thông tin</a></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="delCourse('${safeId}'); return false;"><i class="fa fa-trash me-2"></i>Xóa khóa học</a></li>
-                    </ul>
-                </div>
-            </div>
-          </div>
-          <div class="small text-muted mb-2">Hạn: ${s.start} - ${s.end}</div>
-          
-          <div class="d-flex align-items-center mb-2 bg-light rounded p-2 border">
-            <span class="small fw-bold me-2 text-secondary">Cho phép ký:</span>
-            <div class="form-check form-switch mb-0">
-                <input class="form-check-input" type="checkbox" onchange="toggleCourseSign('${safeId}', this)" ${isChecked}>
-            </div>
-          </div>
-
-          <div class="p-bar-container"><div class="p-bar-fill" style="width: ${s.percent}%"></div></div>
-          <div class="d-flex justify-content-between small fw-bold">
-            <span>Hoàn thành: ${s.percent}%</span>
-            <span class="text-danger">Chờ ký: ${s.pendingCount}</span>
-          </div>
-          <div class="mt-3 d-flex gap-2">
-            <button class="btn btn-sm btn-outline-primary flex-grow-1" onclick="exportRemind('${s.id}')"><i class="fa fa-bullhorn me-1"></i>Nhắc nhở</button>
-            <button class="btn btn-sm btn-dark flex-grow-1" onclick="exportPDF('${s.id}')"><i class="fa fa-file-pdf me-1"></i>Báo cáo</button>
-          </div>
-        </div>`;
-                });
-                document.getElementById('list-c').innerHTML = h;
-            }).withFailureHandler(e => {
-                document.getElementById('list-c').innerHTML = `<div class="alert alert-danger">Lỗi tải khóa học: ${e}</div>`;
-            }).getCourseStatistics();
-        }
-
-        // Global var to track editing course
-        let editingCourseID = null;
 
         function openCourseModal(isEdit = false, id = null) {
             editingCourseID = isEdit ? id : null;
-            const modalTitle = document.querySelector('#modalCourse h5');
-            const targetSection = document.querySelector('.border-top'); // Target section container
+            const titleEl = document.getElementById('courseModalTitle');
+            const targetSection = document.getElementById('course-target-container');
 
             if (isEdit) {
-                modalTitle.innerHTML = '<i class="fa fa-edit me-2"></i>Cập nhật khóa học';
+                titleEl.innerHTML = '<i class="fa-solid fa-pen-to-square me-2 text-primary"></i>Cập nhật khóa học';
+                if (targetSection) targetSection.style.display = 'none';
+
                 google.script.run.withSuccessHandler(stats => {
                     const c = stats.find(x => x.id === id);
                     if (c) {
                         document.getElementById('mc-name').value = c.name;
                         document.getElementById('mc-start').value = c.start;
                         document.getElementById('mc-end').value = c.end;
-                        quill.root.innerHTML = c.content;
-
-                        // Hide target section in edit mode as we don't support re-assigning yet
-                        if (targetSection) targetSection.style.display = 'none';
+                        quill.root.innerHTML = c.content || '';
                         mCourse.show();
                     }
                 }).getCourseStatistics();
             } else {
-                modalTitle.innerHTML = '<i class="fa fa-book me-2"></i>Thiết lập khóa đào tạo';
+                titleEl.innerHTML = '<i class="fa-solid fa-book-bookmark me-2 text-primary"></i>Thiết lập khóa đào tạo';
                 document.getElementById('mc-name').value = '';
                 document.getElementById('mc-start').value = '';
                 document.getElementById('mc-end').value = '';
                 quill.setText('');
-
-                // Show target section
                 if (targetSection) targetSection.style.display = 'block';
                 mCourse.show();
             }
@@ -1157,109 +1300,165 @@
         }
 
         function delCourse(id) {
-            if (confirm("Cảnh báo: Xóa khóa học sẽ xóa toàn bộ dữ liệu assignments liên quan.\nBạn có chắc chắn?")) {
+            if (confirm("Cảnh báo: Hành động này sẽ xóa khóa học và toàn bộ lượt phân bổ liên quan.\nBạn có chắc chắn muốn xóa?")) {
                 showL(true);
                 google.script.run.withSuccessHandler(res => {
                     showL(false);
                     if (res === true) {
-                        alert("Đã xóa khóa học!");
+                        showToast("Đã xóa khóa học thành công!", "success");
                         loadAdminData();
                     } else {
-                        alert("Lỗi khi xóa: " + res.error);
+                        showToast(res.error || "Lỗi xóa khóa học", "danger");
                     }
-                }).deleteCourse(id);
+                }).withFailureHandler(e => {
+                    showL(false);
+                    showToast("Lỗi: " + e, "danger");
+                }).deleteCourse(id, session.token);
             }
         }
 
         function saveNewCourse() {
-            const content = quill.root.innerHTML;
             const data = {
-                id: editingCourseID || '', // Verify ID if editing
-                name: document.getElementById('mc-name').value,
+                id: editingCourseID || '',
+                name: document.getElementById('mc-name').value.trim(),
                 start: document.getElementById('mc-start').value,
                 end: document.getElementById('mc-end').value,
-                content: content
+                content: quill.root.innerHTML
             };
 
-            // If editing, we ignore targetType
+            if (!data.name || !data.start || !data.end) {
+                showToast("Vui lòng nhập tên khóa học và khoảng thời gian hiệu lực!", "warning");
+                return;
+            }
+
             const tType = document.getElementById('target-type').value;
-            const tVal = tType === 'filter' ? { com: document.getElementById('tf-com').value, group: document.getElementById('tf-group').value, part: document.getElementById('tf-part').value } : document.getElementById('tf-list').value;
+            const tVal = tType === 'filter' ? {
+                com: document.getElementById('tf-com').value,
+                group: document.getElementById('tf-group').value,
+                part: document.getElementById('tf-part').value
+            } : document.getElementById('tf-list').value;
 
             showL(true);
             google.script.run.withSuccessHandler(res => {
-                showL(false); mCourse.hide();
+                showL(false);
+                mCourse.hide();
                 if (res.action === 'updated') {
-                    alert("Cập nhật thành công!");
+                    showToast("Cập nhật thông tin khóa học thành công!", "success");
                 } else {
-                    alert("Thành công! Đã gán cho " + res.count + " nhân viên.");
-                    // Clear inputs only on add
-                    document.getElementById('mc-name').value = '';
-                    quill.setText('');
-                    document.getElementById('tf-list').value = '';
-                    document.getElementById('target-excel-file').value = '';
+                    showToast(`Tạo thành công và gán cho ${res.count} nhân viên!`, "success");
                 }
                 loadAdminData();
-            }).saveCourseWithTarget(data, tType, tVal);
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi lưu khóa học: " + e, "danger");
+            }).saveCourseWithTarget(data, tType, tVal, session.token);
         }
 
-        // --- LOGIC USER --- 
+        function toggleTargetUI() {
+            const type = document.getElementById('target-type').value;
+            document.getElementById('ui-target-filter').style.display = type === 'filter' ? 'flex' : 'none';
+            document.getElementById('ui-target-list').style.display = type === 'list' ? 'block' : 'none';
+        }
+
+        function handleExcelUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                if (!rows || rows.length === 0) return;
+
+                let idCol = -1, startRow = 0;
+                for (let i = 0; i < Math.min(rows.length, 5); i++) {
+                    idCol = rows[i].findIndex(c => c && ['userid', 'user id', 'id', 'mã nhân viên', 'mã nv'].includes(String(c).trim().toLowerCase()));
+                    if (idCol !== -1) { startRow = i + 1; break; }
+                }
+                if (idCol === -1) {
+                    showToast("Không tìm thấy cột 'Mã nhân viên' hoặc 'ID' trong file Excel!", "danger");
+                    return;
+                }
+                const ids = [];
+                for (let i = startRow; i < rows.length; i++) {
+                    if (rows[i][idCol]) ids.push(String(rows[i][idCol]).trim());
+                }
+                document.getElementById('tf-list').value = ids.join(', ');
+                showToast(`Đã nhận diện ${ids.length} mã nhân viên hợp lệ.`, "success");
+            };
+            reader.readAsArrayBuffer(input.files[0]);
+        }
+
+        // ==========================================================================
+        // USER MANAGEMENT (ADMIN)
+        // ==========================================================================
+        function loadAdminUsers() {
+            showL(true);
+            google.script.run.withSuccessHandler(res => {
+                showL(false);
+                if (res.error) showToast(res.error, "danger");
+                else {
+                    allUsers = res || [];
+                    renderUsers(allUsers);
+                }
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi: " + e, "danger");
+            }).getAdminUsers(session.token);
+        }
+
         function renderUsers(users) {
+            const container = document.getElementById('list-u');
+            if (!users || users.length === 0) {
+                container.innerHTML = '<div class="text-center p-5 text-muted">Không tìm thấy nhân viên nào.</div>';
+                return;
+            }
+
             let h = '';
             users.forEach(u => {
-                // Escape single quotes in ID for safety
-                const safeId = u[1].toString().replace(/'/g, "\\'");
-                h += `<div class="glass-card p-3 mb-3 user-card ${u[6] === 'Active' ? 'active-status' : 'inactive-status'}">
-        <div class="d-flex justify-content-between align-items-start">
-          <div>
-            <h6 class="fw-bold mb-1">${u[0]} <small class="text-muted">(${u[1]})</small></h6>
-            <div class="small text-secondary">${u[2]} | ${u[3]} | ${u[4]}</div>
-            <span class="badge ${u[6] === 'Active' ? 'bg-success-subtle text-success border border-success' : 'bg-danger-subtle text-danger border border-danger'} mt-2" style="font-size: 0.65rem">${u[6]}</span>
-          </div>
-          <div class="dropdown">
-            <button class="btn btn-sm btn-light" data-bs-toggle="dropdown"><i class="fa fa-ellipsis-v"></i></button>
-            <ul class="dropdown-menu shadow border-0">
-              <li><a class="dropdown-item" href="#" onclick="editUser('${safeId}'); return false;"><i class="fa fa-edit me-2"></i>Sửa</a></li>
-              <li><a class="dropdown-item text-danger" href="#" onclick="delUser('${safeId}'); return false;"><i class="fa fa-trash me-2"></i>Xóa</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>`;
+                const safeId = String(u[1]).replace(/'/g, "\\'");
+                const isActive = u[6] === 'Active';
+                h += `
+                <div class="nexus-card mb-2 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="fw-bold">${u[0]}</span>
+                                <span class="badge bg-secondary-subtle text-secondary font-monospace" style="font-size: 0.7rem;">${u[1]}</span>
+                                <span class="badge ${isActive ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}" style="font-size: 0.65rem;">${u[6]}</span>
+                            </div>
+                            <div class="small text-muted mt-1">${u[2] || '-'} • ${u[3] || '-'} • ${u[4] || '-'}</div>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-nexus-secondary py-1 px-2" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px;">
+                                <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="openUserModal(true, '${safeId}')"><i class="fa-solid fa-pen-to-square me-2 text-secondary"></i>Chỉnh sửa</a></li>
+                                <li><a class="dropdown-item py-2 text-danger" href="javascript:void(0)" onclick="delUser('${safeId}')"><i class="fa-solid fa-trash me-2"></i>Xóa nhân viên</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>`;
             });
-            document.getElementById('list-u').innerHTML = h || '<p class="text-center text-muted">Không tìm thấy nhân viên nào.</p>';
+            container.innerHTML = h;
+        }
+
+        function filterUsers() {
+            const q = document.getElementById('searchU').value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                String(u[0] || '').toLowerCase().includes(q) ||
+                String(u[1] || '').toLowerCase().includes(q)
+            );
+            renderUsers(filtered);
         }
 
         function openUserModal(isEdit = false, uid = null) {
             validationID = isEdit ? uid : null;
             document.getElementById('userModalTitle').innerText = isEdit ? "Cập nhật nhân viên" : "Thêm nhân viên mới";
 
-            // Toggle tabs visibility: Edit mode -> Hide tabs (Force Manual), Add mode -> Show tabs
             const tabs = document.getElementById('userModalTabs');
             if (isEdit) {
                 tabs.style.display = 'none';
-                // Force switch to manual tab content
-                const tabBtn = new bootstrap.Tab(document.getElementById('tab-manual-btn'));
-                tabBtn.show();
-            } else {
-                tabs.style.display = 'flex';
-                // Reset to manual tab default
-                const tabBtn = new bootstrap.Tab(document.getElementById('tab-manual-btn'));
-                tabBtn.show();
-            }
-
-            if (!isEdit) {
-                document.getElementById('mu-name').value = '';
-                document.getElementById('mu-id').value = '';
-                document.getElementById('mu-id').disabled = false;
-                document.getElementById('mu-com').value = '';
-                document.getElementById('mu-group').value = '';
-                document.getElementById('mu-part').value = '';
-                document.getElementById('mu-status').value = 'Active';
-
-                // Clear file input
-                document.getElementById('user-import-file').value = '';
-                document.getElementById('import-preview').innerHTML = '';
-            } else {
-                const u = allUsers.find(x => x[1].toString() === uid.toString());
+                new bootstrap.Tab(document.getElementById('tab-manual-btn')).show();
+                const u = allUsers.find(x => String(x[1]) === String(uid));
                 if (u) {
                     document.getElementById('mu-name').value = u[0];
                     document.getElementById('mu-id').value = u[1];
@@ -1269,520 +1468,560 @@
                     document.getElementById('mu-part').value = u[4];
                     document.getElementById('mu-status').value = u[6];
                 }
+            } else {
+                tabs.style.display = 'flex';
+                new bootstrap.Tab(document.getElementById('tab-manual-btn')).show();
+                document.getElementById('mu-name').value = '';
+                document.getElementById('mu-id').value = '';
+                document.getElementById('mu-id').disabled = false;
+                document.getElementById('mu-com').value = '';
+                document.getElementById('mu-group').value = '';
+                document.getElementById('mu-part').value = '';
+                document.getElementById('mu-status').value = 'Active';
             }
             mUser.show();
+        }
+
+        function saveUserSubmit() {
+            const isEdit = !!validationID;
+            const u = {
+                name: document.getElementById('mu-name').value.trim(),
+                id: document.getElementById('mu-id').value.trim(),
+                com: document.getElementById('mu-com').value.trim(),
+                group: document.getElementById('mu-group').value.trim(),
+                part: document.getElementById('mu-part').value.trim(),
+                status: document.getElementById('mu-status').value
+            };
+
+            if (!u.name || !u.id) {
+                showToast("Vui lòng nhập đầy đủ Tên và Mã nhân viên!", "warning");
+                return;
+            }
+
+            let courseIds = [];
+            if (!isEdit) {
+                const checks = document.querySelectorAll('.course-check-manual-courses:checked');
+                courseIds = Array.from(checks).map(c => c.value);
+            }
+
+            showL(true);
+            google.script.run.withSuccessHandler(res => {
+                showL(false);
+                if (res.success) {
+                    showToast("Đã lưu thông tin nhân viên thành công!", "success");
+                    mUser.hide();
+                    loadAdminUsers();
+                } else {
+                    showToast(res.error || "Lỗi lưu nhân viên", "danger");
+                }
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi: " + e, "danger");
+            }).saveUser(u, isEdit, courseIds, session.token);
+        }
+
+        function delUser(id) {
+            if (confirm(`Bạn có chắc chắn muốn xóa nhân viên [${id}]?`)) {
+                showL(true);
+                google.script.run.withSuccessHandler(res => {
+                    showL(false);
+                    if (res.success) {
+                        showToast(`Đã xóa nhân viên ${id}!`, "success");
+                        allUsers = allUsers.filter(x => String(x[1]) !== String(res.id));
+                        filterUsers();
+                    } else {
+                        showToast(res.error || "Xóa thất bại", "danger");
+                    }
+                }).withFailureHandler(e => {
+                    showL(false);
+                    showToast("Lỗi: " + e, "danger");
+                }).deleteUser(id, session.token);
+            }
         }
 
         function importUsersFile() {
             const input = document.getElementById('user-import-file');
             if (!input.files || !input.files[0]) {
-                alert("Vui lòng chọn file Excel!");
+                showToast("Vui lòng chọn file Excel!", "warning");
                 return;
             }
             const reader = new FileReader();
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, raw: false });
+                const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+                if (rows.length === 0) return;
 
-                if (rows.length === 0) { alert("File rỗng!"); return; }
+                const headers = rows[0].map(h => h ? String(h).trim().toLowerCase() : '');
+                const map = {
+                    name: headers.findIndex(h => ['name', 'họ và tên'].includes(h)),
+                    id: headers.findIndex(h => ['userid', 'id', 'mã nhân viên'].includes(h)),
+                    com: headers.findIndex(h => ['company', 'công ty'].includes(h)),
+                    group: headers.findIndex(h => ['group', 'nhóm'].includes(h)),
+                    part: headers.findIndex(h => ['part', 'bộ phận'].includes(h))
+                };
 
-                // 1. HEADER VALIDATION & MAPPING
-                const headers = rows[0].map(h => h ? h.toString().trim().toLowerCase() : '');
-                const requiredCols = {
-                    name: ['name', 'họ và tên'],
-                    id: ['userid', 'id', 'mã nhân viên'],
-                    com: ['company', 'công ty'],
-                    group: ['group', 'nhóm'],
-                    part: ['part', 'bộ phận']
+                if (map.name === -1 || map.id === -1) {
+                    showToast("File Excel thiếu cột bắt buộc: 'Họ và tên' hoặc 'Mã nhân viên'!", "danger");
+                    return;
                 }
 
-                const map = {};
-                let missing = [];
-
-                for (let key in requiredCols) {
-                    const foundIdx = headers.findIndex(h => requiredCols[key].includes(h));
-                    if (foundIdx !== -1) {
-                        map[key] = foundIdx;
-                    } else {
-                        missing.push(`[${requiredCols[key].join(' / ')}]`);
+                const users = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const r = rows[i];
+                    if (r[map.name] && r[map.id]) {
+                        users.push({
+                            name: r[map.name],
+                            id: String(r[map.id]).trim(),
+                            com: map.com !== -1 ? r[map.com] || '' : '',
+                            group: map.group !== -1 ? r[map.group] || '' : '',
+                            part: map.part !== -1 ? r[map.part] || '' : ''
+                        });
                     }
                 }
 
-                if (missing.length > 0) {
-                    alert("File thiếu các cột bắt buộc sau:\n" + missing.join("\n") + "\nVui lòng kiểm tra lại Header file Excel.");
-                    return;
-                }
-
-                // 2. DATA EXTRACTION
-                let users = [];
-                // Start from row 1 (Skip header)
-                for (let i = 1; i < rows.length; i++) {
-                    const r = rows[i];
-                    // Skip empty rows (check required fields Name & ID)
-                    if (!r[map.name] && !r[map.id]) continue;
-
-                    const strID = r[map.id] ? r[map.id].toString().trim() : '';
-                    if (!strID) continue; // ID is critical
-
-                    users.push({
-                        name: r[map.name],
-                        id: strID,
-                        com: r[map.com] || '',
-                        group: r[map.group] || '',
-                        part: r[map.part] || ''
-                    });
-                }
-
                 if (users.length === 0) {
-                    alert("Không đọc được dữ liệu nào hợp lệ!");
+                    showToast("Không đọc được dữ liệu nhân viên hợp lệ nào!", "warning");
                     return;
                 }
 
-                if (!confirm(`Tìm thấy ${users.length} nhân viên hợp lệ.\nTiến hành import?`)) return;
-
-                showL(true);
-                // Collect Selected Courses for Automatic Assignment (Import)
                 const checks = document.querySelectorAll('.course-check-import-courses:checked');
                 const courseIds = Array.from(checks).map(c => c.value);
 
+                showL(true);
                 google.script.run.withSuccessHandler(res => {
                     showL(false);
-                    if (res.error) {
-                        alert(res.error);
-                    } else {
-                        let msg = `Đã thêm thành công: ${res.added} nhân viên.`;
-                        if (res.errors && res.errors.length > 0) {
-                            msg += `\n\nCó ${res.errors.length} lỗi/trùng lặp:\nUse 'Xem chi tiết' để biết thêm (Console log)`;
-                            console.warn(res.errors);
-                        }
-                        alert(msg);
-                        document.getElementById('user-import-file').value = '';
-                        document.getElementById('import-preview').innerHTML = '';
-                        // Uncheck courses
-                        checks.forEach(c => c.checked = false);
-                        document.getElementById('check-all-import').checked = false;
-
+                    if (res.error) showToast(res.error, "danger");
+                    else {
+                        showToast(`Đã import thành công ${res.added} nhân sự!`, "success");
                         mUser.hide();
                         loadAdminData();
                     }
                 }).withFailureHandler(e => {
-                    showL(false); alert("Lỗi import: " + e);
-                }).importUsers(users, courseIds); // Pass courseIds
+                    showL(false);
+                    showToast("Lỗi import: " + e, "danger");
+                }).importUsers(users, courseIds, session.token);
             };
             reader.readAsArrayBuffer(input.files[0]);
         }
 
-        function editUser(id) {
-            openUserModal(true, id);
-        }
-
-        function saveUser() {
-            const u = {
-                name: document.getElementById('mu-name').value,
-                id: document.getElementById('mu-id').value,
-                com: document.getElementById('mu-com').value || '',
-                group: document.getElementById('mu-group').value || '',
-                part: document.getElementById('mu-part').value || '',
-                status: document.getElementById('mu-status').value
-            };
-
-            if (!u.name || !u.id) {
-                alert("Vui lòng nhập Tên và Mã nhân viên!");
-                return;
-            }
-
-            // Collect Selected Courses for Automatic Assignment
-            const checks = document.querySelectorAll('.course-check-manual-courses:checked');
-            const courseIds = Array.from(checks).map(c => c.value);
-
-            const isEdit = !!validationID;
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
-                showL(false);
-                if (res.success) {
-                    alert("Lưu thành công!");
-                    mUser.hide();
-
-                    if (res.action === 'create') {
-                        // Add new user to local state
-                        if (!allUsers) allUsers = [];
-                        allUsers.push(res.user);
-                    } else if (res.action === 'update') {
-                        // Update existing user in local state
-                        const idx = allUsers.findIndex(x => x[1].toString() === res.user[1].toString());
-                        if (idx !== -1) {
-                            allUsers[idx] = res.user;
-                        }
-                    }
-
-                    // Re-render list locally (Instant)
-                    filterUsers();
-
-                } else if (res.error) {
-                    alert(res.error);
-                } else {
-                    alert("Lỗi không xác định: " + JSON.stringify(res));
-                }
-            }).saveUser(u, isEdit, courseIds);
-        }
-
-        function delUser(id) {
-            if (confirm("Bạn có chắc chắn muốn xóa nhân viên [" + id + "]? Hành động này không thể hoàn tác.")) {
-                showL(true);
-                google.script.run.withSuccessHandler(res => {
-                    showL(false);
-                    if (res.success) {
-                        alert("Đã xóa nhân viên!");
-                        // Update local state
-                        allUsers = allUsers.filter(x => x[1].toString() !== res.id.toString());
-                        // Re-render locally
-                        filterUsers();
-                    } else {
-                        alert("Xóa thất bại! " + (res.error || "Có thể ID không tồn tại."));
-                    }
-                }).withFailureHandler(e => {
-                    showL(false); alert("Lỗi: " + e);
-                }).deleteUser(id);
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('training_user');
-            session = {};
-            document.getElementById('u').value = '';
-            document.getElementById('p').value = '';
-            showP('view-login');
-        }
-        function togg() { const i = document.getElementById('p'); i.type = i.type === 'password' ? 'text' : 'password'; }
-
-        // --- STATS & BULK DELETE ---
-        let mStats;
-
+        // ==========================================================================
+        // STATS & BATCH PURGE
+        // ==========================================================================
         function openUserStats() {
             showL(true);
             google.script.run.withSuccessHandler(res => {
                 showL(false);
-                if (res.error) {
-                    alert(res.error);
-                } else {
+                if (res.error) showToast(res.error, "danger");
+                else {
                     document.getElementById('stats-total').innerText = res.total;
                     let h = '';
-                    if (Object.keys(res.stats).length === 0) {
-                        h = '<tr><td colspan="3" class="text-center text-muted">Không có dữ liệu.</td></tr>';
-                    } else {
-                        for (let part in res.stats) {
-                            h += `<tr>
-                                <td class="fw-bold">${part}</td>
-                                <td class="text-center"><span class="badge bg-secondary rounded-pill">${res.stats[part]}</span></td>
-                                <td class="text-end">
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteByPart('${part}')">
-                                        <i class="fa fa-trash me-1"></i>Xóa
-                                    </button>
-                                </td>
-                            </tr>`;
-                        }
+                    for (let part in res.stats) {
+                        h += `
+                        <tr>
+                            <td class="fw-semibold">${part}</td>
+                            <td class="text-center"><span class="badge bg-secondary-subtle text-secondary font-monospace">${res.stats[part]}</span></td>
+                            <td class="text-end pe-3">
+                                <button class="btn btn-sm btn-nexus-danger py-1 px-2" onclick="deleteByPart('${part}')">
+                                    <i class="fa-solid fa-trash me-1"></i>Xóa Part
+                                </button>
+                            </td>
+                        </tr>`;
                     }
-                    document.getElementById('list-stats-part').innerHTML = h;
+                    document.getElementById('list-stats-part').innerHTML = h || '<tr><td colspan="3" class="text-center text-muted p-3">Chưa có dữ liệu.</td></tr>';
                     mStats.show();
                 }
-            }).getUserStats();
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi: " + e, "danger");
+            }).getUserStats(session.token);
         }
 
         function deleteByPart(part) {
-            if (confirm(`Bạn có chắc chắn muốn xóa TOÀN BỘ nhân viên thuộc bộ phận: ${part}?\nHành động này không thể hoàn tác!`)) {
+            if (confirm(`Bạn có chắc chắn muốn xóa TOÀN BỘ nhân viên thuộc bộ phận: ${part}?`)) {
                 showL(true);
                 google.script.run.withSuccessHandler(res => {
                     showL(false);
-                    if (res.error) alert(res.error);
+                    if (res.error) showToast(res.error, "danger");
                     else {
-                        alert(`Đã xóa ${res.count} nhân viên thuộc bộ phận ${part}.`);
-                        openUserStats(); // Refresh stats
-                        loadAdminData(); // Refresh main list
+                        showToast(`Đã dọn dẹp ${res.count} nhân viên thuộc ${part}.`, "success");
+                        openUserStats();
+                        loadAdminData();
                     }
-                }).deleteUsersByScope('part', part);
+                }).withFailureHandler(e => {
+                    showL(false);
+                    showToast("Lỗi: " + e, "danger");
+                }).deleteUsersByScope('part', part, session.token);
             }
         }
 
-        function deleteAllUsers() {
-            const code = prompt("CẢNH BÁO NGUY HIỂM\nBạn đang yêu cầu xóa TOÀN BỘ nhân viên trong hệ thống (trừ Admin).\nĐể xác nhận, vui lòng gõ chính xác dòng chữ: DELETE ALL");
+        function deleteAllUsersConfirm() {
+            const code = prompt("CẢNH BÁO NGUY HIỂM: Bạn đang chuẩn bị xóa TOÀN BỘ nhân viên trong hệ thống (ngoại trừ Admin).\nNhập chính xác 'DELETE ALL' để tiếp tục:");
             if (code === "DELETE ALL") {
                 showL(true);
                 google.script.run.withSuccessHandler(res => {
                     showL(false);
-                    if (res.error) alert(res.error);
+                    if (res.error) showToast(res.error, "danger");
                     else {
-                        alert(`HOÀN TẤT. Đã xóa ${res.count} nhân viên khỏi hệ thống.`);
+                        showToast(`Hoàn tất dọn dẹp: Đã xóa ${res.count} nhân sự khỏi hệ thống.`, "success");
                         mStats.hide();
                         loadAdminData();
                     }
-                }).deleteUsersByScope('all', null);
-            } else if (code !== null) {
-                alert("Mã xác nhận không đúng. Hủy bỏ.");
-            }
-        }
-
-        // --- EXCEPTION LOGIC ---
-        let mPartInstance;
-        let currentParticipants = []; // Store data for search
-
-        function openParticipantModal(cid) {
-            if (!mPartInstance) mPartInstance = new bootstrap.Modal('#modalParticipants');
-
-            // Reset search input
-            document.getElementById('searchPart').value = '';
-            document.getElementById('list-participants').innerHTML = '<tr><td colspan="4" class="text-center p-4"><div class="spinner-border text-primary"></div></td></tr>';
-            mPartInstance.show();
-
-            google.script.run.withSuccessHandler(list => {
-                currentParticipants = list || [];
-                // Attach course ID to each item for context in actions
-                currentParticipants.forEach(p => p.courseId = cid);
-                renderParticipants(currentParticipants);
-            }).getCourseParticipants(cid);
-        }
-
-        function renderParticipants(list) {
-            let h = '';
-            if (!list || list.length === 0) {
-                h = '<tr><td colspan="4" class="text-center p-4">Không tìm thấy dữ liệu.</td></tr>';
-            } else {
-                list.forEach(u => {
-                    let statusLine = '';
-                    let action = '';
-                    const cid = u.courseId;
-
-                    if (u.signed) {
-                        statusLine = `<span class="badge bg-success"><i class="fa fa-check me-1"></i>Đã ký</span><br><small class="text-muted">${new Date(u.signTime).toLocaleDateString('vi-VN')}</small>`;
-                    } else if (u.exception) {
-                        statusLine = `<span class="badge bg-info text-dark"><i class="fa fa-info-circle me-1"></i>${u.exception}</span>`;
-                        action = `<button class="btn btn-sm btn-outline-secondary" onclick="setException('${cid}', '${u.uid}', '${u.name}')">Sửa lý do</button>`;
-                    } else {
-                        statusLine = `<span class="badge bg-warning text-dark">Chưa tham gia</span>`;
-                        action = `<button class="btn btn-sm btn-outline-danger" onclick="setException('${cid}', '${u.uid}', '${u.name}')">Báo vắng</button>`;
-                    }
-
-                    h += `<tr>
-                        <td class="ps-4">
-                            <div class="fw-bold">${u.name}</div>
-                            <div class="small text-muted">${u.uid}</div>
-                        </td>
-                        <td>
-                            <div class="small">${u.com || '-'} > ${u.group || '-'}</div>
-                            <div class="small text-muted">${u.part || '-'}</div>
-                        </td>
-                        <td>${statusLine}</td>
-                        <td class="text-end pe-4">${action}</td>
-                    </tr>`;
-                });
-            }
-            document.getElementById('list-participants').innerHTML = h;
-        }
-
-        function filterParticipants() {
-            const q = document.getElementById('searchPart').value.toLowerCase();
-            const filtered = currentParticipants.filter(u =>
-                u.name.toLowerCase().includes(q) ||
-                u.uid.toString().toLowerCase().includes(q)
-            );
-            renderParticipants(filtered);
-        }
-
-        function setException(cid, uid, uname) {
-            const reason = prompt(`Nhập lý do vắng mặt/ngoại lệ cho ${uname}:`, "Nghỉ ốm / Công tác");
-            if (reason !== null) {
-                showL(true);
-                google.script.run.withSuccessHandler(res => {
+                }).withFailureHandler(e => {
                     showL(false);
-                    if (res) {
-                        openParticipantModal(cid);
-                        loadAdminData();
-                    } else alert("Lỗi cập nhật!");
-                }).updateException(cid, uid, reason);
+                    showToast("Lỗi: " + e, "danger");
+                }).deleteUsersByScope('all', null, session.token);
             }
         }
 
-        // --- USER & SIGNATURE LOGIC ---
-        let mSign, signCanvas, signCtx, isDrawing = false;
-        let pendingSignatureCourseID = null;
-        let hasSigned = false;
-        window.addEventListener('load', () => {
-            mSign = new bootstrap.Modal('#modalSign');
-            initCanvas();
-        });
+        // ==========================================================================
+        // EXPORT REPORTS
+        // ==========================================================================
+        function exportConsoleReminder() {
+            showL(true);
+            google.script.run.withSuccessHandler(res => {
+                showL(false);
+                if (res.error) showToast(res.error, "warning");
+                else if (res.base64) {
+                    downloadBase64(res.base64, res.filename, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+                    showToast("Đã tải xuống file nhắc nhở Excel!", "success");
+                }
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi xuất Excel: " + e, "danger");
+            }).exportConsolidatedReminder(session.token);
+        }
 
+        function exportPDF(courseId) {
+            showL(true);
+            google.script.run.withSuccessHandler(res => {
+                showL(false);
+                if (res.error) showToast(res.error, "warning");
+                else if (res.base64) {
+                    downloadBase64(res.base64, res.filename, 'application/pdf');
+                    showToast("Đã tải xuống báo cáo PDF thành công!", "success");
+                }
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi xuất PDF: " + e, "danger");
+            }).exportCourseReport(courseId, session.token);
+        }
+
+        function downloadBase64(base64, filename, mimeType) {
+            const link = document.createElement('a');
+            link.href = `data:${mimeType};base64,` + base64;
+            link.download = filename;
+            link.click();
+        }
+
+        // ==========================================================================
+        // USER PORTAL & SIGNATURE ENGINE
+        // ==========================================================================
         function loadUserCourses() {
-            if (session.user) document.getElementById('user-info-display').innerText = `Xin chào, ${session.user}`;
+            if (session.user) {
+                document.getElementById('user-info-display').innerText = `${session.user} (${session.userID})`;
+            }
             showL(true);
             google.script.run.withSuccessHandler(courses => {
                 showL(false);
+                const container = document.getElementById('user-course-list');
                 if (!courses || courses.length === 0) {
-                    document.getElementById('user-course-list').innerHTML =
-                        '<div class="text-center p-5 text-muted"><i class="fa fa-clipboard-check fa-3x mb-3"></i><br>Không có khóa đào tạo nào cần ký xác nhận.</div>';
+                    container.innerHTML = `
+                    <div class="nexus-card text-center py-5">
+                        <i class="fa-solid fa-circle-check fa-3x text-success mb-3"></i>
+                        <h5 class="fw-bold">Bạn đã hoàn thành tất cả nhiệm vụ!</h5>
+                        <p class="text-muted small">Hiện không có khóa đào tạo nào cần ký xác nhận bổ sung.</p>
+                    </div>`;
                     return;
                 }
+
                 let h = '';
-                const statusMap = {
-                    'Opening': 'Đang mở',
-                    'Plan': 'Chưa bắt đầu',
-                    'Pending': 'Đã kết thúc',
-                    'Ended': 'Đã kết thúc'
-                };
-
                 courses.forEach(c => {
-                    const safeId = c.id;
-                    const statusText = statusMap[c.status] || c.status;
+                    const actionBtn = c.canSign ?
+                        `<button class="btn-nexus btn-nexus-primary" onclick="openSignModal('${c.id}')"><i class="fa-solid fa-pen-nib"></i> Ký xác nhận</button>` :
+                        `<button class="btn-nexus btn-nexus-secondary disabled opacity-50" style="cursor: not-allowed;"><i class="fa-solid fa-lock"></i> Chưa mở ký</button>`;
 
-                    let actionBtn = '';
-                    if (c.canSign) {
-                        actionBtn = `<button class="btn btn-primary" onclick="openSignModal('${safeId}')">
-                                        <i class="fa fa-pen-nib me-2"></i>Ký xác nhận
-                                     </button>`;
-                    } else {
-                        actionBtn = `<button class="btn btn-secondary disabled" style="opacity: 0.6; cursor: not-allowed">
-                                        <i class="fa fa-lock me-2"></i>${statusText}
-                                     </button>`;
-                    }
-
-                    h += `<div class="glass-card p-3 mb-3 course-card-admin" style="border-left-color: var(--warning)">
-                        <div class="d-flex justify-content-between align-items-center">
+                    h += `
+                    <div class="nexus-card mb-3">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                             <div>
-                                <h6 class="fw-bold mb-1 text-primary">${c.name}</h6>
-                                <div class="small text-muted mb-2">Thời gian: ${c.start} - ${c.end}</div>
-                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                <h6 class="fw-bold mb-1">${c.name}</h6>
+                                <div class="small text-muted mb-2"><i class="fa-regular fa-calendar me-1"></i>Thời gian: ${c.start} - ${c.end}</div>
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 0.75rem;">Chờ ký xác nhận</span>
                             </div>
                             <div>${actionBtn}</div>
                         </div>
                     </div>`;
                 });
-                document.getElementById('user-course-list').innerHTML = h;
-            }).withFailureHandler(e => { showL(false); alert("Lỗi tải dữ liệu: " + e); }).getMyCourses(session.userID);
+                container.innerHTML = h;
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi tải danh sách: " + e, "danger");
+            }).getMyCourses(session.userID);
         }
 
-        function openSignModal(cid) {
-            pendingSignatureCourseID = cid;
-            document.getElementById('sign-course-content').innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div></div>';
-            if (document.getElementById('commitCheck')) document.getElementById('commitCheck').checked = false;
+        function openSignModal(courseId) {
+            pendingSignatureCourseID = courseId;
+            document.getElementById('commitCheck').checked = false;
+            document.getElementById('sign-course-content').innerHTML = '<div class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang tải nội dung...</div>';
             clearCanvas();
             mSign.show();
 
             google.script.run.withSuccessHandler(content => {
-                document.getElementById('sign-course-content').innerHTML = content || '<p class="text-muted">Không có nội dung chi tiết.</p>';
-            }).getCourseDetails(cid);
+                document.getElementById('sign-course-content').innerHTML = content || '<p class="text-muted">Không có nội dung mô tả chi tiết.</p>';
+            }).getCourseDetails(courseId);
         }
 
-        function initCanvas() {
+        // --- HIGH-DPI & BÉZIER CURVE SMOOTH SIGNATURE ENGINE ---
+        function initSignatureCanvas() {
             signCanvas = document.getElementById('sign-canvas');
+            if (!signCanvas) return;
+
             signCtx = signCanvas.getContext('2d');
-            signCtx.lineWidth = 2;
+            const rect = signCanvas.parentElement.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+
+            // Set display size and buffer size for Retina sharpness
+            const displayWidth = rect.width;
+            const displayHeight = 220;
+
+            signCanvas.width = displayWidth * dpr;
+            signCanvas.height = displayHeight * dpr;
+            signCanvas.style.width = displayWidth + 'px';
+            signCanvas.style.height = displayHeight + 'px';
+
+            signCtx.scale(dpr, dpr);
+            signCtx.lineWidth = 2.5;
             signCtx.lineCap = 'round';
-            signCtx.strokeStyle = '#000';
+            signCtx.lineJoin = 'round';
+            signCtx.strokeStyle = '#0F172A';
 
-            const start = (e) => { isDrawing = true;hasSigned = true; draw(e); };
-            const end = () => { isDrawing = false; signCtx.beginPath(); };
+            clearCanvas();
 
-            signCanvas.addEventListener('mousedown', start);
-            signCanvas.addEventListener('mouseup', end);
-            signCanvas.addEventListener('mousemove', draw);
-
-            // Touch support
-            signCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e.touches[0]); });
-            signCanvas.addEventListener('touchend', (e) => { e.preventDefault(); end(); });
-            signCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+            // Bind Event Listeners with Touch Prevention
+            signCanvas.onpointerdown = startStroke;
+            signCanvas.onpointermove = moveStroke;
+            signCanvas.onpointerup = endStroke;
+            signCanvas.onpointercancel = endStroke;
         }
 
-        function draw(e) {
-            if (!isDrawing) return;
+        function getCanvasPos(e) {
             const rect = signCanvas.getBoundingClientRect();
-            // Handle both mouse and touch events coordinates
-            const clientX = e.clientX || e.touches[0].clientX;
-            const clientY = e.clientY || e.touches[0].clientY;
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
 
-            // Fix Offset: Scale coordinate to internal canvas resolution
-            const scaleX = signCanvas.width / rect.width;
-            const scaleY = signCanvas.height / rect.height;
+        function startStroke(e) {
+            isDrawing = true;
+            hasSigned = true;
+            points = [getCanvasPos(e)];
+        }
 
-            const x = (clientX - rect.left) * scaleX;
-            const y = (clientY - rect.top) * scaleY;
+        function moveStroke(e) {
+            if (!isDrawing) return;
+            points.push(getCanvasPos(e));
 
-            signCtx.lineTo(x, y);
-            signCtx.stroke();
-            signCtx.beginPath();
-            signCtx.moveTo(x, y);
+            if (points.length >= 3) {
+                const len = points.length;
+                const xc = (points[len - 2].x + points[len - 1].x) / 2;
+                const yc = (points[len - 2].y + points[len - 1].y) / 2;
+
+                signCtx.beginPath();
+                signCtx.moveTo(points[len - 3].x, points[len - 3].y);
+                signCtx.quadraticCurveTo(points[len - 2].x, points[len - 2].y, xc, yc);
+                signCtx.stroke();
+            }
+        }
+
+        function endStroke() {
+            isDrawing = false;
+            points = [];
         }
 
         function clearCanvas() {
-            if (signCtx) {
-                signCtx.clearRect(0, 0, signCanvas.width, signCanvas.height);
-                hasSigned = false;
-            }
+            if (!signCanvas || !signCtx) return;
+            const dpr = window.devicePixelRatio || 1;
+            signCtx.clearRect(0, 0, signCanvas.width / dpr, signCanvas.height / dpr);
+            hasSigned = false;
+            points = [];
         }
 
         function submitSignature() {
             if (!hasSigned) {
-                alert("Bạn chưa ký xác nhận. Vui lòng ký vào khung trắng!");
+                showToast("Bạn chưa thực hiện ký tên vào khung chữ ký!", "warning");
                 return;
             }
-            if (document.getElementById('commitCheck') && !document.getElementById('commitCheck').checked) {
-                alert("Bạn chưa cam kết! Vui lòng tích chọn: \n'Tôi xin cam kết đã đọc và hiểu nội dung bên trên...'");
+            if (!document.getElementById('commitCheck').checked) {
+                showToast("Vui lòng tích chọn ô cam kết chất lượng trước khi xác nhận!", "warning");
                 return;
             }
 
-            // Check if canvas is empty? (Simple check: data url length)
-            // But strict pixel check is expensive. Let's assume user signed if they clicked Sign.
-            const signatureData = signCanvas.toDataURL();
-
+            const signatureData = signCanvas.toDataURL('image/png');
             showL(true);
+
             google.script.run.withSuccessHandler(res => {
                 showL(false);
-                if (res) {
-                    alert("Đã ký xác nhận thành công!");
+                if (res && res.success) {
+                    showToast("Đã ký xác nhận thành công!", "success");
                     mSign.hide();
-                    loadUserCourses(); // Refresh list
+                    loadUserCourses();
                 } else {
-                    alert("Lỗi xác nhận! Vui lòng thử lại.");
+                    showToast(res?.message || "Lỗi xác nhận chữ ký!", "danger");
                 }
+            }).withFailureHandler(e => {
+                showL(false);
+                showToast("Lỗi gửi chữ ký: " + e, "danger");
             }).confirmTraining(session.userID, pendingSignatureCourseID, signatureData);
         }
 
-        function exportConsoleReminder() {
+        // ==========================================================================
+        // HELPERS: COURSE SELECTION & PARTICIPANTS
+        // ==========================================================================
+        function renderCourseSelection(containerId, courses) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            if (!courses || courses.length === 0) {
+                container.innerHTML = '<div class="small text-muted text-center py-2">Không có khóa học khả dụng.</div>';
+                return;
+            }
+            let h = '';
+            courses.forEach(c => {
+                h += `
+                <div class="form-check py-1">
+                    <input class="form-check-input course-check-${containerId}" type="checkbox" value="${c.id}" id="${containerId}-${c.id}">
+                    <label class="form-check-label small" for="${containerId}-${c.id}">
+                        <span class="badge bg-secondary-subtle text-secondary me-1" style="font-size: 0.65rem;">${c.status}</span> ${c.name}
+                    </label>
+                </div>`;
+            });
+            container.innerHTML = h;
+        }
+
+        function toggleAllCourses(containerId, checked) {
+            document.querySelectorAll(`.course-check-${containerId}`).forEach(c => c.checked = checked);
+        }
+
+        function renderNewRegModal(users, courses) {
+            let uHtml = '';
+            users.forEach(u => {
+                uHtml += `<span class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1">${u[0]} (${u[1]})</span>`;
+            });
+            document.getElementById('new-reg-list').innerHTML = uHtml || '<span class="text-muted small">Không có người dùng nào.</span>';
+            renderCourseSelection('new-reg-courses', courses);
+        }
+
+        function submitNewRegProcess(skipAssignments) {
+            let selectedCourses = [];
+            if (!skipAssignments) {
+                document.querySelectorAll('.course-check-new-reg-courses:checked').forEach(c => selectedCourses.push(c.value));
+            }
             showL(true);
             google.script.run.withSuccessHandler(res => {
                 showL(false);
-                if (res.error) {
-                    alert(res.error);
-                } else if (res.base64) {
-                    const link = document.createElement('a');
-                    link.href = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," + res.base64;
-                    link.download = res.filename;
-                    link.click();
+                mNewReg.hide();
+                if (res.error) showToast(res.error, "danger");
+                else {
+                    showToast("Đã kích hoạt và gán khóa học thành công!", "success");
+                    loadAdminData();
                 }
             }).withFailureHandler(e => {
-                showL(false); alert("Lỗi export: " + e);
-            }).exportConsolidatedReminder();
-        }
-
-        function exportPDF(id) {
-            showL(true);
-            google.script.run.withSuccessHandler(res => {
                 showL(false);
-                if (res.error) {
-                    alert(res.error);
-                } else if (res.base64) {
-                    const link = document.createElement('a');
-                    link.href = "data:application/pdf;base64," + res.base64;
-                    link.download = res.filename;
-                    link.click();
-                }
-            }).withFailureHandler(e => {
-                showL(false); alert("Lỗi tải báo cáo: " + e);
-            }).exportCourseReport(id);
+                showToast("Lỗi: " + e, "danger");
+            }).processNewRegisters(newRegUserIDs, selectedCourses, session.token);
         }
 
-        window.openSignModal = openSignModal;
-        window.clearCanvas = clearCanvas;
-        window.submitSignature = submitSignature;
+        let currentParticipants = [];
+        function openParticipantModal(cid) {
+            document.getElementById('searchPart').value = '';
+            document.getElementById('list-participants').innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm text-primary"></div> Đang tải...</td></tr>';
+            mParticipants.show();
+
+            google.script.run.withSuccessHandler(list => {
+                currentParticipants = list || [];
+                currentParticipants.forEach(p => p.courseId = cid);
+                renderParticipantsTable(currentParticipants);
+            }).withFailureHandler(e => {
+                showToast("Lỗi: " + e, "danger");
+            }).getCourseParticipants(cid, session.token);
+        }
+
+        function renderParticipantsTable(list) {
+            const tbody = document.getElementById('list-participants');
+            if (!list || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">Không tìm thấy học viên nào.</td></tr>';
+                return;
+            }
+            let h = '';
+            list.forEach(u => {
+                let statusBadge = '';
+                let actionBtn = '';
+                const cid = u.courseId;
+
+                if (u.signed) {
+                    statusBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="fa fa-check me-1"></i>Đã ký</span><br><small class="text-muted" style="font-size: 0.7rem;">${new Date(u.signTime).toLocaleString('vi-VN')}</small>`;
+                } else if (u.exception) {
+                    statusBadge = `<span class="badge bg-warning-subtle text-warning border border-warning-subtle">${u.exception}</span>`;
+                    actionBtn = `<button class="btn btn-sm btn-nexus-secondary py-0 px-2" onclick="setException('${cid}', '${u.uid}', '${u.name}')">Sửa lý do</button>`;
+                } else {
+                    statusBadge = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Chưa tham gia</span>`;
+                    actionBtn = `<button class="btn btn-sm btn-nexus-danger py-0 px-2" onclick="setException('${cid}', '${u.uid}', '${u.name}')">Báo vắng</button>`;
+                }
+
+                h += `
+                <tr>
+                    <td class="ps-3">
+                        <div class="fw-semibold">${u.name}</div>
+                        <div class="small text-muted font-monospace">${u.uid}</div>
+                    </td>
+                    <td>
+                        <div class="small">${u.com || '-'} > ${u.group || '-'}</div>
+                        <div class="small text-muted">${u.part || '-'}</div>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td class="text-end pe-3">${actionBtn}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = h;
+        }
+
+        function filterParticipants() {
+            const q = document.getElementById('searchPart').value.toLowerCase();
+            const filtered = currentParticipants.filter(u =>
+                String(u.name || '').toLowerCase().includes(q) ||
+                String(u.uid || '').toLowerCase().includes(q)
+            );
+            renderParticipantsTable(filtered);
+        }
+
+        function setException(cid, uid, uname) {
+            const reason = prompt(`Nhập lý do ngoại lệ/vắng mặt cho học viên ${uname}:`, "Nghỉ ốm / Công tác");
+            if (reason !== null && reason.trim() !== "") {
+                showL(true);
+                google.script.run.withSuccessHandler(res => {
+                    showL(false);
+                    if (res) {
+                        showToast("Đã cập nhật ngoại lệ!", "success");
+                        openParticipantModal(cid);
+                        loadAdminData();
+                    } else showToast("Lỗi cập nhật!", "danger");
+                }).updateException(cid, uid, reason.trim(), session.token);
+            }
+        }
+
+        function renderFilters(filters) {
+            if (!filters) return;
+            const fill = (id, list, label) => {
+                let h = `<option value="">-- Tất cả ${label} --</option>`;
+                (list || []).forEach(i => h += `<option value="${i}">${i}</option>`);
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = h;
+            };
+            fill('tf-com', filters.com, 'Company');
+            fill('tf-group', filters.group, 'Group');
+            fill('tf-part', filters.part, 'Part');
+        }
     </script>
 </body>
 
