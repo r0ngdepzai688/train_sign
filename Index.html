@@ -145,6 +145,21 @@
             color: var(--text-heading);
             font-weight: 700;
             letter-spacing: -0.03em;
+            text-wrap: balance;
+            overflow-wrap: break-word;
+        }
+
+        p, .small, .form-label, .form-check-label {
+            text-wrap: pretty;
+        }
+
+        .badge {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .min-w-0 {
+            min-width: 0 !important;
         }
 
         .text-muted {
@@ -166,7 +181,13 @@
             z-index: 1;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 24px 16px;
+            padding: 16px 12px 28px 12px;
+        }
+
+        @media (min-width: 576px) {
+            .page {
+                padding: 24px 16px;
+            }
         }
 
         @media (min-width: 768px) {
@@ -520,6 +541,8 @@
             text-decoration: none;
             gap: 8px;
             user-select: none;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .btn-nexus:active {
@@ -715,6 +738,10 @@
 
         .nexus-tab-item {
             flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
             padding: 10px 16px;
             text-align: center;
             font-size: 0.88rem;
@@ -724,6 +751,35 @@
             cursor: pointer;
             transition: all 0.2s ease;
             user-select: none;
+            white-space: nowrap;
+        }
+
+        /* Responsive Action Bar for Admin Tabs */
+        .nexus-action-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 575.98px) {
+            .nexus-action-bar {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 8px;
+            }
+            .nexus-action-bar .btn-action-wide {
+                grid-column: 1 / -1;
+                width: 100%;
+                order: 3;
+            }
+            .nexus-action-bar .btn-action-primary {
+                order: 1;
+                width: 100%;
+            }
+            .nexus-action-bar .btn-action-sync {
+                order: 2;
+            }
         }
 
         .nexus-tab-item.active {
@@ -921,33 +977,89 @@
 
         /* --- SIGNATURE FOOTER BRANDING (SLOGAN & COPYRIGHT) --- */
         .nexus-footer-brand {
-            margin: 26px auto 8px auto;
-            padding: 8px 16px;
-            max-width: 480px;
+            margin: 24px auto 8px auto;
+            padding: 8px 10px;
+            max-width: 520px;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
 
         .nexus-slogan {
             font-family: var(--font-sans);
-            font-size: 0.84rem;
+            font-size: clamp(0.73rem, 3.3vw, 0.84rem);
             font-weight: 600;
             letter-spacing: -0.01em;
             color: var(--primary);
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+            max-width: 100%;
         }
 
         .nexus-copyright {
             font-family: var(--font-sans);
-            font-size: 0.77rem;
+            font-size: clamp(0.7rem, 3vw, 0.77rem);
             font-weight: 500;
             letter-spacing: 0.005em;
             color: var(--text-muted);
+            line-height: 1.45;
+            text-wrap: balance;
+        }
+
+        /* ==========================================================================
+           2026 MOBILE-FIRST RESPONSIVE REFINEMENTS (320px - 575px VIEWPORTS)
+           ========================================================================== */
+        @media (max-width: 575.98px) {
+            .nexus-floating-header {
+                padding: 11px 12px;
+                border-radius: 16px;
+                gap: 8px;
+            }
+            .nexus-floating-header h4 {
+                font-size: clamp(0.96rem, 4.1vw, 1.15rem);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .nexus-theme-fab {
+                top: 12px;
+                right: 12px;
+                width: 38px;
+                height: 38px;
+            }
+            .nexus-tab-item {
+                padding: 9px 8px;
+                font-size: 0.78rem;
+                gap: 5px;
+            }
+            .btn-nexus {
+                padding: 9px 14px;
+                font-size: 0.83rem;
+                gap: 6px;
+            }
+            .nexus-ai-stream {
+                padding: 14px 16px;
+                margin-bottom: 18px;
+            }
+            .liquid-glass::after {
+                inset: -4px;
+                border-radius: calc(var(--radius-card) + 4px);
+            }
+            .fab-trigger {
+                bottom: 20px;
+                right: 18px;
+                width: 50px;
+                height: 50px;
+            }
+            #lcp-brand-logo {
+                max-width: min(220px, 68vw) !important;
+                height: auto !important;
+            }
         }
     </style>
 </head>
@@ -1078,8 +1190,8 @@
                 <div class="mb-3">
                     <img id="lcp-brand-logo" class="nexus-brand-logo" src="data:image/png;base64,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" width="230" height="80" fetchpriority="high" decoding="sync" alt="IQC Nexus Official Logo" style="width: 230px; height: auto; object-fit: contain;">
                 </div>
-                <h3 class="fw-bold mb-1">Quality Intelligence Portal</h3>
-                <p class="text-muted small mb-0">Cổng ký xác nhận & Chứng thực đào tạo thông minh</p>
+                <h3 class="fw-bold mb-1" style="font-size: clamp(1.22rem, 5.2vw, 1.6rem); white-space: nowrap;">Quality Intelligence Portal</h3>
+                <p class="text-muted small mb-0">Cổng ký xác nhận &amp; Chứng thực đào tạo thông minh</p>
             </div>
 
             <div class="mb-3">
@@ -1123,11 +1235,11 @@
         <div class="nexus-footer-brand">
             <div class="nexus-slogan">
                 <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
-                Silence the ads. Let quality make the noise.
+                <span>Silence the ads. Let quality make the noise.</span>
                 <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
             </div>
             <div class="nexus-copyright">
-                Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering
+                <span>Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</span><span class="d-none d-sm-inline"> • </span><span class="d-block d-sm-inline">IQC Quality Engineering</span>
             </div>
         </div>
     </div>
@@ -1136,16 +1248,16 @@
          2. REGISTRATION VIEWPORT
          ========================================================================== -->
     <div id="view-reg" class="page">
-        <div class="liquid-glass p-4 p-md-5 mx-auto mt-4" style="max-width: 520px;">
+        <div class="liquid-glass p-3 p-sm-4 p-md-5 mx-auto mt-4" style="max-width: 520px;">
             <div class="mb-4">
                 <a href="javascript:void(0)" class="text-decoration-none small text-muted d-inline-flex align-items-center gap-2 mb-3" onclick="showP('view-login')">
                     <i class="fa-solid fa-arrow-left"></i> Quay lại Đăng nhập
                 </a>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center justify-content-center p-1 rounded-3" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); width: 44px; height: 44px;">
+                    <div class="d-flex align-items-center justify-content-center p-1 rounded-3 flex-shrink-0" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); width: 44px; height: 44px;">
                         <svg class="nexus-brand-icon" style="width: 32px; height: 39px;" viewBox="0 0 72 88"><use href="#iqc-logo-icon"></use></svg>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h4 class="fw-bold mb-0">Đăng ký thành viên IQC</h4>
                         <p class="text-muted small mb-0">Cung cấp thông tin để cấp quyền và đồng bộ đào tạo</p>
                     </div>
@@ -1164,16 +1276,16 @@
 
             <div class="row g-2 mb-4">
                 <div class="col-4">
-                    <label class="form-label small fw-semibold text-secondary">Company</label>
-                    <input type="text" id="reg-com" class="form-control" placeholder="SEV">
+                    <label class="form-label small fw-semibold text-secondary text-nowrap">Company</label>
+                    <input type="text" id="reg-com" class="form-control px-2 px-sm-3" placeholder="SEV">
                 </div>
                 <div class="col-4">
-                    <label class="form-label small fw-semibold text-secondary">Group</label>
-                    <input type="text" id="reg-group" class="form-control" placeholder="IQC G">
+                    <label class="form-label small fw-semibold text-secondary text-nowrap">Group</label>
+                    <input type="text" id="reg-group" class="form-control px-2 px-sm-3" placeholder="IQC G">
                 </div>
                 <div class="col-4">
-                    <label class="form-label small fw-semibold text-secondary">Part</label>
-                    <input type="text" id="reg-part" class="form-control" placeholder="IQC 1P">
+                    <label class="form-label small fw-semibold text-secondary text-nowrap">Part</label>
+                    <input type="text" id="reg-part" class="form-control px-2 px-sm-3" placeholder="IQC 1P">
                 </div>
             </div>
 
@@ -1185,8 +1297,14 @@
         </div>
 
         <div class="nexus-footer-brand">
-            <div class="nexus-slogan">Silence the ads. Let quality make the noise.</div>
-            <div class="nexus-copyright">Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</div>
+            <div class="nexus-slogan">
+                <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
+                <span>Silence the ads. Let quality make the noise.</span>
+                <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
+            </div>
+            <div class="nexus-copyright">
+                <span>Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</span><span class="d-none d-sm-inline"> • </span><span class="d-block d-sm-inline">IQC Quality Engineering</span>
+            </div>
         </div>
     </div>
 
@@ -1195,33 +1313,33 @@
          ========================================================================== -->
     <div id="view-admin" class="page">
         <!-- Top App Bar (Floating Glass Island) -->
-        <div class="nexus-floating-header d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div class="d-flex align-items-center justify-content-center p-1 rounded-3" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); width: 46px; height: 46px;">
-                    <svg class="nexus-brand-icon" style="width: 32px; height: 39px;" viewBox="0 0 72 88"><use href="#iqc-logo-icon"></use></svg>
+        <div class="nexus-floating-header d-flex justify-content-between align-items-center mb-3 mb-sm-4">
+            <div class="d-flex align-items-center gap-2 gap-sm-3 min-w-0">
+                <div class="d-flex align-items-center justify-content-center p-1 rounded-3 flex-shrink-0" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); width: 42px; height: 42px;">
+                    <svg class="nexus-brand-icon" style="width: 30px; height: 36px;" viewBox="0 0 72 88"><use href="#iqc-logo-icon"></use></svg>
                 </div>
-                <div>
+                <div class="min-w-0">
                     <h4 class="fw-bold mb-0">IQC Executive Command</h4>
                     <div class="d-flex align-items-center gap-2 mt-1">
-                        <span class="live-beacon"><span class="live-beacon-pulse"></span><span class="live-beacon-core"></span></span>
-                        <span class="small font-mono text-muted" style="font-size: 0.76rem;">AUTHENTICATED ADMIN SESSION</span>
+                        <span class="live-beacon flex-shrink-0"><span class="live-beacon-pulse"></span><span class="live-beacon-core"></span></span>
+                        <span class="small font-mono text-muted text-truncate" style="font-size: 0.72rem;"><span class="d-none d-sm-inline">AUTHENTICATED </span>ADMIN SESSION</span>
                     </div>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="openQuickShareModal()" title="Mã QR & Link Ngắn (is.gd/iqcnexus)"><i class="fa-solid fa-qrcode text-primary"></i> <span class="d-none d-sm-inline">QR / Link ngắn</span></button>
-                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()" title="Chế độ Sáng / Tối"><i class="fa-solid fa-moon" id="theme-btn-icon"></i></button>
-                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-power-off"></i> Đăng xuất</button>
+            <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
+                <button class="btn-nexus btn-nexus-secondary py-1 px-2 px-sm-3" onclick="openQuickShareModal()" title="Mã QR & Link Ngắn (is.gd/iqcnexus)"><i class="fa-solid fa-qrcode text-primary"></i> <span class="d-none d-md-inline">QR / Link ngắn</span></button>
+                <button class="btn-nexus btn-nexus-secondary py-1 px-2 px-sm-3" onclick="toggleTheme()" title="Chế độ Sáng / Tối"><i class="fa-solid fa-moon" id="theme-btn-icon"></i></button>
+                <button class="btn-nexus btn-nexus-danger py-1 px-2 px-sm-3" onclick="logout()" title="Đăng xuất"><i class="fa-solid fa-power-off"></i> <span class="d-none d-sm-inline">Đăng xuất</span></button>
             </div>
         </div>
 
         <!-- AI Executive Stream Banner -->
         <div class="nexus-ai-stream" id="admin-ai-brief">
-            <div class="d-flex align-items-start gap-3">
-                <div class="mt-1" style="color: var(--primary);"><i class="fa-solid fa-bolt-lightning fa-lg"></i></div>
-                <div class="flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <h6 class="fw-bold mb-0" style="color: var(--primary);">AI Executive Summary & Risk Predictor</h6>
+            <div class="d-flex align-items-start gap-2 gap-sm-3">
+                <div class="mt-1 flex-shrink-0" style="color: var(--primary);"><i class="fa-solid fa-bolt-lightning fa-lg"></i></div>
+                <div class="flex-grow-1 min-w-0">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-1 mb-1">
+                        <h6 class="fw-bold mb-0" style="color: var(--primary);">AI Executive Summary &amp; Risk Predictor</h6>
                         <span class="small text-muted font-mono" id="brief-timestamp">Syncing...</span>
                     </div>
                     <div class="small" id="brief-text" style="color: var(--text-body);">
@@ -1232,33 +1350,33 @@
         </div>
 
         <!-- Segmented Navigation -->
-        <div class="nexus-tabs mb-4">
+        <div class="nexus-tabs mb-3 mb-sm-4">
             <div class="nexus-tab-item active" id="btn-c" onclick="switchTab('c')">
-                <i class="fa-solid fa-layer-group me-2"></i>Khóa đào tạo & Báo cáo
+                <i class="fa-solid fa-layer-group"></i><span>Khóa đào tạo &amp; Báo cáo</span>
             </div>
             <div class="nexus-tab-item" id="btn-u" onclick="switchTab('u')">
-                <i class="fa-solid fa-users me-2"></i>Quản trị nhân sự
+                <i class="fa-solid fa-users"></i><span>Quản trị nhân sự</span>
             </div>
         </div>
 
         <!-- TAB: COURSES -->
         <div id="tab-c">
-            <div class="d-flex flex-wrap gap-2 mb-4">
-                <button class="btn-nexus btn-nexus-primary" onclick="openCourseModal()"><i class="fa-solid fa-plus"></i> Tạo khóa mới</button>
-                <button class="btn-nexus btn-nexus-secondary" onclick="exportConsoleReminder()"><i class="fa-solid fa-bullhorn text-warning"></i> Trung tâm Nhắc nhở & Xuất Excel</button>
-                <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminData()"><i class="fa-solid fa-rotate"></i> Đồng bộ</button>
+            <div class="nexus-action-bar mb-3 mb-sm-4">
+                <button class="btn-nexus btn-nexus-primary btn-action-primary" onclick="openCourseModal()"><i class="fa-solid fa-plus"></i> Tạo khóa mới</button>
+                <button class="btn-nexus btn-nexus-secondary btn-action-wide" onclick="exportConsoleReminder()"><i class="fa-solid fa-bullhorn text-warning"></i> Trung tâm Nhắc nhở &amp; Xuất Excel</button>
+                <button class="btn-nexus btn-nexus-secondary btn-action-sync ms-sm-auto" onclick="loadAdminData()"><i class="fa-solid fa-rotate"></i> Đồng bộ</button>
             </div>
             <div id="list-c"></div>
         </div>
 
         <!-- TAB: USERS -->
         <div id="tab-u" style="display:none">
-            <div class="d-flex flex-wrap gap-2 mb-3">
-                <button class="btn-nexus btn-nexus-primary" onclick="openUserModal()"><i class="fa-solid fa-user-plus"></i> Thêm nhân viên</button>
-                <button class="btn-nexus btn-nexus-secondary" onclick="openUserStats()"><i class="fa-solid fa-chart-column"></i> Thống kê theo Part & Xóa</button>
-                <button class="btn-nexus btn-nexus-secondary ms-auto" onclick="loadAdminUsers()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
+            <div class="nexus-action-bar mb-3">
+                <button class="btn-nexus btn-nexus-primary btn-action-primary" onclick="openUserModal()"><i class="fa-solid fa-user-plus"></i> Thêm nhân viên</button>
+                <button class="btn-nexus btn-nexus-secondary btn-action-wide" onclick="openUserStats()"><i class="fa-solid fa-chart-column"></i> Thống kê theo Part &amp; Xóa</button>
+                <button class="btn-nexus btn-nexus-secondary btn-action-sync ms-sm-auto" onclick="loadAdminUsers()"><i class="fa-solid fa-rotate"></i> Làm mới</button>
             </div>
-            <div class="mb-4">
+            <div class="mb-3 mb-sm-4">
                 <input type="text" id="searchU" class="form-control" placeholder="Tìm kiếm nhanh nhân viên theo Tên hoặc Mã số..." oninput="debouncedFilterUsers()">
             </div>
             <div id="list-u"></div>
@@ -1269,11 +1387,11 @@
         <div class="nexus-footer-brand">
             <div class="nexus-slogan">
                 <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
-                Silence the ads. Let quality make the noise.
+                <span>Silence the ads. Let quality make the noise.</span>
                 <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
             </div>
             <div class="nexus-copyright">
-                Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering Platform
+                <span>Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</span><span class="d-none d-sm-inline"> • </span><span class="d-block d-sm-inline">IQC Quality Engineering Platform</span>
             </div>
         </div>
     </div>
@@ -1282,25 +1400,25 @@
          4. USER MOBILE TRAINING PORTAL
          ========================================================================== -->
     <div id="view-user" class="page">
-        <div class="nexus-floating-header d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div class="d-flex align-items-center justify-content-center p-1 rounded-3" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); width: 44px; height: 44px;">
-                    <svg class="nexus-brand-icon" style="width: 32px; height: 39px;" viewBox="0 0 72 88"><use href="#iqc-logo-icon"></use></svg>
+        <div class="nexus-floating-header d-flex justify-content-between align-items-center mb-3 mb-sm-4">
+            <div class="d-flex align-items-center gap-2 gap-sm-3 min-w-0">
+                <div class="d-flex align-items-center justify-content-center p-1 rounded-3 flex-shrink-0" style="background: var(--bg-subtle); border: 1px solid var(--border-subtle); width: 42px; height: 42px;">
+                    <svg class="nexus-brand-icon" style="width: 30px; height: 36px;" viewBox="0 0 72 88"><use href="#iqc-logo-icon"></use></svg>
                 </div>
-                <div>
+                <div class="min-w-0">
                     <h4 class="fw-bold mb-0">Nhiệm Vụ Ký Xác Nhận</h4>
-                    <div class="small font-mono text-muted" id="user-info-display">Nhân viên IQC</div>
+                    <div class="small font-mono text-muted text-truncate" id="user-info-display">Nhân viên IQC</div>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="toggleTheme()"><i class="fa-solid fa-moon"></i></button>
-                <button class="btn-nexus btn-nexus-danger py-1 px-3" onclick="logout()"><i class="fa-solid fa-power-off"></i> Đăng xuất</button>
+            <div class="d-flex align-items-center gap-1 gap-sm-2 flex-shrink-0">
+                <button class="btn-nexus btn-nexus-secondary py-1 px-2 px-sm-3" onclick="toggleTheme()" title="Chế độ Sáng / Tối"><i class="fa-solid fa-moon"></i></button>
+                <button class="btn-nexus btn-nexus-danger py-1 px-2 px-sm-3" onclick="logout()" title="Đăng xuất"><i class="fa-solid fa-power-off"></i> <span class="d-none d-sm-inline">Đăng xuất</span></button>
             </div>
         </div>
 
-        <div class="nexus-ai-stream mb-4">
-            <div class="d-flex align-items-center gap-3">
-                <div style="color: var(--primary);"><i class="fa-solid fa-circle-info fa-lg"></i></div>
+        <div class="nexus-ai-stream mb-3 mb-sm-4">
+            <div class="d-flex align-items-start gap-2 gap-sm-3">
+                <div class="mt-1 flex-shrink-0" style="color: var(--primary);"><i class="fa-solid fa-circle-info fa-lg"></i></div>
                 <div class="small" style="color: var(--text-body);">
                     Vui lòng đọc kỹ nội dung bài học, tích chọn ô cam kết chất lượng và ký xác nhận điện tử trước thời hạn kết thúc.
                 </div>
@@ -1313,11 +1431,11 @@
         <div class="nexus-footer-brand">
             <div class="nexus-slogan">
                 <i class="fa-solid fa-quote-left text-primary opacity-50"></i>
-                Silence the ads. Let quality make the noise.
+                <span>Silence the ads. Let quality make the noise.</span>
                 <i class="fa-solid fa-quote-right text-primary opacity-50"></i>
             </div>
             <div class="nexus-copyright">
-                Bản quyền thuộc về Nguyễn Hải Đường (hai.duong) • IQC Quality Engineering
+                <span>Bản quyền thuộc về Nguyễn Hải Đường (hai.duong)</span><span class="d-none d-sm-inline"> • </span><span class="d-block d-sm-inline">IQC Quality Engineering</span>
             </div>
         </div>
     </div>
@@ -1538,7 +1656,7 @@
                 <div class="modal-body p-0">
                     <div class="table-responsive" style="max-height: 480px;">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light sticky-top">
+                            <thead class="table-light sticky-top text-nowrap">
                                 <tr>
                                     <th class="ps-3">Học viên</th>
                                     <th>Bộ phận</th>
@@ -1576,7 +1694,7 @@
                     <div class="small text-secondary fw-bold mb-2">DANH SÁCH BỘ PHẬN</div>
                     <div class="table-responsive mb-4" style="max-height: 280px;">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light sticky-top">
+                            <thead class="table-light sticky-top text-nowrap">
                                 <tr>
                                     <th>Bộ phận (Part)</th>
                                     <th class="text-center">Số lượng</th>
@@ -1587,7 +1705,7 @@
                         </table>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
                         <small class="text-muted"><i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>Xóa danh sách sẽ dọn dẹp các phân công chưa ký.</small>
                         <button class="btn-nexus btn-nexus-danger" onclick="deleteAllUsersConfirm()">
                             <i class="fa-solid fa-trash-can me-1"></i>Xóa toàn bộ nhân sự
@@ -1624,9 +1742,9 @@
                     </div>
                     <div id="new-reg-courses" class="p-2 border rounded-3 mb-3" style="max-height: 160px; overflow-y: auto;"></div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn-nexus btn-nexus-secondary" onclick="submitNewRegProcess(true)">Chỉ kích hoạt (Bỏ qua gán)</button>
-                    <button class="btn-nexus btn-nexus-primary" onclick="submitNewRegProcess(false)">Xác nhận gán & Kích hoạt</button>
+                <div class="modal-footer d-flex flex-wrap gap-2">
+                    <button class="btn-nexus btn-nexus-secondary flex-grow-1 flex-sm-grow-0" onclick="submitNewRegProcess(true)">Chỉ kích hoạt (Bỏ qua gán)</button>
+                    <button class="btn-nexus btn-nexus-primary flex-grow-1 flex-sm-grow-0" onclick="submitNewRegProcess(false)">Xác nhận gán &amp; Kích hoạt</button>
                 </div>
             </div>
         </div>
@@ -1637,26 +1755,26 @@
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div>
+                    <div class="min-w-0">
                         <h5 class="modal-title fw-bold text-primary mb-0">
                             <i class="fa-solid fa-bullhorn me-2 text-warning"></i>Smart Reminder Hub • Trung tâm Đôn đốc Đào tạo
                         </h5>
-                        <div class="small text-muted font-mono mt-1" id="rem-scope-title">Đang đồng bộ...</div>
+                        <div class="small text-muted font-mono mt-1 text-truncate" id="rem-scope-title">Đang đồng bộ...</div>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close flex-shrink-0 ms-2" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-3 p-md-4">
                     <!-- Part Breakdown Filter Pills -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
                         <span class="small text-secondary fw-bold">1. LỌC NHANH THEO BỘ PHẬN (PART):</span>
                         <span class="badge bg-danger-subtle text-danger font-mono" id="rem-total-badge">0 chưa ký</span>
                     </div>
                     <div id="rem-part-pills" class="d-flex flex-wrap gap-2 mb-3"></div>
 
                     <!-- Formatted Message Preview for Zalo / Knox / Teams -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="small text-secondary fw-bold">2. BẢN TIN ĐÔN ĐỐC TỰ ĐỘNG (ZALO / KNOX MESSENGER / EMAIL):</span>
-                        <button class="btn btn-sm btn-nexus-secondary py-1 px-2" onclick="copyReminderMessage()">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                        <span class="small text-secondary fw-bold">2. BẢN TIN ĐÔN ĐỐC TỰ ĐỘNG (ZALO / KNOX / EMAIL):</span>
+                        <button class="btn btn-sm btn-nexus-secondary py-1 px-2 text-nowrap" onclick="copyReminderMessage()">
                             <i class="fa-regular fa-copy text-primary me-1"></i>Copy tin nhắn
                         </button>
                     </div>
@@ -1666,7 +1784,7 @@
                     <div class="small text-secondary fw-bold mb-2">3. DANH SÁCH NHÂN SỰ CHƯA HOÀN THÀNH:</div>
                     <div class="table-responsive border rounded-3" style="max-height: 220px;">
                         <table class="table table-sm table-hover align-middle mb-0 small">
-                            <thead class="table-light sticky-top">
+                            <thead class="table-light sticky-top text-nowrap">
                                 <tr>
                                     <th class="ps-3">Họ và tên</th>
                                     <th>Mã NV</th>
@@ -1680,15 +1798,15 @@
                     </div>
                 </div>
                 <div class="modal-footer d-flex flex-wrap justify-content-between gap-2">
-                    <button class="btn-nexus btn-nexus-secondary" onclick="sendReminderEmailNow()" id="btn-send-rem-email">
+                    <button class="btn-nexus btn-nexus-secondary flex-grow-1 flex-sm-grow-0" onclick="sendReminderEmailNow()" id="btn-send-rem-email">
                         <i class="fa-solid fa-envelope-circle-check text-primary"></i> Gửi Email Nhắc nhở Ngay
                     </button>
-                    <div class="d-flex gap-2">
-                        <button class="btn-nexus btn-nexus-secondary" onclick="copyReminderMessage()">
+                    <div class="d-flex flex-wrap gap-2 flex-grow-1 flex-sm-grow-0">
+                        <button class="btn-nexus btn-nexus-secondary flex-grow-1" onclick="copyReminderMessage()">
                             <i class="fa-solid fa-copy text-warning"></i> Copy Tin nhắn
                         </button>
-                        <button class="btn-nexus btn-nexus-primary" onclick="downloadReminderExcelClient()">
-                            <i class="fa-solid fa-file-excel"></i> Xuất Excel Tức thời (.xlsx)
+                        <button class="btn-nexus btn-nexus-primary flex-grow-1" onclick="downloadReminderExcelClient()">
+                            <i class="fa-solid fa-file-excel"></i> Xuất Excel (.xlsx)
                         </button>
                     </div>
                 </div>
@@ -1701,13 +1819,13 @@
         <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div>
-                        <h5 class="modal-title fw-bold mb-0"><i class="fa-solid fa-qrcode me-2 text-primary"></i>Cổng Truy Cập Nhanh & Mã QR</h5>
+                    <div class="min-w-0">
+                        <h5 class="modal-title fw-bold mb-0"><i class="fa-solid fa-qrcode me-2 text-primary"></i>Cổng Truy Cập Nhanh &amp; Mã QR</h5>
                         <div class="small text-muted font-mono mt-1">Quét QR trên điện thoại hoặc sao chép Link ngắn</div>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close flex-shrink-0 ms-2" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body p-4 text-center">
+                <div class="modal-body p-3 p-sm-4 text-center">
                     <div class="p-3 d-inline-block rounded-4 border mb-3" style="background: #ffffff; box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);">
                         <img id="nexus-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&color=090d16&bgcolor=ffffff&data=https%3A%2F%2Fis.gd%2Fiqcnexus" alt="QR Code IQC Nexus" width="200" height="200" style="display: block; border-radius: 8px;" loading="lazy">
                     </div>
@@ -1728,11 +1846,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer d-flex justify-content-between">
-                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=16&color=090d16&bgcolor=ffffff&data=https%3A%2F%2Fis.gd%2Fiqcnexus" target="_blank" download="QR_IQC_Nexus.png" class="btn-nexus btn-nexus-secondary text-decoration-none">
+                <div class="modal-footer d-flex flex-wrap justify-content-between gap-2">
+                    <a href="https://api.qrserver.com/v1/create-qr-code/?size=600x600&margin=16&color=090d16&bgcolor=ffffff&data=https%3A%2F%2Fis.gd%2Fiqcnexus" target="_blank" download="QR_IQC_Nexus.png" class="btn-nexus btn-nexus-secondary text-decoration-none flex-grow-1 flex-sm-grow-0">
                         <i class="fa-solid fa-download text-primary"></i> Tải ảnh QR nét cao
                     </a>
-                    <button class="btn-nexus btn-nexus-primary" onclick="copyShortPortalUrl('https://is.gd/iqcnexus')">
+                    <button class="btn-nexus btn-nexus-primary flex-grow-1 flex-sm-grow-0" onclick="copyShortPortalUrl('https://is.gd/iqcnexus')">
                         <i class="fa-solid fa-copy"></i> Copy Link Ngắn
                     </button>
                 </div>
@@ -2334,14 +2452,14 @@
                 const isChecked = s.signEnabled ? 'checked' : '';
 
                 h += `
-                <div class="liquid-glass liquid-glass-interactive p-4 mb-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
+                <div class="liquid-glass liquid-glass-interactive p-3 p-sm-4 mb-3">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                        <div class="min-w-0 flex-grow-1">
                             <h5 class="fw-bold mb-1">${s.name}</h5>
-                            <div class="small text-muted"><i class="fa-regular fa-clock me-1"></i>Thời hạn: ${s.start} đến ${s.end}</div>
+                            <div class="small text-muted d-flex flex-wrap align-items-center gap-1"><i class="fa-regular fa-clock"></i><span>Thời hạn:</span><span class="font-mono text-nowrap">${s.start} → ${s.end}</span></div>
                         </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <span class="badge ${badge} font-mono" style="font-size: 0.74rem;">${s.status.toUpperCase()}</span>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                            <span class="badge ${badge} font-mono" style="font-size: 0.72rem;">${s.status.toUpperCase()}</span>
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-nexus-secondary py-1 px-2" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 14px;">
@@ -2354,9 +2472,9 @@
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center justify-content-between p-2 rounded-3 border mb-3" style="background: var(--bg-subtle);">
+                    <div class="d-flex align-items-center justify-content-between gap-2 p-2 rounded-3 border mb-3" style="background: var(--bg-subtle);">
                         <span class="small fw-semibold text-secondary">Cho phép nhân viên ký xác nhận:</span>
-                        <div class="form-check form-switch m-0">
+                        <div class="form-check form-switch m-0 flex-shrink-0">
                             <input class="form-check-input" type="checkbox" onchange="toggleCourseSign('${s.id}', this)" ${isChecked}>
                         </div>
                     </div>
@@ -2369,14 +2487,14 @@
                         <span class="${s.pendingCount > 0 ? 'text-danger' : 'text-success'}">Chưa ký: <b>${s.pendingCount}</b></span>
                     </div>
 
-                    <div class="d-flex flex-wrap gap-2">
-                        <button class="btn-nexus btn-nexus-secondary flex-grow-1 py-1" onclick="exportRemindSingle('${s.id}')" title="Mở Trung tâm Nhắc nhở theo Part, Copy tin nhắn Zalo/Knox & Xuất Excel">
+                    <div class="d-flex flex-nowrap gap-2">
+                        <button class="btn-nexus btn-nexus-secondary flex-grow-1 py-1 px-2" onclick="exportRemindSingle('${s.id}')" title="Mở Trung tâm Nhắc nhở theo Part, Copy tin nhắn Zalo/Knox & Xuất Excel">
                             <i class="fa-solid fa-bullhorn text-warning"></i> Nhắc nhở
                         </button>
-                        <button class="btn-nexus btn-nexus-secondary flex-grow-1 py-1" onclick="printAuditReport('${s.id}')" title="Xem bản in Vector chuẩn Audit A4 & Lưu PDF tức thì (1 giây)">
+                        <button class="btn-nexus btn-nexus-secondary flex-grow-1 py-1 px-2" onclick="printAuditReport('${s.id}')" title="Xem bản in Vector chuẩn Audit A4 & Lưu PDF tức thì (1 giây)">
                             <i class="fa-solid fa-print text-primary"></i> Bản in / PDF
                         </button>
-                        <button class="btn-nexus btn-nexus-secondary py-1 px-3" onclick="exportPDF('${s.id}')" title="Tải xuống trực tiếp file .pdf từ máy chủ">
+                        <button class="btn-nexus btn-nexus-secondary py-1 px-3 flex-shrink-0" onclick="exportPDF('${s.id}')" title="Tải xuống trực tiếp file .pdf từ máy chủ">
                             <i class="fa-solid fa-file-arrow-down text-danger"></i>
                         </button>
                     </div>
@@ -2550,17 +2668,17 @@
                 const safeId = String(u[1]).replace(/'/g, "\\'");
                 const isActive = u[6] === 'Active';
                 h += `
-                <div class="nexus-gpu-row mb-2 py-3 px-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="fw-bold">${u[0]}</span>
+                <div class="nexus-gpu-row mb-2 py-3 px-3 px-sm-4">
+                    <div class="d-flex justify-content-between align-items-center gap-2">
+                        <div class="min-w-0 flex-grow-1">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <span class="fw-bold text-break">${u[0]}</span>
                                 <span class="badge bg-secondary-subtle text-secondary font-mono" style="font-size: 0.72rem;">${u[1]}</span>
                                 <span class="badge ${isActive ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}" style="font-size: 0.65rem;">${u[6]}</span>
                             </div>
-                            <div class="small text-muted mt-1">${u[2] || '-'} • ${u[3] || '-'} • ${u[4] || '-'}</div>
+                            <div class="small text-muted mt-1 text-truncate">${u[2] || '-'} • ${u[3] || '-'} • ${u[4] || '-'}</div>
                         </div>
-                        <div class="dropdown">
+                        <div class="dropdown flex-shrink-0">
                             <button class="btn btn-sm btn-nexus-secondary py-1 px-2" data-bs-toggle="dropdown"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px;">
                                 <li><a class="dropdown-item py-2" href="javascript:void(0)" onclick="openUserModal(true, '${safeId}')"><i class="fa-solid fa-pen-to-square me-2 text-secondary"></i>Chỉnh sửa</a></li>
@@ -2753,10 +2871,10 @@
                     for (let part in res.stats) {
                         h += `
                         <tr>
-                            <td class="fw-semibold">${part}</td>
-                            <td class="text-center"><span class="badge bg-secondary-subtle text-secondary font-mono">${res.stats[part]}</span></td>
-                            <td class="text-end pe-3">
-                                <button class="btn btn-sm btn-nexus-danger py-1 px-2" onclick="deleteByPart('${part}')">
+                            <td class="fw-semibold text-nowrap">${part}</td>
+                            <td class="text-center text-nowrap"><span class="badge bg-secondary-subtle text-secondary font-mono">${res.stats[part]}</span></td>
+                            <td class="text-end pe-3 text-nowrap">
+                                <button class="btn btn-sm btn-nexus-danger py-1 px-2 text-nowrap" onclick="deleteByPart('${part}')">
                                     <i class="fa-solid fa-trash me-1"></i>Xóa Part
                                 </button>
                             </td>
@@ -2902,11 +3020,11 @@
                 const badgeClass = item.status === 'Quá hạn' ? 'bg-danger-subtle text-danger' : 'bg-warning-subtle text-warning';
                 rowsHtml += `
                 <tr>
-                    <td class="ps-3 fw-semibold">${item.name}</td>
-                    <td class="font-mono text-muted">${item.uID}</td>
-                    <td><span class="badge bg-secondary-subtle text-secondary font-mono">${item.part}</span></td>
+                    <td class="ps-3 fw-semibold text-nowrap">${item.name}</td>
+                    <td class="font-mono text-muted text-nowrap">${item.uID}</td>
+                    <td class="text-nowrap"><span class="badge bg-secondary-subtle text-secondary font-mono">${item.part}</span></td>
                     <td>${item.courseName}</td>
-                    <td class="text-end pe-3"><span class="badge ${badgeClass} font-mono">${item.status}</span></td>
+                    <td class="text-end pe-3 text-nowrap"><span class="badge ${badgeClass} font-mono">${item.status}</span></td>
                 </tr>`;
             });
             document.getElementById('rem-table-body').innerHTML = rowsHtml;
@@ -3093,18 +3211,18 @@
             courses.forEach(c => {
                 userCoursesMap[c.id] = c;
                 const actionBtn = c.canSign ?
-                    `<button class="btn-nexus btn-nexus-primary" onclick="openSignModal('${c.id}')"><i class="fa-solid fa-pen-nib"></i> Ký xác nhận</button>` :
-                    `<button class="btn-nexus btn-nexus-secondary disabled opacity-50" style="cursor: not-allowed;"><i class="fa-solid fa-lock"></i> Chưa mở ký</button>`;
+                    `<button class="btn-nexus btn-nexus-primary w-100" onclick="openSignModal('${c.id}')"><i class="fa-solid fa-pen-nib"></i> Ký xác nhận</button>` :
+                    `<button class="btn-nexus btn-nexus-secondary w-100 disabled opacity-50" style="cursor: not-allowed;"><i class="fa-solid fa-lock"></i> Chưa mở ký</button>`;
 
                 h += `
-                <div class="liquid-glass p-4 mb-3">
+                <div class="liquid-glass p-3 p-sm-4 mb-3">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div>
+                        <div class="min-w-0 flex-grow-1">
                             <h5 class="fw-bold mb-1">${c.name}</h5>
-                            <div class="small text-muted mb-2"><i class="fa-regular fa-clock me-1"></i>Thời gian: ${c.start} đến ${c.end}</div>
+                            <div class="small text-muted mb-2 d-flex flex-wrap align-items-center gap-1"><i class="fa-regular fa-clock"></i><span>Thời gian:</span><span class="font-mono text-nowrap">${c.start} → ${c.end}</span></div>
                             <span class="badge bg-warning-subtle text-warning font-mono" style="font-size: 0.72rem;">CHỜ KÝ XÁC NHẬN</span>
                         </div>
-                        <div>${actionBtn}</div>
+                        <div class="flex-shrink-0">${actionBtn}</div>
                     </div>
                 </div>`;
             });
@@ -3372,12 +3490,12 @@
                         <div class="fw-semibold">${u.name}</div>
                         <div class="small text-muted font-mono">${u.uid}</div>
                     </td>
-                    <td>
-                        <div class="small">${u.com || '-'} > ${u.group || '-'}</div>
+                    <td class="text-nowrap">
+                        <div class="small">${u.com || '-'} &gt; ${u.group || '-'}</div>
                         <div class="small text-muted">${u.part || '-'}</div>
                     </td>
-                    <td>${statusBadge}</td>
-                    <td class="text-end pe-3">${actionBtn}</td>
+                    <td class="text-nowrap">${statusBadge}</td>
+                    <td class="text-end pe-3 text-nowrap">${actionBtn}</td>
                 </tr>`;
             });
             tbody.innerHTML = h;
